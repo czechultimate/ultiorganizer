@@ -167,7 +167,7 @@ function GameRespTeam($gameId)
 	);
 	$result = DBQuery($query);
 	if (!$result) {
-		die('Invalid query: ' . mysql_error());
+		die('Invalid query: ');// . mysql_error());
 	}
 
 	$row = mysqli_fetch_assoc($result);
@@ -257,7 +257,8 @@ function GamePlayers($gameId, $teamId)
 		"SELECT p.player_id, pg.num, p.firstname, p.lastname 
 		FROM uo_played AS pg 
 		LEFT JOIN uo_player AS p ON(pg.player=p.player_id)
-		WHERE pg.game=%d AND p.team=%d",
+		WHERE pg.game=%d AND p.team=%d
+		ORDER BY p.lastname ASC, p.firstname ASC",
 		(int)$gameId,
 		(int)$teamId
 	);
@@ -997,6 +998,7 @@ function GameAddTimeout($gameId, $number, $time, $home)
 
 function GameGetSpiritPoints($gameId, $teamId)
 {
+	$spnoteID = GetSpiritCommentID();
 	$query = sprintf(
 		"SELECT * FROM uo_spirit_score WHERE game_id=%d AND team_id=%d",
 		(int)$gameId,
@@ -1005,7 +1007,11 @@ function GameGetSpiritPoints($gameId, $teamId)
 	$scores = DBQueryToArray($query);
 	$points = array();
 	foreach ($scores as $score) {
-		$points[$score['category_id']] = $score['value'];
+		if($score['category_id'] == $spnoteID){
+			$points[$score['category_id']] = $score['note'];
+		}else{
+			$points[$score['category_id']] = $score['value'];
+		}
 	}
 	return $points;
 }
@@ -1021,17 +1027,33 @@ function GameSetSpiritPoints($gameId, $teamId, $home, $points, $categories)
 		);
 		DBQuery($query);
 
+		$spnoteID = GetSpiritCommentID();
+
 		foreach ($points as $cat => $value) {
-			if (!is_null($value)) {
-				$query = sprintf(
-					"INSERT INTO uo_spirit_score (`game_id`, `team_id`, `category_id`, `value`)
-            VALUES (%d, %d, %d, %d)",
-					(int) $gameId,
-					(int) $teamId,
-					(int) $cat,
-					(int) $value
-				);
-				DBQuery($query);
+			if ($cat == $spnoteID) {
+				if (!is_null($value) && $value != "") {
+					$query = sprintf(
+						"INSERT INTO uo_spirit_score (`game_id`, `team_id`, `category_id`, `note`)
+				VALUES (%d, %d, %d, '%s')",
+						(int) $gameId,
+						(int) $teamId,
+						(int) $cat,
+						 $value
+					);
+					DBQuery($query);
+				}
+			}else{
+				if (!is_null($value)) {
+					$query = sprintf(
+						"INSERT INTO uo_spirit_score (`game_id`, `team_id`, `category_id`, `value`)
+				VALUES (%d, %d, %d, %d)",
+						(int) $gameId,
+						(int) $teamId,
+						(int) $cat,
+						(int) $value
+					);
+					DBQuery($query);
+				}
 			}
 		}
 	} else {
@@ -1656,6 +1678,8 @@ function SpiritTable($gameinfo, $points, $categories, $home, $wide = true)
 		$colspan = ($wide ? 3 : 2);
 		$html .= "<th></th></tr>\n";
 
+		$spnoteID = GetSpiritCommentID();
+
 		foreach ($categories as $cat) {
 			if ($cat['index'] == 0)
 				continue;
@@ -1671,22 +1695,27 @@ function SpiritTable($gameinfo, $points, $categories, $home, $wide = true)
 				$html .= "</td>";
 			else
 				$html .= "</td></tr>\n<tr>";
+			if ($id == $spnoteID){
+				$html .= "<td class='center'>
+				  <textarea rows='4' maxlength='500' id='" . $home . "cat" . $id . "_0' name='" . $home . "cat" . $id . "' >" . $points[$id] . "</textarea></td>";
+			} else {
+				$html .= "<td><fieldset id='" . $home . "cat'" . $id . "_0' data-role='controlgroup' data-type='horizontal' >";
+				for ($i = $vmin; $i <= $vmax; ++$i) {
+					if ($i < $cat['min']) {
+						// $html .= "<td></td>";
+					} else {
+						
+						$id = $cat['category_id'];
+						$checked = (isset($points[$id]) && !is_null($points[$id]) && $points[$id] == $i) ? "checked='checked'" : "";
+						$html .= "<label for='" . $home . "cat" . $id . "_" . $i . "'>$i</label>";
+						$html .= "<input type='radio' id='" . $home . "cat" . $id . "_" . $i . "' name='" . $home . "cat" . $id . "' value='$i' $checked/>";
 
-			$html .= "<td><fieldset id='" . $home . "cat'" . $id . "_0' data-role='controlgroup' data-type='horizontal' >";
-			for ($i = $vmin; $i <= $vmax; ++$i) {
-				if ($i < $cat['min']) {
-					// $html .= "<td></td>";
-				} else {
-					$id = $cat['category_id'];
-					$checked = (isset($points[$id]) && !is_null($points[$id]) && $points[$id] == $i) ? "checked='checked'" : "";
-					$html .= "<label for='" . $home . "cat" . $id . "_" . $i . "'>$i</label>";
-					$html .= "<input type='radio' id='" . $home . "cat" . $id . "_" . $i . "' name='" . $home . "cat" . $id . "' value='$i' $checked/>";
-
-					// $html .= "<td class='center'>
-					// <input type='radio' id='".$home."cat".$id."_".$i."' name='".$home."cat". $id . "' value='$i'  $checked/></td>";
+						// $html .= "<td class='center'>
+						// <input type='radio' id='".$home."cat".$id."_".$i."' name='".$home."cat". $id . "' value='$i'  $checked/></td>";
+					}
 				}
+				$html .= "</fieldset></td>";
 			}
-			$html .= "</fieldset></td>";
 			$html .= "</tr>\n";
 		}
 	} else {
@@ -1714,9 +1743,22 @@ function SpiritTable($gameinfo, $points, $categories, $home, $wide = true)
 		$total = ": -";
 	else
 		$html .= ": $total";
-	$html .= "</tr>";
-
+	$html .= "</td></tr>";
 	$html .= "</table>\n";
 
 	return $html;
+}
+
+function GetSpiritCommentID(){
+	$query = sprintf(
+		"SELECT `category_id` FROM `uo_spirit_category` WHERE `text`='Spirit Comment'"
+	);
+
+	$result = DBQuery($query);
+	if($result->num_rows > 0){
+		$row = $result->fetch_assoc();
+		return $row['category_id'];
+	}	else{
+		return 0;
+	}
 }

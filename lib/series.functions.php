@@ -401,7 +401,7 @@ function SeriesSpiritBoard($seriesId)
       LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
       LEFT JOIN uo_pool pool ON(gp.pool=pool.pool_id)
       LEFT JOIN uo_game AS g1 ON (gp.game=g1.game_id)
-      WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0
+      WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0 AND st.value IS NOT NULL
       ORDER BY st.team_id, st.category_id",
     $seriesId
   );
@@ -413,7 +413,9 @@ function SeriesSpiritBoard($seriesId)
   $total = 0;
   $sum = 0;
   $games = 0;
+
   foreach ($scores as $row) {
+    
     if ($last_team != $row['team_id'] || $last_category != $row['category_id']) {
       if (!is_null($last_category)) {
         if (!isset($factor[$last_category])) {
@@ -422,6 +424,7 @@ function SeriesSpiritBoard($seriesId)
         $teamline[$last_category] = SafeDivide($sum, $games);
         $total += SafeDivide($factor[$last_category] * $sum, $games);
       }
+
       if ($last_team != $row['team_id']) {
         if (!is_null($last_team)) {
           $teamline['total'] = $total;
@@ -431,14 +434,20 @@ function SeriesSpiritBoard($seriesId)
         }
         $teamline = array('teamname' => $row['name']);
       }
+
       $sum = 0;
       $games = 0;
       $last_team = $row['team_id'];
       $last_category = $row['category_id'];
     }
+
+    
     $sum += $row['value'];
     ++$games;
   }
+
+  
+
   if (!is_null($last_team)) {
     $factor[$last_category] = DBQueryToArray(sprintf("SELECT * FROM uo_spirit_category WHERE category_id=%d", (int) $last_category))[0]['factor'];
     $teamline[$last_category] = SafeDivide($sum, $games);
@@ -447,7 +456,39 @@ function SeriesSpiritBoard($seriesId)
     $teamline['games'] = $games;
     $averages[$last_team] = $teamline;
   }
+
   return $averages;
+}
+
+/**
+ * Get all games spirit points in given division.
+ * @param int $seriesId uo_series.series_id
+ * @return Array array of games.
+ */
+function SeriesAllSpiritPoints($seriesId)
+{
+  $query = sprintf(
+    "SELECT st.team_id, te.name, SUM(st.value) AS total_value, pool.series
+    FROM uo_team AS te
+    LEFT JOIN uo_spirit_score AS st ON (te.team_id=st.team_id)
+    LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
+    LEFT JOIN uo_pool pool ON(gp.pool=pool.pool_id)
+    LEFT JOIN uo_game AS g1 ON (gp.game=g1.game_id)
+    WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0
+    GROUP BY st.team_id, te.name, pool.series
+    ORDER BY st.team_id;",
+    $seriesId
+  );
+
+  $spirits = DBQueryToArray($query);
+  $spiritSum = array();
+  
+  foreach ($spirits as $row) {
+    $teamline['total_value'] = $row['total_value'];
+    $spiritSum[$row['team_id']] = $teamline;
+  }
+
+  return $spiritSum;
 }
 
 /**
@@ -666,17 +707,18 @@ function SeriesEnrolledTeamsByUser($seriesId, $userid)
  * @param int $country uo_country.country_id
  * @return uo_enrolledteam.id
  */
-function AddSeriesEnrolledTeam($seriesId, $userid, $name, $club, $country)
+function AddSeriesEnrolledTeam($seriesId, $userid, $name, $club, $country, $rank)
 {
   if ($userid == 'anonymous') die("Can not enroll for anonymous");
   if ($userid == $_SESSION['uid'] || hasEditTeamsRight($seriesId)) {
     $query = sprintf(
-      "INSERT INTO uo_enrolledteam (series, userid, name, clubname, countryname, enroll_time)
-				VALUES (%d, '%s', '%s', '%s', '%s', now())",
+      "INSERT INTO uo_enrolledteam (series, userid, name, clubname, rank, countryname, enroll_time)
+				VALUES (%d, '%s', '%s', '%s', '%s', '%s', now())",
       (int)$seriesId,
       DBEscapeString($userid),
       DBEscapeString($name),
       DBEscapeString($club),
+      DBEscapeString($rank),
       DBEscapeString($country)
     );
     $id = DBQueryInsert($query);
@@ -741,9 +783,10 @@ function ConfirmEnrolledTeam($seriesId, $id)
     }
 
     $query = sprintf(
-      "INSERT INTO uo_team (name, series, valid) VALUES ('%s', %d, 1)",
+      "INSERT INTO uo_team (name, series, rank, valid) VALUES ('%s', %d, %d, 1)",
       DBEscapeString($teaminfo['name']),
-      (int)$seriesId
+      (int)$seriesId,
+      (int)$teaminfo['rank']
     );
 
     $teamId = DBQueryInsert($query);

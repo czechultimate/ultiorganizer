@@ -206,7 +206,7 @@ if (ShowDefenseStats()) {
 
 
       $html_tmp .= "<table style='white-space: nowrap;' border='1' cellspacing='0' width='100%'>\n
-			<tr><th>" . _("Event") . "</th><th>" . _("Division") . "</th><th>" . _("Team") . "</th><th>" . _("Games") . "</th><th>" . _("Passes") . "</th><th>" . _("Goals") . "</th><th>" . _("Cal.") . "</th><th>" . _("Tot.") . "</th>";
+			<tr><th>" . _("Season") . "</th><th>" . _("Event") . "</th><th>" . _("Team") . "</th><th>" . _("Games") . "</th><th>" . _("Passes") . "</th><th>" . _("Goals") . "</th><th>" . _("Cal.") . "</th><th>" . _("Tot.") . "</th>";
       $html_tmp .= "<th>" . _("Defenses.") . "</th>";
       $html_tmp .= "<th>" . _("Pass avg.") . "</th><th>" . _("Goal avg.") . "</th><th>" . _("Point avg.") . "</th>";
       $html_tmp .= "<th>" . _("Def. avg.") . "</th>";
@@ -381,7 +381,7 @@ if (ShowDefenseStats()) {
 
 
       $html_tmp .= "<table style='white-space: nowrap;' border='1' cellspacing='0' width='100%'>\n
-			<tr><th>" . _("Event") . "</th><th>" . _("Division") . "</th><th>" . _("Team") . "</th><th>" . _("Games") . "</th><th>" . _("Passes") . "</th><th>" . _("Goals") . "</th>
+			<tr><th>" . _("Season") . "</th><th>" . _("Event") . "</th><th>" . _("Team") . "</th><th>" . _("Games") . "</th><th>" . _("Passes") . "</th><th>" . _("Goals") . "</th>
 			<th>" . _("Cal.") . "</th><th>" . _("Tot.") . "</th><th>" . _("Pass avg.") . "</th><th>" . _("Goal avg.") . "</th><th>" . _("Point avg.") . "</th><th>" . _("Wins") . "</th><th>" . _("Win-%") . "</th></tr>\n";
 
 

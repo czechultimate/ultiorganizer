@@ -625,6 +625,10 @@ function upgrade75()
 			'INSERT INTO uo_spirit_category (`mode`, `group`, `index`, `factor`, `text`) VALUES ("1004", 1, 10, 0, "Communication (ours)")'
 		);
 		_("Communication (ours)");
+		runQuery(
+			'INSERT INTO uo_spirit_category (`mode`, `group`, `index`, `factor`, `text`) VALUES ("1003", 1, 6, 0, "Spirit Comment")'
+		);
+		_("Spirit Comment");
 
 		runQuery("CREATE TABLE `uo_spirit_score` (
         `game_id` INT(10) NOT NULL,
@@ -756,6 +760,11 @@ function upgrade76()
 	}
 }
 
+function upgrade78()
+{
+	addColumn("uo_spirit_score", "note", "varchar(500) default NULL");
+}
+
 function runQuery($query)
 {
 	global $mysqlconnectionref;
@@ -773,11 +782,11 @@ function addColumn($table, $column, $type)
 function hasColumn($table, $column)
 {
 	global $mysqlconnectionref;
-	$query = "SELECT max(" . $column . ") FROM " . $table;
-	$result = mysqli_query($mysqlconnectionref, $query);
-	if (!$result) {
-		return false;
-	} else return true;
+
+    $query = "SHOW COLUMNS FROM $table LIKE '$column'";
+    $result = mysqli_query($mysqlconnectionref, $query);
+
+    return mysqli_num_rows($result) > 0;
 }
 
 function hasRow($table, $column, $value)

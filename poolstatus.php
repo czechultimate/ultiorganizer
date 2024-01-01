@@ -10,6 +10,7 @@ $seriesScoreboard = false;
 $print = 0;
 $html = "";
 $comment = "";
+$submenuseriesid = 0;
 
 if (iget("season")) {
   $seasoninfo = SeasonInfo(iget("season"));
@@ -19,6 +20,7 @@ if (iget("season")) {
   $seriesScoreboard = true;
 } else if (iget("series")) {
   $seriesinfo = SeriesInfo(iget("series"));
+  $submenuseriesid = $seriesinfo['series_id'];
   $pools = SeriesPools($seriesinfo['series_id'], true);
   $title .= U_($seriesinfo['name']);
   $comment = CommentHTML(2, $seriesinfo['series_id']);
@@ -44,6 +46,7 @@ if (iget("season")) {
 
   $seasoninfo = SeasonInfo($poolinfo['season']);
   $title .= utf8entities(U_($poolinfo['seriesname']) . ", " . U_($poolinfo['name']));
+  $submenuseriesid = $poolinfo['series_id'];
 }
 if (iget("print")) {
   $print = intval(iget("print"));
@@ -107,7 +110,7 @@ if ($print) {
 if ($print) {
   showPrintablePage($title, $html);
 } else {
-  showPage($title, $html);
+  showPage($title, $html, false, $submenuseriesid);
 }
 
 function scoreboard($id, $seriesScoreboard)
@@ -794,16 +797,24 @@ function printCrossmatchPool($seasoninfo, $poolinfo)
     $ret .= "</td>";
   }
 
-  $ret .= "<td>" . _("Losers continues in:") . "</td>";
-  foreach ($loserspools as $loserId => $color) {
-    $ret .= "<td style='background-color:#" . $color . ";background-color:" . RGBtoRGBa($color, 0.3) . ";color:#" . textColor($color) . ";width:" . (50 / count($loserspools)) . "%'>";
-    if ($loserspool['visible']) {
-      $ret .= "<a href='?view=poolstatus&amp;pool=" . $loserId . "'>" . utf8entities(PoolName($loserId)) . "</a>";
-    } else {
-      $ret .= utf8entities(PoolName($loserId));
-    }
-    $ret .= "</td>";
-  }
+    $ret .= "<td>" . _("Losers continues in:") . "</td>";
+    foreach ($loserspools as $loserId => $color) {
+      
+      if (PoolName($loserId) == -1 && $poolinfo['placementpool'] == 1){
+        $ret .= "<td style='background-color:white;color:black;width:" . (50 / count($loserspools)) . "%'>";
+        $placement = PoolPlacementString($poolinfo['pool_id'], $i);
+        $placementname = "<b>" . U_($placement) . "</b> ";
+        $ret .= $placementname;
+      } else {
+        $ret .= "<td style='background-color:#" . $color . ";background-color:" . RGBtoRGBa($color, 0.3) . ";color:#" . textColor($color) . ";width:" . (50 / count($loserspools)) . "%'>";
+          if ($loserspool['visible']) {
+            $ret .= "<a href='?view=poolstatus&amp;pool=" . $loserId . "'>" . utf8entities(PoolName($loserId)) . "</a>";
+          } else {
+            $ret .= utf8entities(PoolName($loserId));
+          }
+          $ret .= "</td>";
+        }
+      }
   $ret .= "</tr></table>\n";
 
   $ret .= "<p><a href='?view=games&amp;pool=" . $poolinfo['pool_id'] . "&amp;singleview=1'>" . _("Schedule") . "</a><br/></p>";

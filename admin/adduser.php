@@ -1,5 +1,6 @@
 <?php
 include_once $include_prefix . 'lib/common.functions.php';
+include_once 'lib/club.functions.php';
 
 if ((!empty($_GET["season"]) && !isSeasonAdmin($_GET["season"])) && !isSuperAdmin()) {
   die("Insufficient user rights");
@@ -101,7 +102,7 @@ if (isset($_POST['Email'])) $html .= $_POST['Email'];
 $html .= "'/></td></tr>";
 
 $html .= "<tr><td class='infocell'>" . _("Responsible team") . ":</td>";
-$teams = SeasonTeams(CurrentSeason());
+$teams =SeasonTeams(CurrentSeason()); //ClubList();
 $html .= "<td><select class='dropdown' name='team'>";
 if (isset($_POST['team']))
   $html .= "<option class='dropdown' value='0'></option>";
@@ -113,7 +114,11 @@ foreach ($teams as $team) {
     $html .= "<option class='dropdown' selected='selected' value='" . utf8entities($team['team_id']) . "'>" . utf8entities(U_($team['seriesname'])) . " " . utf8entities($team['name']) . "</option>";
   else
     $html .= "<option class='dropdown' value='" . utf8entities($team['team_id']) . "'>" . utf8entities(U_($team['seriesname'])) . " " . utf8entities($team['name']) . "</option>";
-}
+   /* if (isset($_POST['team']) && $team['club_id'] == $_POST['team'])
+      $html .= "<option class='dropdown' selected='selected' value='" . utf8entities($team['club_id']) . "'>" . utf8entities($team['name']) . "</option>";
+    else
+      $html .= "<option class='dropdown' value='" . utf8entities($team['club_id']) . "'>" . utf8entities($team['name']) . "</option>";*/
+  }
 
 $html .= "</select></td></tr>";
 

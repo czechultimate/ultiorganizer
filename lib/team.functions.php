@@ -93,10 +93,9 @@ function Teams($filter = null, $ordering = null)
 function TeamListAll($grouped = false, $onlyold = false, $namefilter = "")
 {
   if ($grouped) {
-    $query = sprintf("SELECT MAX(team.team_id) AS team_id, team.name, ser.name AS seriesname
+    $query = sprintf("SELECT team.team_id AS team_id, team.name, ser.name AS seriesname
 			FROM uo_team team 
-			LEFT JOIN uo_pool pool ON (team.pool=pool.pool_id) 
-			LEFT JOIN uo_series ser ON (ser.series_id=pool.series)
+			LEFT JOIN uo_series ser ON (ser.series_id=team.series)
 			LEFT JOIN uo_season season ON (ser.season=season.season_id)");
     if ($onlyold) {
       $query .= sprintf("RIGHT JOIN uo_season_stats ss ON(ser.season=ss.season)");
@@ -105,18 +104,17 @@ function TeamListAll($grouped = false, $onlyold = false, $namefilter = "")
       if ($namefilter == "#") {
         $query .= " WHERE UPPER(team.name) REGEXP '^[0-9]'";
       } else {
-        $query .= " WHERE UPPER(team.name) LIKE '" . DBEscapeString($namefilter) . "%'";
+        $query .= " WHERE team.name LIKE '" . DBEscapeString($namefilter) . "%'";
       }
     }
 
     $query .= sprintf(" GROUP BY team.name, ser.name
 			ORDER BY team.name, ser.name");
   } else {
-    $query = sprintf("SELECT team.team_id, team.name, team.club, club.name AS clubname, team.pool, pool.name AS poolname, ser.name AS seriesname,
+    $query = sprintf("SELECT team.team_id, team.name, team.club, club.name AS clubname, team.pool, ser.name AS seriesname,
 			team.series, ser.type, ser.season, season.name AS seasonname, team.country, c.flagfile
 			FROM uo_team team 
-			LEFT JOIN uo_pool pool ON (team.pool=pool.pool_id) 
-			LEFT JOIN uo_series ser ON (ser.series_id=pool.series)
+			LEFT JOIN uo_series ser ON (ser.series_id=team.series)
 			LEFT JOIN uo_club club ON (team.club=club.club_id)
 			LEFT JOIN uo_country c ON (team.country=c.country_id)
 			LEFT JOIN uo_season season ON (ser.season=season.season_id)");
@@ -551,7 +549,7 @@ function TeamPlayedGames($name, $seriestype, $sorting, $curSeason = false)
 {
 
   $query = sprintf(
-    "SELECT pj1.name AS hometeamname, pj2.name AS visitorteamname, pp.homescore, pp.visitorscore, pp.hasstarted,
+    "SELECT pj1.name AS hometeamname, pj2.name AS visitorteamname, pp.homescore, pp.visitorscore, pp.hasstarted, ser.name as seriesname,
 	ser.season as season_id, ps.name, pp.game_id, ps.pool_id
 	FROM uo_game pp 
 	LEFT JOIN uo_pool ps ON (ps.pool_id=pp.pool)
@@ -565,10 +563,11 @@ function TeamPlayedGames($name, $seriestype, $sorting, $curSeason = false)
     DBEscapeString($seriestype)
   );
 
-  if (!$curSeason) {
+ /* if (!$curSeason) {
     $curentSeason = CurrentSeason();
     $query .= sprintf(" AND ser.season!='%s'", DBEscapeString($curentSeason));
-  }
+    print($query);
+  }*/
 
   switch ($sorting) {
 
@@ -581,11 +580,11 @@ function TeamPlayedGames($name, $seriestype, $sorting, $curSeason = false)
       break;
 
     case "serie":
-      $query .= " ORDER BY ser.season DESC, ps.name ASC, hometeamname ASC, visitorteamname ASC";
+      $query .= " ORDER BY ser.name DESC, ps.name ASC, hometeamname ASC, visitorteamname ASC";
       break;
 
     default:
-      $query .= " ORDER BY ser.season DESC, ps.name ASC, hometeamname ASC, visitorteamname ASC";
+      $query .= " ORDER BY ser.name DESC, ps.name ASC, hometeamname ASC, visitorteamname ASC";
       break;
   }
   return DBQueryToArray($query);

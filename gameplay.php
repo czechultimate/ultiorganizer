@@ -536,7 +536,11 @@ if (GameHasStarted($game_result) > 0) {
         $html .= ":</td>";
         $html .= "<td class='home'>";
         if (isset($homepoints[$id]) && !is_null($homepoints[$id])) {
-          $html .= intval($homepoints[$id]);
+		  if (is_numeric($homepoints[$id])){
+			  $html .= intval($homepoints[$id]);
+		  } else {
+			  $html .= $homepoints[$id];
+		  }
         } else {
           $html .= "-";
         }
@@ -544,7 +548,12 @@ if (GameHasStarted($game_result) > 0) {
         $html .= "</td>";
         $html .= "<td class='guest'>";
         if (isset($visitorpoints[$id]) && !is_null($visitorpoints[$id])) {
-          $html .= intval($visitorpoints[$id]);
+		  if (is_numeric($visitorpoints[$id])){
+			$html .= intval($visitorpoints[$id]);
+		  } else {
+			$html .= $visitorpoints[$id];
+		  }
+          
         } else {
           $html .= "-";
         }

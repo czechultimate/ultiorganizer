@@ -4,7 +4,6 @@ include_once $include_prefix . 'lib/game.functions.php';
 include_once $include_prefix . 'lib/standings.functions.php';
 include_once $include_prefix . 'lib/pool.functions.php';
 include_once $include_prefix . 'lib/configuration.functions.php';
-
 $html = "";
 
 $gameId = intval($_GET["game"]);

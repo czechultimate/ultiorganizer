@@ -200,12 +200,11 @@ foreach ($played_players as $player) {
     $selected = "selected='selected'";
   }
 
-  $html .= "<option value='" . utf8entities($player['player_id']) . "' $selected>#" . $player['num'] . " " . utf8entities($player['firstname'] . " " . $player['lastname']) . "</option>";
+  $html .= "<option value='" . utf8entities($player['player_id']) . "' $selected>#" . $player['num'] . " " . $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
 }
 
 $html .= "<option value='xx'>XX " . _("Callahan Goal") . "</option>";
 $html .= "</select>";
-
 $html .= "<label for='goal' class='select'>" . _("Scorer") . "</label>";
 $html .= "<select id='goal' name='goal' >";
 $html .= "<option value='0' selected='selected'>-</option>";
@@ -215,7 +214,7 @@ foreach ($played_players as $player) {
     $selected = "selected='selected'";
   }
 
-  $html .= "<option value='" . utf8entities($player['player_id']) . "' $selected>#" . $player['num'] . " " . utf8entities($player['firstname'] . " " . $player['lastname']) . "</option>";
+  $html .= "<option value='" . utf8entities($player['player_id']) . "' $selected>#" . $player['num'] . " " . $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
 }
 $html .= "</select>";
 
@@ -292,7 +291,7 @@ echo $html;
                   echo "<option value='0'>-</option>";
                   $played_players = GamePlayers($gameId, $game_result['hometeam']);
                   foreach ($played_players as $player) {
-                    echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " . utf8entities($player['firstname'] . " " . $player['lastname']) . "</option>";
+                    echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " . $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
                   }
                   echo "<option value='xx'>XX " . _("Callahan Goal") . "</option>";
                   echo "\"";
@@ -303,7 +302,7 @@ echo $html;
                   $played_players = GamePlayers($gameId, $game_result['visitorteam']);
                   echo "<option value='0'>-</option>";
                   foreach ($played_players as $player) {
-                    echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " . utf8entities($player['firstname'] . " " . $player['lastname']) . "</option>";
+                    echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " .  $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
                   }
                   echo "<option value='xx'>XX " . _("Callahan Goal") . "</option>";
                   echo "\"";

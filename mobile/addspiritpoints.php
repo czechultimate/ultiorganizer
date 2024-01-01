@@ -38,7 +38,7 @@ if ($season['spiritmode'] > 0) {
     $game_result = GameResult($gameId);
   }
 
-  $html .= "<form  method='post' action='?view=user/addspirit&amp;game=" . $gameId . "'>";
+  $html .= "<form  method='post' action='?view=mobile/addspiritpoints&amp;game=" . $gameId . "'>";
 
   $html .= "<h3>" . sprintf(_("Spirit points given for %s"), utf8entities($game_result['hometeamname'])) . "</h3>\n";
 

@@ -21,12 +21,14 @@ $format = "html";
 $group = "";
 $groupheader = true;
 $games;
+$submenuseriesid = 0;
 
 if (iget("series")) {
   $id = iget("series");
   $baseurl .= "&series=$id";
   $gamefilter = "series";
   $title = _("Schedule") . " " . utf8entities(U_(SeriesName($id)));
+  $submenuseriesid = $id;
 } elseif (iget("pool")) {
   $id = iget("pool");
   $baseurl .= "&pool=$id";
@@ -222,5 +224,5 @@ if ($print) {
 if ($print) {
   showPrintablePage($title, $html);
 } else {
-  showPage($title, $html);
+  showPage($title, $html, false, $submenuseriesid);
 }

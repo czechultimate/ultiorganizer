@@ -18,7 +18,7 @@ ob_end_clean();
 if (!isSuperAdmin()) {
 	die('Insufficient user rights');
 }
-
+// schovat vyber separatoru, napsat napovedu tvaru, zaskrtnout vzdy utf8
 include_once 'lib/season.functions.php';
 include_once 'lib/series.functions.php';
 
@@ -27,29 +27,38 @@ $title = ("Import Teams from CSV file");
 
 if (isset($_POST['import'])) {
 
-	$utf8 = !empty($_POST['utf8']);
+	//$utf8 = !empty($_POST['utf8']);
 	$season = $_POST['season'];
-	$separator = $_POST['separator'];
+	//$separator = $_POST['separator'];
 	$series = SeasonSeries($season);
 	$ser = array();
+	$country = NULL;
+	$count = 0;
 	foreach($series as $row) {
-		$ser[] = array('id' => $row['series_id'], 'name' => $row['seriesname']);
+		$ser[] = array('id' => $row['series_id'], 'name' => $row['name']);
 	}
-
 	if (is_uploaded_file($_FILES['file']['tmp_name'])) {
 		$row = 1;
 		if (($handle = fopen($_FILES['file']['tmp_name'], "r")) !== FALSE) {
-			while (($data = fgetcsv($handle, 0, ";")) !== FALSE) {
-				$team = $utf8 ? $data[0] : utf8_encode($data[0]);
+			while (($data = fgetcsv($handle, 0, ",")) !== FALSE) {
+				$count++;
+				/*$team = $utf8 ? $data[0] : utf8_encode($data[0]);
 				$club = $utf8 ? $data[1] : utf8_encode($data[1]);
 				$country = $utf8 ? $data[2] : utf8_encode($data[2]);
-				$series = $utf8 ? $data[3] : utf8_encode($data[3]);
+				$series = $utf8 ? $data[3] : utf8_encode($data[3]);*/
+				$team = $data[0];
+				$club = $data[1];
+				$country = $data[2];
+				$series = $data[3];
 
+				$rank = $count;
+				
 				//if series is given as name
 				if (!is_int($series)) {
 					foreach ($ser as $s) {
+						
 						if ($s['name'] == $series) {
-							$series = $s['id'];
+							$series = (int)$s['id'];
 							break;
 						}
 					}
@@ -69,7 +78,7 @@ if (isset($_POST['import'])) {
 						$series = $id;
 					}
 				}
-				$id = AddSeriesEnrolledTeam($series, $_SESSION['uid'], $team, $club, $country);
+				$id = AddSeriesEnrolledTeam($series, $_SESSION['uid'], $team, $club, $country, $rank);
 				ConfirmEnrolledTeam($series, $id);
 			}
 			fclose($handle);
@@ -90,12 +99,13 @@ while ($row = mysqli_fetch_assoc($seasons)) {
 }
 
 $html .= "</select></p>\n";
-$html .= "<p>" . ("CSV separator") . ": <input class='input' maxlength='1' size='1' name='separator' value=','/></p>\n";
+//$html .= "<p>" . ("CSV separator") . ": <input class='input' maxlength='1' size='1' name='separator' value=','/></p>\n";
 
 $html .= "<p>" . ("Select file to import") . ":<br/>\n";
 $html .= "<input class='input' type='file' size='100' name='file'/><br/>\n";
-$html .= "<input class='input' type='checkbox' name='utf8' /> " . ("File in UTF-8 format") . "</p>";
+//$html .= "<input class='input' type='checkbox' name='utf8' /> " . ("File in UTF-8 format") . "</p>";
 $html .= "<p><input class='button' type='submit' name='import' value='" . ("Import") . "'/></p>";
+$html .= "<p> CSV file format: Team, Club, Country, Division</p>";
 $html .= "<div><input type='hidden' name='MAX_FILE_SIZE' value='50000000' /></div>\n";
 $html .= "</form>";
 

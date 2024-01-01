@@ -4,7 +4,7 @@ include_once 'lib/club.functions.php';
 $title = _("All clubs");
 $html = "";
 
-$filter = "A";
+$filter = "ALL";
 
 if (iget("list")) {
   $filter = strtoupper(iget("list"));

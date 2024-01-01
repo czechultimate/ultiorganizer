@@ -94,6 +94,30 @@ function Players($filter = null, $ordering = null)
 }
 
 /**
+ * Return players araay 
+ * [0] - id
+ * [2] - name,lastname
+ *
+ * @param unknown_type $filter
+ * @param unknown_type $ordering
+ */
+function PlayersByName()
+{
+  $query = "SELECT p.profile_id, CONCAT(p.firstname, ' ', p.lastname) as name
+		FROM uo_player_profile p";
+
+  $result = DBQuery(trim($query));
+  $players = array();
+
+  while ($row = $result->fetch_row()) {
+    
+    $players[$row[0]] = $row[1];
+  }
+
+  return $players;
+}
+
+/**
  * Player info.
  * 
  * @param int $playerId
@@ -138,12 +162,16 @@ function PlayerLatestId($profileId)
 
 function PlayerListAll($lastname = "")
 {
-  $query = "SELECT MAX(player_id) AS player_id, firstname, lastname
+  /*$query = "SELECT MAX(player_id) AS player_id, firstname, lastname
 		FROM uo_player p 
 		LEFT JOIN uo_team ON p.team=team_id
-		WHERE accredited=1";
+		WHERE accredited=1";*/
+    $query = "SELECT player_id AS player_id, firstname, lastname
+		FROM uo_player p 
+		LEFT JOIN uo_team ON p.team=team_id";
+    
   if (!empty($lastname) && $lastname != "ALL") {
-    $query .= " AND UPPER(lastname) LIKE '" . DBEscapeString($lastname) . "%'";
+    $query .= " WHERE lastname LIKE '" . DBEscapeString($lastname) . "%'";
   }
 
   $query .= " GROUP BY profile_id, firstname, lastname ORDER BY lastname, firstname";

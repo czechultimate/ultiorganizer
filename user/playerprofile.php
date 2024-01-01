@@ -234,7 +234,7 @@ $html .= "<td><select class='dropdown' name='gender'>";
 
 
 $html .= "<option class='dropdown' value=''></option>";
-if ($pp['gender'] != "F") {
+if ($pp['gender'] == "F") {
 	$html .= "<option class='dropdown' selected='selected' value='F'>" . _("Female") . "</option>";
 } else {
 	$html .= "<option class='dropdown' value='F'>" . _("Female") . "</option>";
@@ -247,7 +247,7 @@ if ($pp['gender'] == "M") {
 if ($pp['gender'] == "O") {
 	$html .= "<option class='dropdown' selected='selected' value='O'>" . _("Other") . "</option>";
 } else {
-	$html .= "<option class='dropdown' value='o'>" . _("Other") . "</option>";
+	$html .= "<option class='dropdown' value='O'>" . _("Other") . "</option>";
 }
 
 

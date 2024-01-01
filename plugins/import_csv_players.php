@@ -21,6 +21,7 @@ if (!isSuperAdmin()) {
 
 include_once 'lib/season.functions.php';
 include_once 'lib/series.functions.php';
+include_once 'lib/player.functions.php';
 
 $html = "";
 $title = ("Import Players from CSV file");
@@ -32,28 +33,44 @@ if (!empty($_POST['season'])) {
 
 if (isset($_POST['import'])) {
 
-	$utf8 = !empty($_POST['utf8']);
+	//$utf8 = !empty($_POST['utf8']);
 	$seriesId = $_POST['seriesid'];
-	$separator = $_POST['separator'];
+	//$separator = $_POST['separator'];
 	$teams = SeriesTeams($seriesId);
-
+	$player = PlayersByName();
+	//print_r($players);
 	if (is_uploaded_file($_FILES['file']['tmp_name'])) {
 		$row = 1;
 		if (($handle = fopen($_FILES['file']['tmp_name'], "r")) !== FALSE) {
-			while (($data = fgetcsv($handle, 0, ";")) !== FALSE) {
-				$first = $utf8 ? $data[0] : utf8_encode($data[0]);
+			while (($data = fgetcsv($handle, 0, ",")) !== FALSE) {
+				/*$first = $utf8 ? $data[0] : utf8_encode($data[0]);
 				$last = $utf8 ? $data[1] : utf8_encode($data[1]);
 				$number = $utf8 ? $data[2] : utf8_encode($data[2]);
-				$team = $utf8 ? $data[3] : utf8_encode($data[3]);
+				$team = $utf8 ? $data[3] : utf8_encode($data[3]);*/
+				$first = $data[0];
+				$last = $data[1];
+				$number = $data[2];
+				$team = $data[3];
 				$teamId = -1;
+				$playerId = "";
 				foreach ($teams as $t) {
 					if ($t['name'] == $team) {
 						$teamId = $t['team_id'];
 						break;
 					}
 				}
+
+				//printf("%s-%s\n", $first, $last);
+				foreach ($player as $id => $name) {
+					if ($name == ($first . ' ' . $last)){
+						//printf("%d-%s\n", $id, $name);
+						$playerId = $id;
+						break;
+					}
+				}
+
 				if ($teamId != -1) {
-					$id = AddPlayer($teamId, $first, $last, "", $number);
+					$id = AddPlayer($teamId, $first, $last, $playerId, $number);
 				}
 			}
 			fclose($handle);
@@ -86,12 +103,13 @@ if (empty($seasonId)) {
 	}
 	$html .= "</select></p>\n";
 
-	$html .= "<p>" . ("CSV separator") . ": <input class='input' maxlength='1' size='1' name='separator' value=','/></p>\n";
+	//$html .= "<p>" . ("CSV separator") . ": <input class='input' maxlength='1' size='1' name='separator' value=','/></p>\n";
 
 	$html .= "<p>" . ("Select file to import") . ":<br/>\n";
 	$html .= "<input class='input' type='file' size='100' name='file'/><br/>\n";
-	$html .= "<input class='input' type='checkbox' name='utf8' /> " . ("File in UTF-8 format") . "</p>";
+	//$html .= "<input class='input' type='checkbox' name='utf8' /> " . ("File in UTF-8 format") . "</p>";
 	$html .= "<p><input class='button' type='submit' name='import' value='" . ("Import") . "'/></p>";
+	$html .= "<p> CSV file format: First Name, Last Name, Number, Team</p>";
 	$html .= "<div>";
 	$html .= "<input type='hidden' name='MAX_FILE_SIZE' value='50000000' />\n";
 	$html .= "<input type='hidden' name='season' value='$seasonId' />\n";

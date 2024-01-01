@@ -33,7 +33,7 @@ function Pools($filter = null, $ordering = null)
 function PoolInfo($poolId)
 {
   $query = sprintf(
-    "SELECT pool.*, ser.name AS seriesname, ser.season FROM uo_pool pool
+    "SELECT pool.*, ser.name AS seriesname, ser.season, ser.series_id FROM uo_pool pool
         LEFT JOIN uo_series ser ON(pool.series=ser.series_id)
         WHERE pool.pool_id=%d",
     (int)$poolId
@@ -1696,12 +1696,12 @@ function PoolAddTeam($poolId, $teamId, $rank, $updaterank = false, $checkrights 
     DBQuery($query);
 
     //update team pool
-    /*
+    
     $query = sprintf("UPDATE uo_team SET
             pool=%d WHERE team_id=%d",
     (int)$poolId,
     (int)$teamId);
-    */
+    
     DBQuery($query);
   } else {
     die('PAT: Insufficient rights to edit pool teams');

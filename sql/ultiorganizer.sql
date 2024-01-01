@@ -270,6 +270,7 @@ CREATE TABLE `uo_enrolledteam` (
   `series` int(10) NOT NULL,
   `userid` varchar(50) NOT NULL,
   `status` int(10) DEFAULT '0',
+  `rank` int(10) DEFAULT '0',
   `enroll_time` datetime DEFAULT NULL,
   `countryname` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),

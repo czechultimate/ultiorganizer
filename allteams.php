@@ -4,14 +4,14 @@ include_once 'lib/team.functions.php';
 $title = _("All teams");
 $html = "";
 
-$filter = "A";
+$filter = "ALL";
 
 if (iget("list")) {
   $filter = strtoupper(iget("list"));
 }
 
 $validletters = array("#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
-$maxcols = 3;
+$maxcols = 2;
 
 $html .= "<h1>" . $title . "</h1>\n";
 

@@ -33,7 +33,7 @@ while ($season = mysqli_fetch_assoc($seasons)) {
     $html .= "<table cellpadding='0'>";
     foreach ($series as $ser) {
       $html .= "<tr><td><a href='?view=seriesstatus&amp;series=" . $ser['series_id'] . "
-				'>" . utf8entities(U_($ser['name'])) . " " . _("division") . "</a></td></tr>";
+				'>" . utf8entities(U_($ser['name'])) . "</a></td></tr>";
     }
 
     $html .= "</table>";

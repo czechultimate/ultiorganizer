@@ -77,7 +77,7 @@ contentEnd();
   let geocoder;
 
   function initMap() {
-    const helsinki = new google.maps.LatLng(60.192059, 24.945831);
+    const helsinki = new google.maps.LatLng(50.07573793855029, 14.434653626212459);
 
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(document.getElementById("googleMap"), {
@@ -182,7 +182,7 @@ contentEnd();
       });
   }
 </script>
-<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo GetGoogleMapsAPIKey(); ?>&amp;libraries=places&amp;callback=initMap"></script>
 
 <?php

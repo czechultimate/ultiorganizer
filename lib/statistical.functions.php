@@ -129,6 +129,24 @@ function TeamStandings($season, $seriestype)
 	return DBQueryToArray($query);
 }
 
+function TeamStandingsSeries($seriesid)
+{
+	$query = sprintf(
+		"SELECT ts.*, ser.name AS seriesname, t.name AS teamname,
+		s.name AS seasonname, s.type AS seasontype, ser.type AS seriestype,
+		t.country, c.flagfile
+		FROM uo_team_stats ts 
+		LEFT JOIN uo_series ser ON(ser.series_id=ts.series)
+		LEFT JOIN uo_season s ON(s.season_id=ts.season)
+		LEFT JOIN uo_team t ON(t.team_id=ts.team_id)
+		LEFT JOIN uo_country c ON(t.country=c.country_id)
+		WHERE ser.series_id='%s'
+		ORDER BY ts.series,ts.standing",
+		DBEscapeString($seriesid)
+	);
+	return DBQueryToArray($query);
+}
+
 function TeamStatisticsByName($teamname, $seriestype)
 {
 	$query = sprintf(

@@ -11,7 +11,6 @@ $html = "";
 $teamId = intval(iget("team"));
 $teaminfo = TeamInfo($teamId);
 $profile = TeamProfile($teamId);
-
 $title = utf8entities($teaminfo['name']);
 
 $html .= "<h1>";
@@ -150,7 +149,7 @@ if (ShowDefenseStats()) {
 
   $players = TeamScoreBoard($teamId, 0, "name", 0);
   if ($players) {
-    $html .= "<p><span class='profileheader'>" . utf8entities(U_(SeasonName($teaminfo['season']))) . " " . _("roster") . ":</span></p>\n";
+    $html .= "<p><span class='profileheader'>" . utf8entities(U_($teaminfo['seriesname'])) . " " . _("roster") . ":</span></p>\n";
 
     $html .= "<table style='width:80%'>\n";
     $html .= "<tr><th style='width:40%'>" . _("Name") . "</th>
@@ -193,7 +192,7 @@ if (ShowDefenseStats()) {
 $allgames = TimetableGames($teamId, "team", "all", "time");
 if ($allgames) {
   $html .= "<h2>" . U_(SeasonName($teaminfo['season'])) . ":</h2>\n";
-  $html .=  "<p>" . _("Division") . ": <a href='?view=poolstatus&amp;series=" . $teaminfo['series'] . "'>" . utf8entities(U_($teaminfo['seriesname'])) . "</a></p>";
+  $html .=  "<p>" . _("Event") . ": <a href='?view=poolstatus&amp;series=" . $teaminfo['series'] . "'>" . utf8entities(U_($teaminfo['seriesname'])) . "</a></p>";
   $html .= "<table style='width:80%'>\n";
   foreach ($allgames as $game) {
     //function GameRow($game, $date=false, $time=true, $field=true, $series=false,$pool=false,$info=true)
@@ -203,6 +202,7 @@ if ($allgames) {
   $html .= "</table>\n";
 }
 
+/*
 $seasons = TeamStatisticsByName($teaminfo['name'], $teaminfo['type']);
 if (ShowDefenseStats()) {
   if (count($seasons)) {
@@ -374,8 +374,8 @@ if (ShowDefenseStats()) {
     $tmphtml = "";
 
     $tmphtml .= "<table style='white-space: nowrap;' border='1' cellspacing='0' width='100%'><tr>
+		<th>" . _("Season") . "</th>
 		<th>" . _("Event") . "</th>
-		<th>" . _("Division") . "</th>
 		<th>" . _("Pos.") . "</th>
 		<th>" . _("Games") . "</th>
 		<th>" . _("Wins") . "</th>
@@ -519,7 +519,7 @@ if (ShowDefenseStats()) {
 
     $html .= $tmphtml;
   }
-}
+}*/
 
 
 $sort = iget("sort");
@@ -529,6 +529,7 @@ if (empty($sort)) {
 }
 
 $played = TeamPlayedGames($teaminfo['name'], $teaminfo['type'], $sort);
+
 if ($played) {
   $html .= "<h2>" . _("Game history") . "</h2>";
 
@@ -538,15 +539,15 @@ if ($played) {
 
   $html .= "<th><a class='thsort' href=\"" . $viewUrl . "sort=team\">" . _("Team") . "</a></th>";
   $html .= "<th><a class='thsort' href=\"" . $viewUrl . "sort=result\">" . _("Result") . "</a></th>";
-  $html .= "<th><a class='thsort' href=\"" . $viewUrl . "sort=serie\">" . _("Division") . "</a></th></tr>";
-  $curSeason = Currentseason();
+  $html .= "<th><a class='thsort' href=\"" . $viewUrl . "sort=serie\">" . _("Event") . "</a></th></tr>";
+ // $curSeason = Currentseason();
 
   foreach ($played as $row) {
-    if ($row['season_id'] == $curSeason) {
+   /* if ($row['season_id'] == $curSeason) {
       continue;
-    }
+    }*/
     if (GameHasStarted($row)) {
-      $seasonName = SeasonName($row['season_id']);
+      //$seasonName = SeasonName($row['season_id']);
 
       if ($row['homescore'] > $row['visitorscore'])
         $html .= "<tr><td><b>" . utf8entities($row['hometeamname']) . "</b>";
@@ -562,9 +563,149 @@ if ($played) {
 
       $html .= "<td><a href=\"?view=gameplay&amp;game=" . $row['game_id'] . "\">" . $row['homescore'] . " - " . $row['visitorscore'] . "</a></td>";
 
-      $html .= "<td>" . utf8entities(U_($seasonName)) . ": <a href=\"?view=poolstatus&amp;pool=" . $row['pool_id'] . "\">" . utf8entities(U_($row['name'])) . "</a></td></tr>";
+      $html .= "<td>" . utf8entities(U_($row['seriesname'])) . ": <a href=\"?view=poolstatus&amp;pool=" . $row['pool_id'] . "\">" . utf8entities(U_($row['name'])) . "</a></td></tr>";
     }
   }
+
+  $html .= "</table>";
+}
+
+$spnoteID = GetSpiritCommentID();
+$allgames = TimetableGames($teamId, "team", "all", "time");
+
+$spiritto = array();
+$spiritfrom = array();
+foreach($allgames as $game){
+  if($teamId == $game['hometeam']){
+    $tmpa1 = array('team' => $game['visitorteamname'],'teamid' => $game['visitorteam']);
+    $tmpa1['spirit'] = GameGetSpiritPoints($game['game_id'], $game['hometeam']);
+    $spiritfrom[$game['game_id']] = $tmpa1;
+    $tmpa2 = array('team' => $game['visitorteamname'], 'teamid' => $game['visitorteam']);
+    $tmpa2['spirit'] = GameGetSpiritPoints($game['game_id'], $game['visitorteam']);
+    $spiritto[$game['game_id']] = $tmpa2;
+  } else {
+    $tmpa1 = array('team' => $game['hometeamname'], 'teamid' => $game['hometeam']);
+    $tmpa1['spirit'] = GameGetSpiritPoints($game['game_id'], $game['hometeam']);
+    $spiritto[$game['game_id']] = $tmpa1;
+    $tmpa2 = array('team' => $game['hometeamname'], 'teamid' => $game['hometeam']);
+    $tmpa2['spirit'] = GameGetSpiritPoints($game['game_id'], $game['visitorteam']);
+    $spiritfrom[$game['game_id']] = $tmpa2;
+  }
+
+}
+
+if ($spiritfrom) {
+  $html .= "<h2>" . _("Spirit points received") . "</h2>";
+  
+  $html .= "<table border='1' cellspacing='2' width='100%'><tr>";
+  $html .= "<tr><th style='width:18%'>" . _("Given by") . "</th>
+  <th class='center' style='width:7%'>" . _("Rules") . "</th>
+  <th class='center' style='width:7%'>" . _("Fouls") . "</th>
+  <th class='center' style='width:7%'>" . _("Fair.") . "</th>
+  <th class='center' style='width:7%'>" . _("Attit.") . "</th>
+  <th class='center' style='width:7%'>" . _("Comm.") . "</th>
+  <th class='center' style='width:7%'>" . _("Total") . "</th>
+  <th style='width:40%'>" . _("Comments") . "</th></tr>\n";
+
+  foreach($spiritfrom as $spfrom){
+    $total = 0;
+    $comment = "";
+    $html .= "<tr>";
+    $html .= "<td><a href=\"?view=teamcard&amp;team=" . $spfrom['teamid'] . "\">" . $spfrom['team'] . "</a></td>";
+    foreach($spfrom['spirit'] as $key => $sp){
+      if($key != $spnoteID){
+       $html .= "<td class='center'>" . $sp . "</td>";
+       $total += $sp;
+      } else {
+        $comment = $sp;
+      }
+      
+    }
+    $html .= "<td class='center'>" . $total . "</td>";
+    $html .= "<td class='center'>" . $comment . "</td>";
+    $html .= "</tr>";
+  }
+ // $curSeason = Currentseason();
+
+  /*foreach ($played as $row) {
+    if (GameHasStarted($row)) {
+      //$seasonName = SeasonName($row['season_id']);
+
+      if ($row['homescore'] > $row['visitorscore'])
+        $html .= "<tr><td><b>" . utf8entities($row['hometeamname']) . "</b>";
+      else
+        $html .= "<tr><td>" . utf8entities($row['hometeamname']);
+
+
+      if ($row['homescore'] < $row['visitorscore'])
+        $html .= " - <b>" . utf8entities($row['visitorteamname']) . "</b></td>";
+      else
+        $html .= " - " . utf8entities($row['visitorteamname']) . "</td>";
+
+
+      $html .= "<td><a href=\"?view=gameplay&amp;game=" . $row['game_id'] . "\">" . $row['homescore'] . " - " . $row['visitorscore'] . "</a></td>";
+
+      $html .= "<td>" . utf8entities(U_($row['seriesname'])) . ": <a href=\"?view=poolstatus&amp;pool=" . $row['pool_id'] . "\">" . utf8entities(U_($row['name'])) . "</a></td></tr>";
+    }
+  }*/
+
+  $html .= "</table>";
+}
+
+if ($spiritto) {
+  $html .= "<h2>" . _("Spirit points given to the other teams:") . "</h2>";
+
+  $html .= "<table border='1' cellspacing='2' width='100%'><tr>";
+  $html .= "<tr><th style='width:18%'>" . _("Given to") . "</th>
+  <th class='center' style='width:7%'>" . _("Rules") . "</th>
+  <th class='center' style='width:7%'>" . _("Fouls") . "</th>
+  <th class='center' style='width:7%'>" . _("Fair.") . "</th>
+  <th class='center' style='width:7%'>" . _("Attit.") . "</th>
+  <th class='center' style='width:7%'>" . _("Comm.") . "</th>
+  <th class='center' style='width:7%'>" . _("Total") . "</th>
+  <th style='width:40%'>" . _("Comments") . "</th></tr>\n";
+
+  foreach($spiritto as $spto){
+    $total = 0;
+    $comment = "";
+    $html .= "<tr>";
+    $html .= "<td><a href=\"?view=teamcard&amp;team=" . $spto['teamid'] . "\">" . $spto['team'] . "</a></td>";
+    foreach($spto['spirit'] as $key => $sp){
+      if($key != $spnoteID){
+       $html .= "<td class='center'>" . $sp . "</td>";
+       $total += $sp;
+      } else {
+        $comment = $sp;
+      }
+      
+    }
+    $html .= "<td class='center'>" . $total . "</td>";
+    $html .= "<td class='center'>" . $comment . "</td>";
+    $html .= "</tr>";
+  }
+ // $curSeason = Currentseason();
+
+  /*foreach ($played as $row) {
+    if (GameHasStarted($row)) {
+      //$seasonName = SeasonName($row['season_id']);
+
+      if ($row['homescore'] > $row['visitorscore'])
+        $html .= "<tr><td><b>" . utf8entities($row['hometeamname']) . "</b>";
+      else
+        $html .= "<tr><td>" . utf8entities($row['hometeamname']);
+
+
+      if ($row['homescore'] < $row['visitorscore'])
+        $html .= " - <b>" . utf8entities($row['visitorteamname']) . "</b></td>";
+      else
+        $html .= " - " . utf8entities($row['visitorteamname']) . "</td>";
+
+
+      $html .= "<td><a href=\"?view=gameplay&amp;game=" . $row['game_id'] . "\">" . $row['homescore'] . " - " . $row['visitorscore'] . "</a></td>";
+
+      $html .= "<td>" . utf8entities(U_($row['seriesname'])) . ": <a href=\"?view=poolstatus&amp;pool=" . $row['pool_id'] . "\">" . utf8entities(U_($row['name'])) . "</a></td></tr>";
+    }
+  }*/
 
   $html .= "</table>";
 }

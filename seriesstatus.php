@@ -9,23 +9,31 @@ $LAYOUT_ID = SERIESTATUS;
 $title = _("Statistics") . " ";
 $viewUrl = "?view=seriesstatus";
 $sort = "ranking";
+$spsort = "total";
 $html = "";
+$submenuseriesid = 0;
 
 if (iget("series")) {
   $seriesinfo = SeriesInfo(iget("series"));
   $viewUrl .= "&amp;series=" . $seriesinfo['series_id'];
   $seasoninfo = SeasonInfo($seriesinfo['season']);
   $title .= U_($seriesinfo['name']);
+  $submenuseriesid = $seriesinfo['series_id'];
 }
 
 if (iget("sort")) {
   $sort = iget("sort");
 }
 
+if (iget("spsort")) {
+  $spsort = iget("spsort");
+}
+
 $teamstats = array();
 $allteams = array();
 $teams = SeriesTeams($seriesinfo['series_id']);
 $spiritAvg = SeriesSpiritBoard($seriesinfo['series_id']);
+$spiritTtl = SeriesAllSpiritPoints($seriesinfo['series_id']);
 foreach ($teams as $team) {
   $stats = TeamStats($team['team_id']);
   $points = TeamPoints($team['team_id']);
@@ -49,6 +57,7 @@ foreach ($teams as $team) {
   $teamstats['winavg'] = number_format(SafeDivide(intval($stats['wins']), intval($stats['games'])) * 100, 1);
 
   $teamstats['ranking'] = 0;
+  $teamstats['spiritpoints'] = isset($spiritTtl[$team['team_id']]) ? $spiritTtl[$team['team_id']]['total_value'] : null;
   $allteams[] = $teamstats;
 }
 
@@ -56,16 +65,19 @@ $rankedteams  = SeriesRanking($seriesinfo['series_id']);
 $rank = 0;
 foreach ($rankedteams as $rteam) {
   $rank++;
-  foreach ($allteams as $ateam) {
-    if (isset($rteam['team_id']) && $ateam['team_id'] == $rteam['team_id'])
+  foreach ($allteams as &$ateam) {
+    if (isset($rteam['team_id']) && $ateam['team_id'] == $rteam['team_id']){
       $ateam['ranking'] = $rank;
+    }
   }
 }
 
+unset($ateam);
 
 $html .= CommentHTML(2, $seriesinfo['series_id']);
 
-$html .= "<h2>" . _("Division statistics:") . " " . utf8entities($seriesinfo['name']) . "</h2>";
+//$html .= "<h2>" . _("Division statistics:") . " " . utf8entities($seriesinfo['name']) . "</h2>";
+$html .= "<h2>". utf8entities($seriesinfo['name']) . "</h2>";
 $style = "";
 
 $html .= "<table border='1' style='width:100%'>\n";
@@ -154,13 +166,21 @@ if ($sort == "winavg") {
 } else {
   $html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Sort=winavg'>" . _("Win-%") . "</a></th>";
 }
+
+if ($sort == "spiritpoints") {
+  $html .= "<th class='center'>" . _("Spirit points") . "</th>";
+} else {
+  $html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Sort=spiritpoints'>" . _("Spirit points") . "</a></th>";
+}
+
 if ((isset($seasoninfo['spiritmode']) && $seasoninfo['spiritmode'] > 0) && ($seasoninfo['showspiritpoints'] || isSeasonAdmin($seriesinfo['season']))) {
   if ($sort == "spirit") {
-    $html .= "<th class='center'>" . _("Spirit points") . "</th>";
+    $html .= "<th class='center'>" . _("Spirit/ Game") . "</th>";
   } else {
-    $html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Sort=spirit'>" . _("Spirit points") . "</a></th>";
+    $html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Sort=spirit'>" . _("Spirit/ Game") . "</a></th>";
   }
 }
+
 
 $html .= "</tr>\n";
 
@@ -235,6 +255,12 @@ foreach ($allteams as $stats) {
   } else {
     $html .= "<td class='center'>" . $stats['winavg'] . "%</td>";
   }
+  
+	if ($sort == "spiritpoints") {
+	  $html .= "<td class='center highlight'>" . $stats['spiritpoints'] . "</td>";
+	} else {
+	  $html .= "<td class='center'>" . $stats['spiritpoints'] . "</td>";
+	}
 
   if ((isset($seasoninfo['spiritmode']) && $seasoninfo['spiritmode'] > 0) && ($seasoninfo['showspiritpoints'] || isSeasonAdmin($seriesinfo['season']))) {
     if ($sort == "spirit") {
@@ -243,6 +269,7 @@ foreach ($allteams as $stats) {
       $html .= "<td class='center'>" . ($stats['spirit'] ? number_format($stats['spirit'], 2) : "-") . "</td>";
     }
   }
+
 
   $html .= "</tr>\n";
 }
@@ -288,42 +315,97 @@ if (ShowDefenseStats()) {
 }
 
 if ($seasoninfo['showspiritpoints']) { // TODO total
+
+	if ($spsort == "ranking") {
+	  mergesort($spiritAvg, function ($a, $b) use ($spsort) {
+		$va = $a[$spsort];
+		$vb = $b[$spsort];
+		return $va == $vb ? 0 : ($va == null ? 1 : ($vb = null ? -1 : ($a[$spsort] < $b[$spsort] ? -1 : 1)));
+	  });
+	} else if ($spsort == "teamname" || $spsort == "pool" || $spsort == "against" || $spsort == "seed") {
+	  mergesort($spiritAvg, function ($a, $b) use ($spsort) {
+		return $a[$spsort] == $b[$spsort] ? 0 : ($a[$spsort] < $b[$spsort] ? -1 : 1);
+	  });
+	} else {
+	  mergesort($spiritAvg, function ($a, $b) use ($spsort) {
+		return $a[$spsort] == $b[$spsort] ? 0 : ($a[$spsort] > $b[$spsort] ? -1 : 1);
+	  });
+	}
+
   $categories = SpiritCategories($seasoninfo['spiritmode']);
+  $html .= "<a name='spiritboard'></a>";
   $html .= "<h2>" . _("Spirit points average per category") . "</h2>\n";
 
   $html .= "<table cellspacing='0' border='0' width='100%'>\n";
-  $html .= "<tr><th style='width:150px'>" . _("Team") . "</th>";
-  $html .= "<th>" . _("Games") . "</th>";
+  //$html .= "<tr><th style='width:150px'>" . _("Team") . "</th>";
+	if ($spsort == "teamname") {
+	  $html .= "<th style='width:150px'>" . _("Team") . "</th>";
+	} else {
+	  $html .= "<th style='width:150px'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=teamname#spiritboard'>" . _("Team") . "</a></th>";
+	}
+
+  //$html .= "<th>" . _("Games") . "</th>";
   foreach ($categories as $cat) {
-    if ($cat['index'] > 0)
+    if ($cat['index'] > 0 && $cat['index'] < 6)
       $html .= "<th class='center'>" . _($cat['index']) . "</th>";
-  }
-  $html .= "<th class='center'>" . _("Tot.") . "</th>";
+	}
+	if ($spsort == "total"){
+		$html .= "<th class='center'>" . _("Tot.") . "</th>";
+	} else {
+		$html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=total#spiritboard'>" . _("Tot.") . "</a></th>";
+	}
   $html .= "</tr>\n";
 
   foreach ($spiritAvg as $teamAvg) {
     $html .= "<td>" . utf8entities($teamAvg['teamname']) . "</td>";
-    $html .= "<td>" . $teamAvg['games'] . "</td>";
+    //$html .= "<td>" . $teamAvg['games'] . "</td>";
     foreach ($categories as $cat) {
-      if ($cat['index'] > 0 && isset($teamAvg[$cat['category_id']])) {
-        if ($cat['factor'] != 0)
-          $html .= "<td class='center'><b>" . number_format($teamAvg[$cat['category_id']], 2) . "</b></td>";
-        else
+      if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])) {
           $html .= "<td class='center'>" . number_format($teamAvg[$cat['category_id']], 2) . "</td>";
       }
     }
-    $html .= "<td class='center'><b>" . number_format($teamAvg['total'], 2) . "</b></td>";
+    $html .= "<td class='center'>" . number_format($teamAvg['total'], 2) . "</td>";
     $html .= "</tr>\n";
   }
   $html .= "</table>";
-
+  
+  $html .= "<table cellspacing='0' border='0' width='100%'>\n<tr>\n";
+  $html .= "<td style='width:150px'><b>Average of all games</b></td>";
+  $catSum = 0;
+  $teamCount = 0;
+  foreach ($categories as $cat) {
+	if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])) {
+		$catSum = 0;
+		$teamCount = 0;
+		foreach ($spiritAvg as $teamAvg) {
+			$catSum += number_format($teamAvg[$cat['category_id']], 2);
+			$teamCount++;
+		}
+		
+		$html .= "<td class='center'><b>". number_format(SafeDivide($catSum, $teamCount),2) ."</b></td>";
+	}
+  }
+  
+  $catSum = 0;
+  $teamCount = 0;
+  foreach ($spiritAvg as $teamAvg) {
+			$catSum += number_format($teamAvg['total'], 2);
+			$teamCount++;
+  }
+  if ($catSum > 0)
+  $html .= "<td class='center'><b>". number_format(SafeDivide($catSum, $teamCount),2) ."</b></td>";
+  $html .= "</tr>\n";
+  $html .= "</table>";
+  
+  //
+  
   $html .= "<ul>";
   foreach ($categories as $cat) {
-    if ($cat['index'] > 0)
+    if ($cat['index'] > 0 && $cat['index'] < 6)
       $html .= "<li>" . $cat['index'] . " " . $cat['text'] . "</li>";
   }
   $html .= "</ul>\n";
 }
 
 
-showPage($title, $html);
+showPage($title, $html, false, $submenuseriesid);

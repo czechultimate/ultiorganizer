@@ -3,7 +3,7 @@ include_once 'lib/player.functions.php';
 
 $title = _("All players");
 $html = "";
-$filter = "A";
+$filter = "ALL";
 
 if (iget("list")) {
   $filter = strtoupper(iget("list"));

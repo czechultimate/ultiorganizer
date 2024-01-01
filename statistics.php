@@ -43,15 +43,16 @@ if ($list == "teamstandings") {
       $html .= "<table style='width:100%' border='1'><tr>
 				<th>" . _("Event") . "</th><th>" . _("Gold") . "</th><th>" . _("Silver") . "</th><th>" . _("Bronze") . "</th></tr>\n";
 
-      foreach ($seasons as $season) {
-        $standings = TeamStandings($season['season_id'], $seriestype);
+      foreach ($serstats as $series) {
+        $standings = TeamStandingsSeries($series['series_id']);
         if (!count($standings)) {
           continue;
         }
+        
         ++$countall;
         $html .= "<tr>";
-        $html .= "<td style='width:16%'><a href='?view=eventstatus&amp;season=" . urlencode($season['season_id']) .
-          "&amp;list=bystandings'>" . utf8entities(U_($season['name'])) . "</a></td>";
+        $html .= "<td style='width:16%'><a href='?view=seriesstatus&series=" . urlencode($series['series_id']) .
+          "&amp;list=bystandings'>" . utf8entities(U_($series['seriesname'])) . "</a></td>";
 
         for ($i = 0; $i < count($standings) && $i < 3; $i++) {
           $html .= "<td style='width:28%'>";
@@ -87,7 +88,7 @@ if ($list == "teamstandings") {
       }
       $html .= "<h3>" . U_($seriestype) . "</h3>\n";
       $html .= "<table border='1' width='100%'><tr>
-				<th>" . _("Event") . "</th><th>" . _("First") . "</th><th>" . _("Second") . "</th><th>" . _("Third") . "</th></tr>\n";
+				<th>" . _("Season") . "</th><th>" . _("First") . "</th><th>" . _("Second") . "</th><th>" . _("Third") . "</th></tr>\n";
 
       foreach ($seasons as $season) {
         $scores = AlltimeScoreboard($season['season_id'], $seriestype);
