@@ -99,7 +99,7 @@ if (empty($season)) {
     } else {
       $html .= "<a class='groupinglink' href='?view=admin/reservations&amp;season=$season&amp;group=all'>" . _("All") . "</a>";
     }
-    $html .= "</p>\n";
+    $html .= "</p><br>";
   }
   $html .= "<form method='post' id='reservations' action='?view=admin/reservations&amp;season=$season&amp;group=" . urlencode($group) . "'>\n";
   $reservations = SeasonReservations($season, $group);

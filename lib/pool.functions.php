@@ -291,7 +291,7 @@ function PoolPlacementString($poolId, $pos, $ordinal = true)
     }
 
     if ($ordinal) {
-      if ($placementfrom == 0) {
+      /*if ($placementfrom == 0) {
         $ret = _("Unknown");
       } elseif ($placementfrom == 1) {
         $ret = _("Gold");
@@ -301,7 +301,13 @@ function PoolPlacementString($poolId, $pos, $ordinal = true)
         $ret = _("Bronze");
       } elseif ($placementfrom > 3) {
         $ret = ordinal($placementfrom);
+      }*/
+      if ($placementfrom == 0) {
+        $ret = _("Unknown");
+      } else {
+        $ret = ordinal($placementfrom);
       }
+      
     } else {
       $ret = $placementfrom;
     }

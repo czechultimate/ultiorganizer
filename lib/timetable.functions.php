@@ -239,6 +239,42 @@ function TimeView($games, $grouping = true)
   return $ret;
 }
 
+function UpcomingView($games, $grouping = true)
+{
+  $ret = "";
+  $prevTournament = "";
+  $prevTime = "";
+  $isTableOpen = false;
+  $rss = IsGameRSSEnabled();
+
+  while ($game = mysqli_fetch_assoc($games)) {
+    if ($game['time'] != $prevTime) {
+      if ($isTableOpen) {
+        $ret .= "</table>\n";
+        //$ret .= "<hr/>\n";
+        $isTableOpen = false;
+      }
+      $ret .= "<h3>" . DefWeekDateFormat($game['time']) . " " . DefHourFormat($game['time']) . "</h3>\n";
+      $ret .= "<table cellpadding='2' border='0' cellspacing='0'>\n";
+      $isTableOpen = true;
+    }
+
+    if ($isTableOpen) {
+      //function GameRow($game, $date=false, $time=true, $field=true, $series=false,$pool=false,$info=true)
+      $ret .= GameRowUpcoming($game, false, false, true, true, true, true, $rss);
+    }
+
+    $prevTime = $game['time'];
+    $prevTimezone = $game['timezone'];
+  }
+
+  if ($isTableOpen) {
+    $ret .= "</table>\n";
+  }
+  $ret .= PrintTimeZone($prevTimezone);
+  return $ret;
+}
+
 function ExtTournamentView($games)
 {
   $ret = "";
@@ -570,6 +606,139 @@ function GameRow($game, $date = false, $time = true, $field = true, $series = fa
   return $ret;
 }
 
+function GameRowUpcoming($game, $date = false, $time = true, $field = true, $series = false, $pool = false, $info = true, $rss = false, $media = true)
+{
+  $datew = 'width:60px';
+  $timew = 'width:40px';
+  $fieldw = 'width:60px';
+  $teamw = 'width:120px';
+  $againstmarkw = 'width:5px';
+  $seriesw = 'width:80px';
+  $poolw = 'width:130px';
+  $scoresw = 'width:15px';
+  $infow = 'width:80px';
+  $gamenamew = 'width:50px';
+  $mediaw = 'width:40px';
+
+  $ret = "<tr style='width:100%'>\n";
+
+  if ($date) {
+    $ret .= "<td style='$datew'><span>" . ShortDate($game['time']) . "</span></td>\n";
+  }
+
+  if ($time) {
+    $ret .= "<td style='$timew'><span>" . DefHourFormat($game['time']) . "</span></td>\n";
+  }
+
+  if ($field) {
+    if (!empty($game['fieldname']))
+      $ret .= "<td style='$fieldw'><span>" . _("Field") . " " . utf8entities($game['fieldname']) . "</span></td>\n";
+    else
+      $ret .= "<td style='$fieldw'></td>\n";
+  }
+
+  if ($game['hometeam']) {
+    $ret .= "<td class='right' style='$teamw'><span>" . utf8entities($game['hometeamname']) . "</span></td>\n";
+  } else {
+    $ret .= "<td class='right' style='$teamw'><span class='schedulingname'>" . utf8entities(U_($game['phometeamname'])) . "</span></td>\n";
+  }
+
+  //$ret .= "<td style='$againstmarkw'>-</td>\n";
+
+  if (!GameHasStarted($game)) {
+    $ret .= "<td class='center' style='$scoresw'><span>?</span></td>\n";
+    $ret .= "<td class='center' style='$againstmarkw'><span>-</span></td>\n";
+    $ret .= "<td class='center' style='$scoresw'><span>?</span></td>\n";
+  } else {
+    if ($game['isongoing']) {
+      $ret .= "<td class='center' style='$scoresw'><span><em><b>" . intval($game['homescore']) . "</b></em></span></td>\n";
+      $ret .= "<td class='center' style='$againstmarkw'><span>-</span></td>\n";
+      $ret .= "<td class='center' style='$scoresw'><span><em><b>" . intval($game['visitorscore']) . "</b></em></span></td>\n";
+    } else {
+      $ret .= "<td class='center' style='$scoresw'><span><b>" . intval($game['homescore']) . "</span></td>\n";
+      $ret .= "<td class='center' style='$againstmarkw'><span>-</span></td>\n";
+      $ret .= "<td class='center' style='$scoresw'><span><b>" . intval($game['visitorscore']) . "</b></span></td>\n";
+    }
+  }
+
+  if ($game['visitorteam']) {
+    $ret .= "<td style='$teamw'><span>" . utf8entities($game['visitorteamname']) . "</span></td>\n";
+  } else {
+    $ret .= "<td style='$teamw'><span class='schedulingname'>" . utf8entities(U_($game['pvisitorteamname'])) . "</span></td>\n";
+  }
+
+  if ($series) {
+    $ret .= "<td style='$seriesw'><span>" . utf8entities(U_($game['seriesname'])) . "</span></td>\n";
+  }
+
+  if ($pool) {
+    $ret .= "<td style='$poolw'><span>" . utf8entities(U_($game['poolname'])) . "</span></td>\n";
+  }
+
+  if ($game['gamename']) {
+    $ret .= "<td style='$gamenamew'><span>" . utf8entities(U_($game['gamename'])) . "</span></td>\n";
+  } else {
+    $ret .= "<td style='$gamenamew'></td>\n";
+  }
+
+  if ($media) {
+    $urls = GetMediaUrlList("game", $game['game_id'], "live");
+    $ret .= "<td style='$mediaw;white-space: nowrap;'>";
+    if (count($urls) && (intval($game['isongoing']) || !GameHasStarted($game))) {
+      foreach ($urls as $url) {
+        $title = $url['name'];
+        if (empty($title)) {
+          $title = _("Live Broadcasting");
+        }
+        $ret .= "<a href='" . $url['url'] . "'>" . "<img border='0' width='16' height='16' title='" . utf8entities($title) . "' src='images/linkicons/" . $url['type'] . ".png' alt='" . $url['type'] . "'/></a>";
+      }
+    }
+    $ret .= "</td>\n";
+  }
+
+  if ($info) {
+    if (!GameHasStarted($game)) {
+      if ($game['hometeam'] && $game['visitorteam']) {
+        $t1 = preg_replace('/\s*/m', '', $game['hometeamname']);
+        $t2 = preg_replace('/\s*/m', '', $game['visitorteamname']);
+
+        $xgames = GetAllPlayedGames($t1, $t2, $game['type'], "");
+        if (mysqli_num_rows($xgames) > 0) {
+          $ret .= "<td class='right' style='$infow'><span style='white-space: nowrap'>";
+          $ret .= "<a href='?view=gamecard&amp;team1=" . utf8entities($game['hometeam']) . "&amp;team2=" . utf8entities($game['visitorteam']) . "'>";
+          $ret .=  _("Game history") . "</a></span></td>\n";
+        } else {
+          $ret .= "<td class='left' style='$infow'></td>\n";
+        }
+      } else {
+        $ret .= "<td class='left' style='$infow'></td>\n";
+      }
+    } else {
+      if (!intval($game['isongoing'])) {
+        if (intval($game['scoresheet'])) {
+          $ret .= "<td class='right' style='$infow'><span>&nbsp;<a href='?view=gameplay&amp;game=" . $game['game_id'] . "'>";
+          $ret .= _("Game play") . "</a></span></td>\n";
+        } else {
+          $ret .= "<td class='left' style='$infow'></td>\n";
+        }
+      } else {
+        if (intval($game['scoresheet'])) {
+          $ret .= "<td class='right' style='$infow'><span>&nbsp;&nbsp;<a href='?view=gameplay&amp;game=" . $game['game_id'] . "'>";
+          $ret .= _("Ongoing") . "</a></span></td>\n";
+        } else {
+          $ret .= "<td class='right' style='$infow'>&nbsp;&nbsp;" . _("Ongoing") . "</td>\n";
+        }
+      }
+    }
+    if ($rss) {
+      $ret .= "<td class='feed-list'><a style='color: #ffffff;' href='ext/rss.php?feed=game&amp;id1=" . $game['game_id'] . "'>";
+      $ret .= "<img src='images/feed-icon-14x14.png' width='10' height='10' alt='RSS'/></a></td>";
+    }
+  }
+  $ret .=  "</tr>\n";
+  return $ret;
+}
+
 function PrintTimeZone($timezone)
 {
   $ret = "<p class='timezone'>" . _("Timezone") . ": " . utf8entities($timezone) . ". ";
@@ -603,10 +772,11 @@ function PrevGameDay($id, $gamefilter, $order)
 function TimetableGames($id, $gamefilter, $timefilter, $order, $groupfilter = "")
 {
   //common game query
+  // edit COALESCE to 1 (default is 0) for print result without scoring
   $query = "SELECT pp.game_id, pp.time, pp.hometeam, pp.visitorteam, pp.homescore,
 			pp.visitorscore, pp.pool AS pool, pool.name AS poolname, pool.timeslot,
 			ps.series_id, ps.name AS seriesname, ps.season, ps.type, pr.fieldname, pr.reservationgroup,
-			pr.id AS reservation_id, pr.starttime, pr.endtime, pl.id AS place_id, COALESCE(pm.goals,0) AS scoresheet,
+			pr.id AS reservation_id, pr.starttime, pr.endtime, pl.id AS place_id, COALESCE(pm.goals,1) AS scoresheet,
 			pl.name AS placename, pl.address, pp.isongoing, pp.hasstarted, home.name AS hometeamname, visitor.name AS visitorteamname,
 			phome.name AS phometeamname, pvisitor.name AS pvisitorteamname, pool.color, pgame.name AS gamename,
 			home.abbreviation AS homeshortname, visitor.abbreviation AS visitorshortname, homec.country_id AS homecountryid, 
@@ -694,11 +864,15 @@ function TimetableGames($id, $gamefilter, $timefilter, $order, $groupfilter = ""
       $query .= " AND DATE_FORMAT(pp.time,'%Y-%m-%d') = DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)";
       break;
 
+    case "upcoming":
+        $query .= " AND pp.time >= Now() - interval (2 * pool.timeslot) MINUTE";
+        break;
+
     case "all":
       break;
 
     default:
-      $query .= " AND DATE_FORMAT(pp.time,'%Y-%m-%d') = '" . DBEscapeString($timefilter) . "'";
+      $query .= " AND pp.time >= Now()";
       break;
   }
 
@@ -708,7 +882,8 @@ function TimetableGames($id, $gamefilter, $timefilter, $order, $groupfilter = ""
 
   switch ($order) {
     case "tournaments":
-      $query .= " ORDER BY pr.starttime, pr.reservationgroup, pl.id, ps.ordering, pool.ordering, pp.time ASC, pr.fieldname + 0, pp.game_id ASC";
+      //$query .= " ORDER BY pr.starttime, pr.reservationgroup, pl.id, ps.ordering, pool.ordering, pp.time ASC, pr.fieldname + 0, pp.game_id ASC";
+      $query .= " ORDER BY ps.ordering, pool.ordering, pp.time ASC, pr.starttime, pr.fieldname + 0, pp.game_id ASC";
       break;
 
     case "series":
@@ -743,7 +918,6 @@ function TimetableGames($id, $gamefilter, $timefilter, $order, $groupfilter = ""
       $query .= " ORDER BY homepool.rank ASC, game_id ASC";
       break;
   }
-
   $result = DBQuery($query);
 
   return $result;

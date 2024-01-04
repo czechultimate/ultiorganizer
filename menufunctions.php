@@ -586,7 +586,8 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
         echo "<tr><td class='menuseasonlevel'><a class='seasonnav' style='text-align:center;' href='?view=teams&amp;season=" . urlencode($season) . "&amp;list=bystandings'>";
         echo utf8entities(U_($row['season_name'])) . "</a></td></tr>\n";
         echo "<tr><td><a class='nav' href='?view=teams&amp;season=" . urlencode($season) . "&amp;list=bystandings'>" . utf8entities(_("Final standings")) . "</a></td></tr>\n";
-        echo "<tr><td><a class='nav' href='?view=games&amp;season=" . urlencode($season) . "&amp;filter=tournaments&amp;group=all'>" . utf8entities(_("Games")) . "</a></td></tr>\n";
+        //echo "<tr><td><a class='nav' href='?view=games&amp;season=" . urlencode($season) . "&amp;filter=tournaments&amp;group=all'>" . utf8entities(_("Games")) . "</a></td></tr>\n";
+        echo "<tr><td><a class='nav' href='?view=games&amp;season=" . urlencode($season) . "&amp;filter=upcoming&group=all'>" . utf8entities(_("Games")) . "</a></td></tr>\n";
         //echo "<tr><td><a class='nav' href='?view=played&amp;season=".urlencode($season)."'>".utf8entities(_("Played games"))."</a></td></tr>\n";
         echo "<tr><td><a class='nav' href='?view=teams&amp;season=" . urlencode($season) . "&amp;list=allteams'>" . utf8entities(_("Teams")) . "</a></td></tr>\n";
         echo "<tr><td class='menuseparator'></td></tr>\n";
@@ -600,9 +601,10 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
         echo "<a class='subnav' onclick=LeftMenu(". utf8entities(U_($row['series'])) . ") href=#". utf8entities(U_($row['series'])) . ">" . utf8entities(U_($row['series_name'])) . "</a></td></tr>\n";
         // echo "<a class='subnav' onclick=LeftMenu(". utf8entities(U_($row['series'])) . ")>" . utf8entities(U_($row['series_name'])) . "</td></tr>\n";
         echo "<tr><td class='navpoollink' style='display: block;' name='". utf8entities(U_($row['series'])) . "'>\n";
+        echo "<a class='subnav' href='?view=games&amp;series=" . $series . "&amp;filter=tournaments&amp;group=all'>&raquo; " . utf8entities(_("Games")) . "</a></td></tr>\n";
+        echo "<tr><td class='navpoollink' style='display: block;' name='". utf8entities(U_($row['series'])) . "'>\n";
           echo "<a class='subnav' href='?view=seriesstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Statistics")) . "</a></td></tr>\n";
-          echo "<tr><td class='navpoollink' style='display: block;' name='". utf8entities(U_($row['series'])) . "'>\n";
-          echo "<a class='subnav' href='?view=games&amp;series=" . $series . "&amp;filter=tournaments&amp;group=all'>&raquo; " . utf8entities(_("Games")) . "</a></td></tr>\n";
+          
           echo "<tr><td class='navpoollink' style='display: block;' name='". utf8entities(U_($row['series'])) . "'>\n";
           echo "<a class='subnav' href='?view=poolstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Show all pools")) . "</a></td></tr>\n";
         } else {
@@ -611,9 +613,9 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
         echo "<a class='subnav' onclick=LeftMenu(". utf8entities(U_($row['series'])) . ") href=#". utf8entities(U_($row['series'])) . ">" . utf8entities(U_($row['series_name'])) . "</a></td></tr>\n";
         // echo "<a class='subnav' onclick=LeftMenu(". utf8entities(U_($row['series'])) . ")>" . utf8entities(U_($row['series_name'])) . "</td></tr>\n";
         echo "<tr><td class='navpoollink' style='display: none;' name='". utf8entities(U_($row['series'])) . "'>\n";
-          echo "<a class='subnav' href='?view=seriesstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Statistics")) . "</a></td></tr>\n";
-          echo "<tr><td class='navpoollink' style='display: none;' name='". utf8entities(U_($row['series'])) . "'>\n";
           echo "<a class='subnav' href='?view=games&amp;series=" . $series . "&amp;filter=tournaments&amp;group=all'>&raquo; " . utf8entities(_("Games")) . "</a></td></tr>\n";
+        echo "<tr><td class='navpoollink' style='display: none;' name='". utf8entities(U_($row['series'])) . "'>\n";
+          echo "<a class='subnav' href='?view=seriesstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Statistics")) . "</a></td></tr>\n";
           echo "<tr><td class='navpoollink' style='display: none;' name='". utf8entities(U_($row['series'])) . "'>\n";
           echo "<a class='subnav' href='?view=poolstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Show all pools")) . "</a></td></tr>\n";
         }

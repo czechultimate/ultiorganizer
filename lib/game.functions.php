@@ -645,6 +645,9 @@ function GameSetResult($gameId, $home, $away, $updatePools = true, $checkRights 
 		if (IsFacebookEnabled()) {
 			TriggerFacebookEvent($gameId, "game", 0);
 		}
+
+		GameAddAllPlayers($gameId);
+
 		return $result;
 	} else {
 		die('Insufficient rights to edit game');
@@ -762,6 +765,47 @@ function GameRemovePlayer($gameId, $playerId)
 	} else {
 		die('Insufficient rights to edit game');
 	}
+}
+
+function GameAddAllPlayers($gameId){
+
+		if(mysqli_num_rows(GetPlayersFromGame($gameId)) < 1){
+			$teams = GetTeamsIdByGameId($gameId);
+			$home_playerlist = TeamPlayerList($teams['hometeam']);
+			while ($player = mysqli_fetch_assoc($home_playerlist)) {
+				GameAddPlayer($gameId, $player["player_id"], $player["num"]);
+			}
+
+			$home_playerlist = TeamPlayerList($teams['visitorteam']);
+			while ($player = mysqli_fetch_assoc($home_playerlist)) {
+				GameAddPlayer($gameId, $player["player_id"], $player["num"]);
+			}
+		}
+}
+
+function GetPlayersFromGame($gameId){
+	$query = sprintf(
+		"SELECT * 
+		FROM uo_played
+		WHERE game=%d",
+		(int)$gameId
+	);
+
+	$result = DBQuery($query);
+
+	return $result;
+}
+
+function GetTeamsIdByGameId($gameId){
+
+	$query = sprintf(
+		"SELECT hometeam, visitorteam 
+		FROM uo_game 
+		WHERE game_id=%d",
+		(int)$gameId
+	);
+
+	return DBQueryToRow($query);
 }
 
 function GameRemoveAllPlayers($gameId)

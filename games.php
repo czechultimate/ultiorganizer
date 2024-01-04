@@ -134,6 +134,11 @@ switch ($filter) {
     $timefilter = "all";
     $order = "time";
     break;
+  
+    case "upcoming":
+      $timefilter = "upcoming";
+      $order = "time";
+      break;
 
   default:
     $timefilter = "all";
@@ -155,13 +160,14 @@ if ($format == "pdf") {
 }
 
 if (!$print && !$singleview) {
+  $menutabs[_("Upcoming")] = ($baseurl) . "&filter=upcoming&group=$group";
   $menutabs[_("By grouping")] = ($baseurl) . "&filter=tournaments&group=$group";
   $menutabs[_("By timeslot")] = ($baseurl) . "&filter=timeslot&group=$group";
   $menutabs[_("By division")] = ($baseurl) . "&filter=series&group=$group";
   $menutabs[_("By location")] = ($baseurl) . "&filter=places&group=$group";
-  $menutabs[_("Today")] = ($baseurl) . "&filter=today&group=$group";
-  $menutabs[_("Tomorrow")] = ($baseurl) . "&filter=tomorrow&group=$group";
-  $menutabs[_("Yesterday")] = ($baseurl) . "&filter=yesterday&group=$group";
+  //$menutabs[_("Today")] = ($baseurl) . "&filter=today&group=$group";
+  //$menutabs[_("Tomorrow")] = ($baseurl) . "&filter=tomorrow&group=$group";
+  //$menutabs[_("Yesterday")] = ($baseurl) . "&filter=yesterday&group=$group";
 
   $html .= pageMenu($menutabs, "", false);
 
@@ -180,7 +186,7 @@ if (!$print && !$singleview) {
     } else {
       $html .= "<a class='groupinglink' href='" . utf8entities($baseurl) . "&amp;filter=" . $filter . "&amp;group=all'>" . _("All") . "</a>";
     }
-    $html .= "</p>\n";
+    $html .= "</p><br>";
   }
 }
 if (!empty($group) && $group != "all") {
@@ -205,6 +211,8 @@ if (mysqli_num_rows($games) == 0) {
   $html .= SeriesView($games);
 } elseif ($filter == 'timeslot') {
   $html .= TimeView($games);
+} elseif ($filter == 'upcoming') {
+  $html .= UpcomingView($games);
 }
 
 
