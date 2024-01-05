@@ -611,8 +611,12 @@ if ($spiritfrom) {
     $total = 0;
     $comment = "";
     $html .= "<tr>";
-    $html .= "<td><a href=\"?view=teamcard&amp;team=" . $spfrom['teamid'] . "\">" . $spfrom['team'] . "</a></td>";
+    $flag = true;
     foreach($spfrom['spirit'] as $key => $sp){
+      if($flag){
+        $html .= "<td><a href=\"?view=teamcard&amp;team=" . $spfrom['teamid'] . "\">" . $spfrom['team'] . "</a></td>";
+        $flag = false;
+      }
       if($key != $spnoteID){
        $html .= "<td class='center'>" . $sp . "</td>";
        $total += $sp;
@@ -621,8 +625,10 @@ if ($spiritfrom) {
       }
       
     }
-    $html .= "<td class='center'>" . $total . "</td>";
-    $html .= "<td class='center'>" . $comment . "</td>";
+    if($total > 0){
+      $html .= "<td class='center'>" . $total . "</td>";
+      $html .= "<td class='center'>" . $comment . "</td>";
+    }
     $html .= "</tr>";
   }
  // $curSeason = Currentseason();
@@ -669,8 +675,12 @@ if ($spiritto) {
     $total = 0;
     $comment = "";
     $html .= "<tr>";
-    $html .= "<td><a href=\"?view=teamcard&amp;team=" . $spto['teamid'] . "\">" . $spto['team'] . "</a></td>";
+    $flag = true;
     foreach($spto['spirit'] as $key => $sp){
+      if($flag){
+        $html .= "<td><a href=\"?view=teamcard&amp;team=" . $spto['teamid'] . "\">" . $spto['team'] . "</a></td>";
+        $flag = false;
+      }
       if($key != $spnoteID){
        $html .= "<td class='center'>" . $sp . "</td>";
        $total += $sp;
@@ -679,8 +689,10 @@ if ($spiritto) {
       }
       
     }
-    $html .= "<td class='center'>" . $total . "</td>";
-    $html .= "<td class='center'>" . $comment . "</td>";
+    if($total > 0){
+      $html .= "<td class='center'>" . $total . "</td>";
+      $html .= "<td class='center'>" . $comment . "</td>";
+    }
     $html .= "</tr>";
   }
  // $curSeason = Currentseason();
