@@ -56,14 +56,14 @@ if (isset($_POST['save'])) {
 						break;
 					}
 					//if two players with same number
-					if ($player['player_id'] != $playerId && $player['num'] == $number) {
+					/*if ($player['player_id'] != $playerId && $player['num'] == $number) {
 						$playerinfo1 = PlayerInfo($playerId);
 						$playerinfo2 = PlayerInfo($player['player_id']);
 						$html .= "<p  class='warning'><i>" . utf8entities($playerinfo1['firstname'] . " " . $playerinfo1['lastname']) . "</i> " . _("and")
 							. " <i>" . utf8entities($playerinfo2['firstname'] . " " . $playerinfo2['lastname']) . "</i> " . _("same number") . " '$number'.</p>";
 						$found = true;
 						break;
-					}
+					}*/
 				}
 
 				if (!$found)
