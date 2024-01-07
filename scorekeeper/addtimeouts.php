@@ -7,40 +7,50 @@ $_SESSION['game'] = $gameId;
 
 $game_result = GameResult($gameId);
 
+$time = 0;
+
+
+
+if(is_null($game_result['starttime'])){
+  $timestart = strtotime($game_result['time']);
+  $actualtime = time();
+  $time = $actualtime -$timestart;
+} else{
+  $timestart = strtotime($game_result['starttime']);
+  $actualtime = time();
+  $time = $actualtime -$timestart;
+}
+
 if (isset($_POST['save'])) {
-  $time = "0.0";
-  $time_delim = array(",", ";", ":", "#", "*");
-
-  //remove all old timeouts (if any)
-  GameRemoveAllTimeouts($gameId);
-
-  //insert home timeouts
-  $j = 0;
-  for ($i = 0; $i < $maxtimeouts; $i++) {
-    $timemm = $_POST['htomm' . $i];
-    $timess = $_POST['htoss' . $i];
-    $time = $timemm . "." . $timess;
-
-    if (($timemm + $timess) > 0) {
-      $j++;
-      GameAddTimeout($gameId, $j, TimeToSec($time), 1);
+  $timeouts = GameTimeouts($gameId);
+  $h = 0;
+  $v = 0;
+  while ($timeout = mysqli_fetch_assoc($timeouts)) {
+    if (intval($timeout['ishome'])) {
+      $h++;
+    } else {
+      $v++;
     }
   }
 
-  //insert away timeouts
-  $j = 0;
-  for ($i = 0; $i < $maxtimeouts; $i++) {
-    $timemm = $_POST['atomm' . $i];
-    $timess = $_POST['atoss' . $i];
-    $time = $timemm . "." . $timess;
+	if (!empty($_POST['team'])) {
+		$home = $_POST['team'];
+		if ($home == "H") {
+			GameAddTimeout($gameId, $h++, $time, 1);
+		} elseif ($home == "V") {
+			GameAddTimeout($gameId, $v++, $time, 0);
+		}
+	}
+	header("location:?view=addtimeouts&game=" . $gameId);
+}
 
-    if (($timemm + $timess) > 0) {
-      $j++;
-      GameAddTimeout($gameId, $j, TimeToSec($time), 0);
+if (isset($_POST['delete'])) {
+  if (!empty($_POST["check"])) {
+    foreach($_POST["check"] as $timeoutId) {
+      GameRemoveTimeout($gameId, $timeoutId);
     }
   }
-
-  header("location:?view=addscoresheet&game=" . $gameId);
+	//header("location:?view=addtimeouts&game=" . $gameId);
 }
 
 $html .= "<div data-role='header'>\n";
@@ -49,160 +59,47 @@ $html .= "</div><!-- /header -->\n\n";
 
 $html .= "<div data-role='content'>\n";
 
-
 $html .= "<form action='?view=addtimeouts' method='post' data-ajax='false'>\n";
-
-
-$html .= "<label for='timemm0' class='select'><b>" . utf8entities($game_result['hometeamname']) . "</b> " . _("time outs") . ":</label>";
-$html .= "<div class='ui-grid-b'>";
-
-//used timeouts
-$j = 0;
-$timemm = 0;
-$timess = 0;
+$html .= "<fieldset data-role='controlgroup' id='teamselection'>";
+$html .= "<input type='radio' name='team' id='htime' value='H'/>";
+$html .= "<label for='htime'>" . utf8entities($game_result['hometeamname']) . "</label>";
+$html .= "<input type='radio' name='team' id='vtime' value='V'/>";
+$html .= "<label for='vtime'>" . utf8entities($game_result['visitorteamname']) . "</label>";
+$html .= "</fieldset>";
+$html .= "<input type='submit' name='save' data-ajax='false' value='" . _("Add") . "'/>";
+$html .= "<a href='?view=addscoresheet&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Back to score sheet") . "</a>";
+$html .= "</form>";
+$html .= "<br>";
+$html .= "<form action='?view=addtimeouts' method='post' data-ajax='false'>\n";
+$html .= "<b>Timeouts " . $game_result['hometeamname'] . "</b><br>";
 
 $timeouts = GameTimeouts($gameId);
-
+$h = 0;
+$v = 0;
 while ($timeout = mysqli_fetch_assoc($timeouts)) {
   if (intval($timeout['ishome'])) {
-    $html .= "<div class='ui-block-a'>\n";
-
-    $time = explode(".", SecToMin($timeout['time']));
-    $timemm = $time[0];
-    $timess = $time[1];
-
-
-    $html .= "<select id='htomm$j' name='htomm$j' >";
-    for ($i = 0; $i <= 180; $i++) {
-      if ($i == $timemm) {
-        $html .= "<option value='" . $i . "' selected='selected'>" . $i . "</option>";
-      } else {
-        $html .= "<option value='" . $i . "'>" . $i . "</option>";
-      }
-    }
-    $html .= "</select>";
-    $html .= "</div>";
-    $html .= "<div class='ui-block-b'>\n";
-    $html .= "<select id='htoss$j' name='htoss$j' >";
-    for ($i = 0; $i <= 60; $i = $i + 5) {
-      if ($i == $timess) {
-        $html .= "<option value='" . $i . "' selected='selected'>" . $i . "</option>";
-      } else {
-        $html .= "<option value='" . $i . "'>" . $i . "</option>";
-      }
-    }
-    $html .= "</select>";
-    $html .= "</div>";
-    $j++;
+    $h++;
+    $html .= "<label><input type='checkbox' name='check[]' value='" . $timeout['timeout_id'] ."' />";
+    $html .= $h . " - " .  SecToMin($timeout['time']) . "</label>";
   }
+    
 }
 
-//empty slots
-for ($j; $j < $maxtimeouts; $j++) {
+$html .= "<b>Timeouts " . $game_result['visitorteamname'] . "</b><br>";
 
-  $html .= "<div class='ui-block-a'>\n";
-  $html .= "<select id='htomm$j' name='htomm$j' >";
-  $timemm = 0;
-  $timess = 0;
-  for ($i = 0; $i <= 180; $i++) {
-    if ($i == $timemm) {
-      $html .= "<option value='" . $i . "' selected='selected'>" . $i . "</option>";
-    } else {
-      $html .= "<option value='" . $i . "'>" . $i . "</option>";
-    }
-  }
-  $html .= "</select>";
-  $html .= "</div>";
-  $html .= "<div class='ui-block-b'>\n";
-  $html .= "<select id='htoss$j' name='htoss$j' >";
-  for ($i = 0; $i <= 60; $i = $i + 5) {
-    if ($i == $timess) {
-      $html .= "<option value='" . $i . "' selected='selected'>" . $i . "</option>";
-    } else {
-      $html .= "<option value='" . $i . "'>" . $i . "</option>";
-    }
-  }
-  $html .= "</select>";
-  $html .= "</div>";
-}
-$html .= "</div>";
-
-$html .= "<label for='timemm0' class='select'><b>" . utf8entities($game_result['visitorteamname']) . "</b> " . _("time outs") . ":</label>";
-$html .= "<div class='ui-grid-b'>";
-
-//used timeouts
-$j = 0;
-
+$h = 0;
+$v = 0;
 $timeouts = GameTimeouts($gameId);
-
 while ($timeout = mysqli_fetch_assoc($timeouts)) {
   if (!intval($timeout['ishome'])) {
-    $html .= "<div class='ui-block-a'>\n";
-
-    $time = explode(".", SecToMin($timeout['time']));
-    $timemm = $time[0];
-    $timess = $time[1];
-
-    $html .= "<select id='atomm$j' name='atomm$j' >";
-    for ($i = 0; $i <= 180; $i++) {
-      if ($i == $timemm) {
-        $html .= "<option value='" . $i . "' selected='selected'>" . $i . "</option>";
-      } else {
-        $html .= "<option value='" . $i . "'>" . $i . "</option>";
-      }
-    }
-    $html .= "</select>";
-    $html .= "</div>";
-    $html .= "<div class='ui-block-b'>\n";
-    $html .= "<select id='atoss$j' name='atoss$j' >";
-    for ($i = 0; $i <= 55; $i = $i + 5) {
-      if ($i == $timess) {
-        $html .= "<option value='" . $i . "' selected='selected'>" . $i . "</option>";
-      } else {
-        $html .= "<option value='" . $i . "'>" . $i . "</option>";
-      }
-    }
-    $html .= "</select>";
-    $html .= "</div>";
-    $j++;
+    $v++;
+    $html .= "<label><input type='checkbox' name='check[]' value='" . $timeout['timeout_id'] . "' />";
+    $html .= $v . " - " .  SecToMin($timeout['time']) . "</label>";
   }
 }
 
-//empty slots
-for ($j; $j < $maxtimeouts; $j++) {
 
-  $html .= "<div class='ui-block-a'>\n";
-  $html .= "<select id='atomm$j' name='atomm$j' >";
-  $timemm = 0;
-  $timess = 0;
-  for ($i = 0; $i <= 180; $i++) {
-    if ($i == $timemm) {
-      $html .= "<option value='" . $i . "' selected='selected'>" . $i . "</option>";
-    } else {
-      $html .= "<option value='" . $i . "'>" . $i . "</option>";
-    }
-  }
-  $html .= "</select>";
-  $html .= "</div>";
-  $html .= "<div class='ui-block-b'>\n";
-  $html .= "<select id='atoss$j' name='atoss$j' >";
-  for ($i = 0; $i <= 55; $i = $i + 5) {
-    if ($i == $timess) {
-      $html .= "<option value='" . $i . "' selected='selected'>" . $i . "</option>";
-    } else {
-      $html .= "<option value='" . $i . "'>" . $i . "</option>";
-    }
-  }
-  $html .= "</select>";
-  $html .= "</div>";
-}
-$html .= "</div>";
-
-$html .= "<input type='submit' name='save' data-ajax='false' value='" . _("Save") . "'/>";
-$html .= "<a href='?view=addscoresheet&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Back to score sheet") . "</a>";
-
-
-$html .= "</form>";
+$html .= "<input type='submit' name='delete' data-ajax='false' value='" . _("Delete") . "'/>";
 $html .= "</div><!-- /content -->\n\n";
 
 echo $html;

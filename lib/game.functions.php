@@ -38,7 +38,7 @@ function PoolGameSetResults($pool, $games)
 function GameResult($gameId)
 {
 	$query = sprintf(
-		"SELECT time, k.name As hometeamname, v.name As visitorteamname, 
+		"SELECT time, starttime, k.name As hometeamname, v.name As visitorteamname, 
         k.valid as homevalid, v.valid as visitorvalid, 
         p.*, hspirit.mode AS spiritmode, hspirit.sotg AS homesotg, vspirit.sotg AS visitorsotg, s.name AS gamename
     FROM uo_game AS p 
@@ -517,7 +517,7 @@ function RemoveGameMediaEvent($gameId, $urlId)
 function GameTimeouts($gameId)
 {
 	$query = sprintf(
-		"SELECT num,time,ishome 
+		"SELECT timeout_id,num,time,ishome 
 		FROM uo_timeout 
 		WHERE game='%s' 
 		ORDER BY time",
@@ -997,6 +997,21 @@ function GameAddScoreEntry($uo_goal)
 			//TriggerFacebookEvent($gameId, "goal", $number);
 		}
 		return $result;
+	} else {
+		die('Insufficient rights to edit game');
+	}
+}
+
+function GameRemoveTimeout($gameId, $timeoutId)
+{
+	if (hasEditGameEventsRight($gameId)) {
+		$query = sprintf(
+			"DELETE FROM uo_timeout 
+			WHERE timeout_id=%d",
+			(int)$timeoutId
+		);
+
+		DBQuery($query);
 	} else {
 		die('Insufficient rights to edit game');
 	}
@@ -1791,6 +1806,20 @@ function SpiritTable($gameinfo, $points, $categories, $home, $wide = true)
 	$html .= "</table>\n";
 
 	return $html;
+}
+
+function StartGame($gameId){
+
+	if (hasEditGameEventsRight($gameId)) {
+	$query = sprintf(
+		"UPDATE uo_game SET starttime = now() WHERE game_id = %d",
+		(int)$gameId
+	);
+
+		DBQuery($query);
+	} else {
+		die('Insufficient rights to edit game');
+	}
 }
 
 function GetSpiritCommentID(){

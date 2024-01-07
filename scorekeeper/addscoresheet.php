@@ -55,21 +55,32 @@ if (isset($_POST['add']) || isset($_POST['forceadd'])) {
     $uo_goal['scorer'] = $_POST['goal'];
     $goal = $_POST['goal'];
   }
-  if (!empty($_POST['timemm'])) {
+  
+  /*if (!empty($_POST['timemm'])) {
     $timemm = intval($_POST['timemm']);
   }
   if (!empty($_POST['timess'])) {
     $timess = intval($_POST['timess']);
-  }
+  }*/
 
-  $uo_goal['time'] = TimeToSec($timemm . "." . $timess);
+  if(is_null($game_result['starttime'])){
+    $timestart = strtotime($game_result['time']);
+    $actualtime = time();
+    $uo_goal['time'] = $actualtime -$timestart;
+  } else{
+    $timestart = strtotime($game_result['starttime']);
+    $actualtime = time();
+    $uo_goal['time'] = $actualtime -$timestart;
+  }
 
   if ($uo_goal['time'] <= $prevtime) {
     $errors .= "<p class='warning'>" . _("Time can not be the same or earlier than the previous point") . "!</p>\n";
   }
 
-  if (strcasecmp($uo_goal['assist'], 'xx') == 0 || strcasecmp($uo_goal['assist'], 'x') == 0)
+  if (strcasecmp($uo_goal['assist'], 'xx') == 0 || strcasecmp($uo_goal['assist'], 'x') == 0){
     $uo_goal['iscallahan'] = 1;
+    $uo_goal['assist'] = 0;
+  }
 
   if (!empty($team) && $team == 'H') {
     $uo_goal['homescore']++;
@@ -124,7 +135,6 @@ if (isset($_POST['add']) || isset($_POST['forceadd'])) {
   header("location:?view=gameplay&game=" . $gameId);
 }
 
-
 $html .= "<div data-role='header'>\n";
 $html .= "<h1>" . _("Scoresheet") . ": " . utf8entities($game_result['hometeamname']) . " - " . utf8entities($game_result['visitorteamname']) . "</h1>\n";
 $html .= "</div><!-- /header -->\n\n";
@@ -133,6 +143,10 @@ $html .= "<div data-role='content'>\n";
 
 $html .= "<form action='?view=addscoresheet' method='post' data-ajax='false'>\n";
 
+if (isset($_POST['start'])){
+  StartGame($gameId);
+  $html .= _("Game started\n");
+}
 
 //last score
 $lastscore;
@@ -216,9 +230,9 @@ foreach ($played_players as $player) {
 
   $html .= "<option value='" . utf8entities($player['player_id']) . "' $selected>#" . $player['num'] . " " . $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
 }
-$html .= "</select>";
+$html .= "</select><br>";
 
-if (isset($lastscore)) {
+/*if (isset($lastscore)) {
   $time = explode(".", SecToMin($lastscore['time']));
   $timemm = $time[0];
   $timess = $time[1];
@@ -248,7 +262,7 @@ for ($i = 0; $i <= 55; $i = $i + 5) {
 }
 $html .= "</select>";
 $html .= "</div>";
-$html .= "</div>";
+$html .= "</div>";*/
 
 
 if (empty($errors)) {
@@ -258,6 +272,7 @@ if (empty($errors)) {
   $html .= "<a href='?view=addhalftime&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Half time") . "</a>";
   $html .= "<a href='?view=addfirstoffence&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("First offence") . "</a>";
   $html .= "<a href='?view=addofficial&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Game official") . "</a>";
+  $html .= "<input type='submit' name='start' data-ajax='false' value='" . _("Start game") . "'/>";
   if (IsTwitterEnabled()) {
     $html .= "<a href='?view=tweet&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Tweet") . "</a>";
   }

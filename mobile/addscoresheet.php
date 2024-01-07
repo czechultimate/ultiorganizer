@@ -70,9 +70,13 @@ if (isset($_POST['add']) || isset($_POST['forceadd'])) {
 		$timess = intval($_POST['timess']);
 	}
 
-
-	//$time = str_replace($time_delim,".",$time);
-	$uo_goal['time'] = TimeToSec($timemm . "." . $timess);
+	if($timemm == "0" && $timess == "0"){
+		$timestart = strtotime($game_result['time']);
+		$actualtime = time();
+		$uo_goal['time'] = $actualtime -$timestart;
+	  } else{
+		$uo_goal['time'] = TimeToSec($timemm . "." . $timess);
+	  }
 
 	if ($uo_goal['time'] <= $prevtime) {
 		$html .= "<p class='warning'>" . _("time can not be the same or earlier than the previous point") . "!</p>\n";
