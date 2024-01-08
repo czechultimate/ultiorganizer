@@ -582,14 +582,15 @@ function AddSeries($params)
   if (hasEditSeasonSeriesRight($params['season'])) {
     $query = sprintf(
       "INSERT INTO uo_series
-				(name,type,ordering,season,valid,pool_template)
-				VALUES ('%s','%s','%s','%s',%d,%d)",
+				(name,type,ordering,season,valid,pool_template,advance)
+				VALUES ('%s','%s','%s','%s',%d, %d,'%s')",
       DBEscapeString($params['name']),
       DBEscapeString($params['type']),
       DBEscapeString($params['ordering']),
       DBEscapeString($params['season']),
       (int)$params['valid'],
-      (int)$params['pool_template']
+      (int)$params['pool_template'],
+      DBEscapeString($params['advance'])
     );
 
     $id = DBQueryInsert($query);
@@ -613,13 +614,14 @@ function SetSeries($params)
       "
 			UPDATE uo_series SET
 			name='%s', type='%s', ordering='%s', valid=%d,
-			pool_template=%d
+			pool_template=%d, advance='%s'
 			WHERE series_id=%d",
       DBEscapeString($params['name']),
       DBEscapeString($params['type']),
       DBEscapeString($params['ordering']),
       (int)$params['valid'],
       (int)$params['pool_template'],
+      DBEscapeString($params['advance']),
       (int)$params['series_id']
     );
 
@@ -925,4 +927,31 @@ function SeriesCopyTeams($to, $from)
   } else {
     die('Insufficient rights');
   }
+}
+
+function SeriesGetAdvance($serieId){
+  $advance = array();
+
+  $query = sprintf(
+    "SELECT advance 
+  	FROM uo_series
+	WHERE series_id = %d",
+    (int)$serieId
+  );
+
+  $advancestr = DBQueryToValue($query);
+
+  if(!is_null($advancestr)){
+    $spots = explode(",",$advancestr);
+    $league = 1;
+    foreach($spots as $spotcount){
+      $text = sprintf("Postup do %d. ligy", $league);
+      for($i=0; $i < $spotcount; $i++){
+        array_push($advance,$text);
+      }
+      $league++;
+    }
+  }
+
+  return $advance;
 }

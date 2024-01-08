@@ -64,10 +64,19 @@ if (!empty($_POST['save'])) {
 }
 
 foreach ($series as $row) {
-  $menutabs[U_($row['name'])] = "?view=user/respgames&season=" . $season . "&series=" . $row['series_id'];
+  $menutabs[U_($row['name'])] = "/?view=user/respgames&season=" . $season . "&series=" . $row['series_id'];
 }
-$menutabs[_("...")] = "?view=user/respgames&season=" . $season;
-$html .= pageMenu($menutabs, respgameslink($season, $series_id, $group, $hide, $mass, false), false);
+
+$html .= "<p>" . _("Select tournament:") . " ";
+
+$html .= "<select class='dropdown' name='selectdiv' onchange='location.href=this.value'>\n";
+
+foreach ($menutabs as $name => $url) {
+    $selected = (strpos($_SERVER['REQUEST_URI'], $url) !== false) ? "selected" : "";
+    $html .= "<option class='dropdown' value='" . htmlentities($url) . "' $selected>" . utf8entities($name) . "</option>";
+}
+$html .= "</select>\n";
+$html .= "</p>\n";
 
 
 $seasoninfo = SeasonInfo($season);

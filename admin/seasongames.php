@@ -97,7 +97,7 @@ contentStart();
 
 function seasongameslink($season, $series, $group, $switchvisible, $mass, $showpool = null)
 {
-  $ret = "?view=admin/seasongames&season=$season"
+  $ret = "/?view=admin/seasongames&season=$season"
     . ($series ? "&series=$series" : "")
     . "&group=" . utf8entities($group)
     . ($switchvisible ? "&v=$switchvisible" : "")
@@ -110,8 +110,17 @@ $tab = 0;
 foreach ($series as $row) {
   $menutabs[U_($row['name'])] = seasongameslink($season, $row['series_id'], $group, null, $mass, null);
 }
-$menutabs[_("...")] = "?view=admin/seasonseries&season=" . $season;
-pageMenu($menutabs, seasongameslink($season, $series_id, $group, null, $mass, $showpool));
+
+$html .= "<p>" . _("Select tournament:") . " ";
+
+$html .= "<select class='dropdown' name='selectdiv' onchange='location.href=this.value'>\n";
+
+foreach ($menutabs as $name => $url) {
+    $selected = (strpos($_SERVER['REQUEST_URI'], $url) !== false) ? "selected" : "";
+    $html .= "<option class='dropdown' value='" . htmlentities($url) . "' $selected>" . utf8entities($name) . "</option>";
+}
+$html .= "</select>\n";
+$html .= "</p>\n";
 
 $html .= "<table width='100%'><tr><td>";
 if (!$showpool) {

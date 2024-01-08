@@ -168,10 +168,10 @@ if ($list == "allteams" || $list == "byseeding") {
 } elseif ($list == "bystandings") {
   
   foreach ($series as $ser) {
-    $htmlseries = array();
+    //$htmlseries = array();
     $maxplacements = 0;
     $series = SeasonSeries($seasonInfo['season_id'], true);
-
+    $advance = SeriesGetAdvance($ser["series_id"]);
       $htmlteams = array();
       $teams  = SeriesRanking($ser['series_id']);
       foreach ($teams as $team) {
@@ -186,17 +186,17 @@ if ($list == "allteams" || $list == "byseeding") {
           $htmlteams[] = "&nbsp;";
         }
       }
-      $htmlseries[] = $htmlteams;
+      //$htmlseries[] = $htmlteams;
     
   
     $html .= "<table cellpadding='2' style='width:100%;'>\n";
     $html .= "<tr>";
     $html .= "<th style='width:20%;'>" . _("Placement") . "</th>";
     
-      $html .= "<th style='width:130%;'><a href='?view=seriesstatus&series=" .
+      $html .= "<th style='width:50%;'><a href='?view=seriesstatus&series=" .
         $ser['series_id'] . "'>" . utf8entities(U_($ser['name'])) . "</a></th>";
       $maxplacements = max(count(SeriesTeams($ser['series_id'])), $maxplacements);
-    
+      $html .= "<th style='width:30%;'>" . _("Advance") . "</th>";
     $html .= "</tr>\n";
     for ($i = 0; $i < $maxplacements; $i++) {
 
@@ -215,7 +215,8 @@ if ($list == "allteams" || $list == "byseeding") {
         $html .= "<td>" . ordinal($i + 1) . "</td>";
       }*/
       $html .= "<td>" . ordinal($i + 1) . "</td>";
-      for ($j = 0; $j < count($series); $j++) {
+      $html .= "<td>" . $htmlteams[$i] . "</td>";
+      /*for ($j = 0; $j < count($series); $j++) {
         $html .= "<td>";
         if (!empty($htmlseries[$j][$i])) {
           $html .= $htmlseries[$j][$i];
@@ -223,7 +224,8 @@ if ($list == "allteams" || $list == "byseeding") {
           $html .= "&nbsp;";
         }
         $html .= "</td>";
-      }
+      }*/
+      $html .= "<td>" . $advance[$i] . "</td>";
       $html .= "</tr>\n";
     }
     $html .= "</table>\n";

@@ -642,6 +642,7 @@ CREATE TABLE `uo_series` (
   `season` varchar(50) DEFAULT NULL,
   `valid` tinyint(4) NOT NULL DEFAULT '0',
   `type` varchar(20) DEFAULT NULL,
+  `advance` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`series_id`),
   INDEX `idx_season` (`season`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;

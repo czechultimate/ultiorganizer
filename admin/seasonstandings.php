@@ -160,16 +160,32 @@ leftMenu($LAYOUT_ID);
 contentStart();
 
 foreach ($series as $row) {
-  $menutabs[U_($row['name'])] = "?view=admin/seasonstandings&season=" . $season . "&series=" . $row['series_id'];
+  $menutabs[U_($row['name'])] = "/?view=admin/seasonstandings&season=" . $season . "&series=" . $row['series_id'];
 }
 $menutabs[_("...")] = "?view=admin/seasonseries&season=" . $season;
-pageMenu($menutabs, "?view=admin/seasonstandings&season=" . $season . "&series=" . $series_id);
+
+$html .= "<p>" . _("Select tournament:") . " ";
+$html .= "<select class='dropdown' name='selectdiv' onchange='location.href=this.value'>\n";
+
+foreach ($menutabs as $name => $url) {
+    $selected = ($url === $_SERVER['REQUEST_URI'] || $url."&v=pool" === $_SERVER['REQUEST_URI']) ? "selected" : "";
+    $html .= "<option class='dropdown' value='" . htmlentities($url) . "' $selected>" . utf8entities($name) . "</option>";
+}
+$html .= "</select>\n";
+$html .= "</p>\n";
 
 $html .= "<p>";
+
+$uriWithPool = $_SERVER['REQUEST_URI'];
+
+  if (strpos($uriWithPool, '&v=pool') === false) {
+      $uriWithPool .= '&amp;v=pool';
+  }
+
 if ($_SESSION['hide_played_pools']) {
-  $html .= "<a href='?view=admin/seasonstandings&amp;season=$season&amp;v=pool'>" . _("Show played pools") . "</a> ";
+  $html .= "<a href='".$uriWithPool."'>" . _("Show played pools") . "</a> ";
 } else {
-  $html .= "<a href='?view=admin/seasonstandings&amp;season=$season&amp;v=pool'>" . _("Hide played pools") . "</a> ";
+  $html .= "<a href='".$uriWithPool."'>" . _("Hide played pools") . "</a> ";
 }
 $html .= "</p>";
 
@@ -517,7 +533,10 @@ function editField($prefix, $teamNum, $id, $value)
 
 function editPoolStandings($type, $pool, $startIds, $editStarts, $editEnds, $seedIds, $seeds, $rankIds, $ranks)
 {
+  $start=0;
+  $end=0;
   foreach ($startIds as $key => $value) {
+    
     if ($value == $pool) {
       $start = $editStarts[$key];
       $end = $editEnds[$key];

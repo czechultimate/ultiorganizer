@@ -83,10 +83,21 @@ contentStart();
 
 
 foreach ($series as $row) {
-  $menutabs[U_($row['name'])] = "?view=admin/seasonpools&season=" . $season . "&series=" . $row['series_id'];
+  $menutabs[U_($row['name'])] = "/?view=admin/seasonpools&season=" . $season . "&series=" . $row['series_id'];
 }
 $menutabs[_("...")] = "?view=admin/seasonseries&season=" . $season;
-pageMenu($menutabs, "?view=admin/seasonpools&season=" . $season . "&series=" . $series_id);
+
+$html .= "<p>" . _("Select tournament:") . " ";
+$html .= "<select class='dropdown' name='selectdiv' onchange='location.href=this.value'>\n";
+
+foreach ($menutabs as $name => $url) {
+    $selected = ($url === $_SERVER['REQUEST_URI']) ? "selected" : "";
+    $html .= "<option class='dropdown' value='" . htmlentities($url) . "' $selected>" . utf8entities($name) . "</option>";
+}
+$html .= "</select>\n";
+$html .= "</p>\n";
+
+
 
 $html .= "<form method='post' action='?view=admin/seasonpools&amp;season=$season&amp;series=$series_id'>";
 
