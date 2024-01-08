@@ -599,6 +599,7 @@ function printPlayoffTree($seasoninfo, $poolinfo)
               $game .= "<a href='?view=gameplay&amp;game=" . $res['game_id'] . "'>";
               $game .= $res['homescore'] . "-" . $res['visitorscore'] . "</a> ";
             } elseif (GameHasStarted($res) > 0 && !$res['isongoing']) {
+              $game .= "<a href='?view=gameplay&amp;game=" . $res['game_id'] . "'>";
               $game .= $res['homescore'] . "-" . $res['visitorscore'];
             } elseif (!empty($res['gamename'])) {
               $game .= "<span class='lowlight'>" . utf8entities(U_($res['gamename'])) . "</span>";
