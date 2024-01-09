@@ -460,7 +460,8 @@ function pageMainStart($printable = false)
     return;
   }
 
-  echo "<table style='border:1px solid #fff;background-color: #ffffff;'><tr>\n";
+  //echo "<table style='border:1px solid #fff;background-color: #ffffff;'><tr>\n";
+  echo "<table style=background-color: #ffffff;'><tr>\n";
 }
 /**
  * Creates menus on left side of page.

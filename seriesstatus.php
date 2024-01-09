@@ -275,24 +275,27 @@ foreach ($allteams as $stats) {
 }
 $html .= "</table>\n";
 $html .= "<a href='?view=poolstatus&amp;series=" . $seriesinfo['series_id'] . "'>" . _("Show all pools") . "</a>";
-$html .= "<h2>" . _("Scoreboard leaders") . "</h2>\n";
-$html .= "<table cellspacing='0' border='0' width='100%'>\n";
-$html .= "<tr><th style='width:200px'>" . _("Player") . "</th><th style='width:200px'>" . _("Team") . "</th><th class='center'>" . _("Games") . "</th>
-<th class='center'>" . _("Assists") . "</th><th class='center'>" . _("Goals") . "</th><th class='center'>" . _("Tot.") . "</th></tr>\n";
 
-$scores = SeriesScoreBoard($seriesinfo['series_id'], "total", 10);
-while ($row = mysqli_fetch_assoc($scores)) {
-  $html .= "<tr><td>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</td>";
-  $html .= "<td>" . utf8entities($row['teamname']) . "</td>";
-  $html .= "<td class='center'>" . intval($row['games']) . "</td>";
-  $html .= "<td class='center'>" . intval($row['fedin']) . "</td>";
-  $html .= "<td class='center'>" . intval($row['done']) . "</td>";
-  $html .= "<td class='center'>" . intval($row['total']) . "</td></tr>\n";
+if($seriesinfo["stats"] == 1){
+  $html .= "<h2>" . _("Scoreboard leaders") . "</h2>\n";
+  $html .= "<table cellspacing='0' border='0' width='100%'>\n";
+  $html .= "<tr><th style='width:200px'>" . _("Player") . "</th><th style='width:200px'>" . _("Team") . "</th><th class='center'>" . _("Games") . "</th>
+  <th class='center'>" . _("Assists") . "</th><th class='center'>" . _("Goals") . "</th><th class='center'>" . _("Tot.") . "</th></tr>\n";
+
+
+  $scores = SeriesScoreBoard($seriesinfo['series_id'], "total", 10);
+  while ($row = mysqli_fetch_assoc($scores)) {
+    $html .= "<tr><td>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</td>";
+    $html .= "<td>" . utf8entities($row['teamname']) . "</td>";
+    $html .= "<td class='center'>" . intval($row['games']) . "</td>";
+    $html .= "<td class='center'>" . intval($row['fedin']) . "</td>";
+    $html .= "<td class='center'>" . intval($row['done']) . "</td>";
+    $html .= "<td class='center'>" . intval($row['total']) . "</td></tr>\n";
+  }
+
+  $html .= "</table>";
+  $html .= "<a href='?view=scorestatus&amp;series=" . $seriesinfo['series_id'] . "'>" . _("Scoreboard") . "</a>";
 }
-
-$html .= "</table>";
-$html .= "<a href='?view=scorestatus&amp;series=" . $seriesinfo['series_id'] . "'>" . _("Scoreboard") . "</a>";
-
 
 if (ShowDefenseStats()) {
   $html .= "<h2>" . _("Defenseboard leaders") . "</h2>\n";

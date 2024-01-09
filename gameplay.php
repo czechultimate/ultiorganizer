@@ -42,19 +42,23 @@ if (GameHasStarted($game_result) > 0) {
   } else {
 
     //score board
-
+  
     $html .= "<table style='width:100%'><tr><td valign='top' style='width:45%'>\n";
 
     $html .= "<table width='100%' cellspacing='0' cellpadding='0' border='0'>\n";
     $html .= "<tr style='height=20'><td align='center'><b>";
     $html .= utf8entities($game_result['hometeamname']) . "</b></td></tr>\n";
     $html .= "</table><table width='100%' cellspacing='0' cellpadding='3' border='0'>";
-    $html .= "<tr><th class='home'>#</th><th class='home'>" . _("Name") . "</th><th class='home center'>" . _("Assists") . "</th><th class='home center'>" . _("Goals") . "</th>
-		 <th class='home center'>" . _("Tot.") . "</th></tr>\n";
+    $html .= "<tr><th class='home'>#</th><th class='home'>" . _("Name");
+
+    if($poolinfo["stats"] == 1){
+      $html .= "</th><th class='home center'>" . _("Assists") . "</th><th class='home center'>" . _("Goals") . "</th>
+      <th class='home center'>" . _("Tot.") . "</th></tr>\n";
+    }
 
     while ($row = mysqli_fetch_assoc($home_team_score_board)) {
       $html .= "<tr>";
-      $html .= "<td style='text-align:right'>" . $row['num'] . "</td>";
+      $html .= "<td style='text-align:left'>" . $row['num'] . "</td>";
       $html .= "<td><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
       $html .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
       $html .= utf8entities($row['lastname']) . "</a>";
@@ -62,9 +66,11 @@ if (GameHasStarted($game_result) > 0) {
         $html .= "&nbsp;" . _("(C)");
       }
       $html .= "</td>";
-      $html .= "<td class='center'>" . $row['fedin'] . "</td>";
-      $html .= "<td class='center'>" . $row['done'] . "</td>";
-      $html .= "<td class='center'>" . $row['total'] . "</td>";
+      if($poolinfo["stats"] == 1){
+        $html .= "<td class='center'>" . $row['fedin'] . "</td>";
+        $html .= "<td class='center'>" . $row['done'] . "</td>";
+        $html .= "<td class='center'>" . $row['total'] . "</td>";
+      }
       $html .= "</tr>";
     }
 
@@ -75,14 +81,15 @@ if (GameHasStarted($game_result) > 0) {
     $html .= "<tr><td><b>";
     $html .= utf8entities($game_result['visitorteamname']) . "</b></td></tr>\n";
     $html .= "</table><table width='100%' cellspacing='0' cellpadding='3' border='0'>";
-    $html .= "<tr><th class='guest'>#</th><th class='guest'>" . _("Name") . "</th><th class='guest center'>";
-    $html .= _("Assists") . "</th><th class='guest center'>" . _("Goals");
-    $html .= "</th><th class='guest center'>" . _("Tot.") . "</th></tr>\n";
-
+    $html .= "<tr><th class='guest'>#</th><th class='guest'>" . _("Name");
+    if($poolinfo["stats"] == 1){
+      $html .= "</th><th class='guest center'>" . _("Assists") . "</th><th class='guest center'>" . _("Goals");
+      $html .= "</th><th class='guest center'>" . _("Tot.") . "</th></tr>\n";
+    }
 
     while ($row = mysqli_fetch_assoc($guest_team_score_board)) {
       $html .= "<tr>";
-      $html .= "<td style='text-align:right'>" . $row['num'] . "</td>";
+      $html .= "<td style='text-align:left'>" . $row['num'] . "</td>";
       $html .= "<td><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
       $html .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
       $html .= utf8entities($row['lastname']) . "</a>";
@@ -90,9 +97,12 @@ if (GameHasStarted($game_result) > 0) {
         $html .= "&nbsp;" . _("(C)");
       }
       $html .= "</td>";
-      $html .= "<td class='center'>" . $row['fedin'] . "</td>";
-      $html .= "<td class='center'>" . $row['done'] . "</td>";
-      $html .= "<td class='center'>" . $row['total'] . "</td>";
+
+      if($poolinfo["stats"] == 1){
+        $html .= "<td class='center'>" . $row['fedin'] . "</td>";
+        $html .= "<td class='center'>" . $row['done'] . "</td>";
+        $html .= "<td class='center'>" . $row['total'] . "</td>";
+      }
       $html .= "</tr>";
     }
 
@@ -171,7 +181,9 @@ if (GameHasStarted($game_result) > 0) {
       $html .= "<td style='width:" . $width_a . "px' class='$color' title='$title'></td>\n";
     }
     $html .= "</tr></table>\n";
-
+    
+    //zacatek asi tady
+    if($poolinfo["stats"] == 1){
     $html .= "<table border='1' cellpadding='2' width='100%'>\n";
     $html .= "<tr><th>" . _("Scores") . "</th><th>" . _("Assist") . "</th><th>" . _("Goal") . "</th><th>" . _("Time") . "</th><th>" . _("Dur.") . "</th>";
     if (count($gameevents) || count($mediaevents)) {
@@ -299,7 +311,7 @@ if (GameHasStarted($game_result) > 0) {
       }
       $html .= "</table>";
     }
-
+    
     if (!intval($game_result['isongoing'])) {
       //statistics
       $html .= "<h2>" . _("Game statistics") . "</h2>\n";
@@ -519,6 +531,9 @@ if (GameHasStarted($game_result) > 0) {
       }
       $html .= "</table>";
     }
+  }
+  }
+ // konec asi tady
     // spirit points
     if ((isset($seasoninfo['spiritmode']) && $seasoninfo['spiritmode'] > 0) && !intval($game_result['isongoing'])) {
       $html .= "<h2>" . _("Spirit Points") . "</h2>\n";
@@ -662,7 +677,7 @@ if (GameHasStarted($game_result) > 0) {
       }
       $html .= "</table>\n";
     }
-  }
+  
 } else {
   $game_result = GameInfo($gameId);
 

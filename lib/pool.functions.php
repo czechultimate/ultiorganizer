@@ -33,7 +33,7 @@ function Pools($filter = null, $ordering = null)
 function PoolInfo($poolId)
 {
   $query = sprintf(
-    "SELECT pool.*, ser.name AS seriesname, ser.season, ser.series_id FROM uo_pool pool
+    "SELECT pool.*, ser.name AS seriesname, ser.season, ser.series_id, ser.stats FROM uo_pool pool
         LEFT JOIN uo_series ser ON(pool.series=ser.series_id)
         WHERE pool.pool_id=%d",
     (int)$poolId

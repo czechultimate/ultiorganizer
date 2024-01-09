@@ -582,15 +582,16 @@ function AddSeries($params)
   if (hasEditSeasonSeriesRight($params['season'])) {
     $query = sprintf(
       "INSERT INTO uo_series
-				(name,type,ordering,season,valid,pool_template,advance)
-				VALUES ('%s','%s','%s','%s',%d, %d,'%s')",
+				(name,type,ordering,season,valid,pool_template,advance,stats)
+				VALUES ('%s','%s','%s','%s',%d, %d,'%s', %d)",
       DBEscapeString($params['name']),
       DBEscapeString($params['type']),
       DBEscapeString($params['ordering']),
       DBEscapeString($params['season']),
       (int)$params['valid'],
       (int)$params['pool_template'],
-      DBEscapeString($params['advance'])
+      DBEscapeString($params['advance']),
+      (int)$params['stats']
     );
 
     $id = DBQueryInsert($query);
@@ -614,7 +615,7 @@ function SetSeries($params)
       "
 			UPDATE uo_series SET
 			name='%s', type='%s', ordering='%s', valid=%d,
-			pool_template=%d, advance='%s'
+			pool_template=%d, advance='%s', stats=%d
 			WHERE series_id=%d",
       DBEscapeString($params['name']),
       DBEscapeString($params['type']),
@@ -622,6 +623,7 @@ function SetSeries($params)
       (int)$params['valid'],
       (int)$params['pool_template'],
       DBEscapeString($params['advance']),
+      (int)$params['stats'],
       (int)$params['series_id']
     );
 

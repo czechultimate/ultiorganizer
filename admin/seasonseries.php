@@ -23,6 +23,7 @@ if (!empty($_POST['remove_x'])) {
   $sp['advance'] = !empty($_POST['advance0']) ? $_POST['advance0'] : NULL;
   $sp['season'] = $season;
   $sp['valid'] = isset($_POST['valid0']) ? 1 : 0;
+  $sp['stats'] = isset($_POST['stats0']) ? 1 : 0;
   $sp['pool_template'] = $_POST['template0'];
   AddSeries($sp);
 } else if (!empty($_POST['save'])) {
@@ -38,6 +39,7 @@ if (!empty($_POST['remove_x'])) {
     $sp['advance'] = $_POST["advance$id"];
     $sp['season'] = $season;
     $sp['valid'] = isset($_POST["valid$id"]) ? 1 : 0;
+    $sp['stats'] = isset($_POST["stats$id"]) ? 1 : 0;
     $sp['pool_template'] = $_POST["template$id"];
     SetSeries($sp);
   }
@@ -57,7 +59,7 @@ $series = SeasonSeries($season);
 $types = SeriesTypes();
 
 $html .= "<table class='admintable'>\n";
-$html .= "<tr><th>" . _("Name") . "</th><th>" . _("Type") . "</th><th>" . _("Rules") . "</th><th>" . _("Ordering") . "</th><th>" . _("Advance") . "</th><th class='center' title='" . _("Visible") . "'>" . _("V") . "</th>";
+$html .= "<tr><th>" . _("Name") . "</th><th>" . _("Type") . "</th><th>" . _("Rules") . "</th><th>" . _("Ordering") . "</th><th>" . _("Advance") . "</th><th class='center' title='" . _("Visible") . "'>" . _("V") . "</th>" . "</th><th class='center' title='" . _("Stats") . "'>" . _("S") . "</th>";
 $html .= "<th>" . _("Operations") . "</th><th></th></tr>\n";
 
 $last_ordering = 0;
@@ -103,6 +105,12 @@ foreach ($series as $row) {
     $html .= "<td class='center'><input class='input' type='checkbox' name='valid$id' checked='checked'/></td>";
   } else {
     $html .= "<td class='center'><input class='input' type='checkbox' name='valid$id'/></td>";
+  }
+
+  if (intval($row['stats'])) {
+    $html .= "<td class='center'><input class='input' type='checkbox' name='stats$id' checked='checked'/></td>";
+  } else {
+    $html .= "<td class='center'><input class='input' type='checkbox' name='stats$id'/></td>";
   }
 
   $html .= "<td style='white-space: nowrap;'>\n";
@@ -151,6 +159,7 @@ $html .=  "</select></td>";
 $html .= "<td style='padding-top:15px'><input class='input' size='3' maxlength='1' name='ordering0' value='$last_ordering'/></td>";
 $html .= "<td style='padding-top:15px'><input class='input' size='3' name='advance0'/></td>";
 $html .= "<td style='padding-top:15px'><input class='input' type='checkbox' name='valid0' checked='checked'/></td>";
+$html .= "<td style='padding-top:15px'><input class='input' type='checkbox' name='stats0' checked='checked'/></td>";
 
 $html .= "<td style='padding-top:15px'><input id='add' class='button' name='add' type='submit' value='" . _("Add") . "'/></td>";
 $html .= "<td style='padding-top:15px'></td>";
