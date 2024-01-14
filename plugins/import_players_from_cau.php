@@ -121,7 +121,7 @@ if (empty($seasonId)) {
     
 } else {
 
-    $html .= "<p>" . ("Select tournament") . ":	<select class='dropdown' name='cautournamentid'>\n";
+    $html .= "<p>" . ("Select tournament from CAU") . ":	<select class='dropdown' name='cautournamentid'>\n";
     $tournamentData = GetCAUTournaments($SeasonYear);
 
     foreach ($tournamentData as $t) {
@@ -130,7 +130,7 @@ if (empty($seasonId)) {
 
 	$html .= "</select></p>\n";
 
-	$html .= "<p>" . ("Select division") . ":	<select class='dropdown' name='seriesid'>\n";
+	$html .= "<p>" . ("Select tournament UO") . ":	<select class='dropdown' name='seriesid'>\n";
 	$series = SeasonSeries($seasonId);
 	foreach ($series as $row) {
 		$html .= "<option class='dropdown' value='" . utf8entities($row['series_id']) . "'>" . utf8entities($row['name']) . "</option>";
