@@ -1077,7 +1077,7 @@ function GameGetSpiritPoints($gameId, $teamId)
 
 function GameSetSpiritPoints($gameId, $teamId, $home, $points, $categories)
 {
-	if (hasEditGameEventsRight($gameId)) {
+	if (hasEditGameSpiritRight($gameId)) {
 		$query = sprintf(
 			"DELETE FROM uo_spirit_score 
         WHERE game_id=%d AND team_id=%d",
@@ -1833,5 +1833,59 @@ function GetSpiritCommentID(){
 		return $row['category_id'];
 	}	else{
 		return 0;
+	}
+}
+
+function GetGameInfoCSV($seriesId,$separator){
+	$query = sprintf(
+		"SELECT
+		uo_game.game_id,
+		uo_game.hometeam,
+		uo_game.visitorteam,
+		uo_team.name AS hometeam_name, 
+		'' AS spiritH,
+		'' AS commentH,
+		(SELECT name FROM uo_team WHERE team_id = uo_game.visitorteam) AS visitorteam_name,
+		'' AS spiritV,
+		'' AS commentV
+	  FROM uo_game
+	  JOIN uo_team ON uo_game.hometeam = uo_team.team_id
+	  WHERE uo_team.series = %d
+	  ORDER BY TIME DESC",
+		(int)$seriesId
+	);
+	
+	$result = DBQuery($query);
+	return ResultsetToCsv($result, $separator);
+}
+
+function AddSpiritScore($gameId, $teamId, $categoryId, $value = -1, $note = ""){
+	if (hasEditGameSpiritRight($gameId)) {
+		if($value != -1){
+			$query = sprintf(
+				"INSERT INTO uo_spirit_score
+				(game_id, team_id, category_id, value) 
+				VALUES ('%d', '%d', '%d', '%d')",
+				(int)$gameId,
+				(int)$teamId,
+				(int)$categoryId,
+				(int)$value
+			);
+		} else {
+			$query = sprintf(
+				"INSERT INTO uo_spirit_score
+				(game_id, team_id, category_id, note) 
+				VALUES ('%d', '%d', '%d', '%s')",
+				(int)$gameId,
+				(int)$teamId,
+				(int)$categoryId,
+				DBEscapeString($note)
+			);
+		}
+		$result = DBQuery($query);
+
+		return $result;
+	} else {
+		die('Insufficient rights to edit game');
 	}
 }

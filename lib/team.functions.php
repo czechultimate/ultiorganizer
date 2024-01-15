@@ -1620,3 +1620,16 @@ function TeamsToCsv($season, $separator)
   $result = DBQuery($query);
   return ResultsetToCsv($result, $separator);
 }
+
+function FindTeamInArray($teamArray, $home, $visitor){
+  foreach ($teamArray as $key => $value) {
+
+    if ($key == $home){
+      return $visitor;
+    } 
+    
+    if ($key == $visitor){
+      return $home;
+    }
+  }
+}

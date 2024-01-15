@@ -59,20 +59,24 @@ if ($season['spiritmode'] > 0) {
     $html .= " $missing";
   $html .= "</p>";
   $html .= "</form>\n";
-  if ($ishome) {
-    $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['visitorteam'] .
-      "' data-role='button' data-ajax='false'>" . _("Spirit points for") . " " .
-      utf8entities($game_result['visitorteamname']) . "</a>";
-  } else {
-    $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['hometeam'] .
-      "' data-role='button' data-ajax='false'>" . _("Spirit points for") . " " .
-      utf8entities($game_result['hometeamname']) . "</a>";
+  if(hasEditGameEventsRight($gameId)){
+    if ($ishome) {
+      $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['visitorteam'] .
+        "' data-role='button' data-ajax='false'>" . _("Spirit points for") . " " .
+        utf8entities($game_result['visitorteamname']) . "</a>";
+    } else {
+      $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['hometeam'] .
+        "' data-role='button' data-ajax='false'>" . _("Spirit points for") . " " .
+        utf8entities($game_result['hometeamname']) . "</a>";
+    }
   }
-} else {
-  $html .= "<p>" . sprintf(_("Spirit points not given for %s."), utf8entities($season['name'])) . "</p>";
-}
+  } else {
+    $html .= "<p>" . sprintf(_("Spirit points not given for %s."), utf8entities($season['name'])) . "</p>";
+  }
 
-$html .= " <a href='?view=addscoresheet&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Back to score sheet") . "</a>";
+  if(hasEditGameEventsRight($gameId)){
+    $html .= " <a href='?view=addscoresheet&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Back to score sheet") . "</a>";
+  }
 $html .= " <a href='?view=respgames' data-role='button' data-ajax='false'>" . _("Back to game responsibilities") . "</a>";
 
 echo $html;

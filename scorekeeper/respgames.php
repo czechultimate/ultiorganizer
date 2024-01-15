@@ -23,6 +23,10 @@ if (isset($_GET['all'])) {
   $showall = intval($_GET['all']);
 }
 
+if (isset($_SESSION['userproperties']['userrole']['teamadmin'])){
+  $teamAdminIdArray = $_SESSION['userproperties']['userrole']['teamadmin'];
+}
+
 $html .= "<div data-role='header'>\n";
 $html .= "<h1>" . _("Games you are responsible for") . "</h1>\n";
 $html .= "</div><!-- /header -->\n\n";
@@ -138,15 +142,20 @@ foreach ($respGameArray as $tournament => $resArray) {
             $html .= "</tr>";
             $html .= "</tbody>";
             $html .= "</table>";
-
-            $html .= "<div data-role='controlgroup' data-type='horizontal'>\n";
-            $html .= "<a href='?view=addresult&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Result") . "</a>";
-            $html .= "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Players") . "</a>";
-            $html .= "<a href='?view=addscoresheet&amp;game=$gameId' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
-            if (intval($seasoninfo['spiritmode'] > 0) && isSeasonAdmin($seasoninfo['season_id'])) {
-              $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
-            }
-            $html .= "</div>\n";
+            
+              $html .= "<div data-role='controlgroup' data-type='horizontal'>\n";
+              if(hasEditGameEventsRight($gameId)){
+                $html .= "<a href='?view=addresult&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Result") . "</a>";
+                $html .= "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Players") . "</a>";
+                $html .= "<a href='?view=addscoresheet&amp;game=$gameId' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
+              }
+              if (intval($seasoninfo['spiritmode'] > 0) && isSeasonAdmin($seasoninfo['season_id'])) {
+                $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
+              } else if(hasEditGameSpiritRight($gameId)){
+                $team = FindTeamInArray($teamAdminIdArray, $game['hometeam'], $game['visitorteam']);
+                $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
+              }
+              $html .= "</div>\n";
             $html .= "</div>\n";
           } else {
             $html .= utf8entities($game['phometeamname']) . " - " . utf8entities($game['pvisitorteamname']) . " ";

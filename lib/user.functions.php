@@ -636,10 +636,25 @@ function hasEditGameEventsRight($game)
 	return isset($_SESSION['userproperties']['userrole']['superadmin']) ||
 		isset($_SESSION['userproperties']['userrole']['seasonadmin'][$season]) ||
 		isset($_SESSION['userproperties']['userrole']['seriesadmin'][$series]) ||
+		//isset($_SESSION['userproperties']['userrole']['teamadmin'][$team]) ||
+		isset($_SESSION['userproperties']['userrole']['resgameadmin'][$reservation]) ||
+		isset($_SESSION['userproperties']['userrole']['gameadmin'][$game]);
+}
+
+function hasEditGameSpiritRight($game)
+{
+	$team = GameRespTeam($game);
+	$series = GameSeries($game);
+	$season = SeriesSeasonId($series);
+	$reservation = GameReservation($game);
+	return isset($_SESSION['userproperties']['userrole']['superadmin']) ||
+		isset($_SESSION['userproperties']['userrole']['seasonadmin'][$season]) ||
+		isset($_SESSION['userproperties']['userrole']['seriesadmin'][$series]) ||
 		isset($_SESSION['userproperties']['userrole']['teamadmin'][$team]) ||
 		isset($_SESSION['userproperties']['userrole']['resgameadmin'][$reservation]) ||
 		isset($_SESSION['userproperties']['userrole']['gameadmin'][$game]);
 }
+
 function hasAccredidationRight($team)
 {
 	return hasEditTeamsRight(getTeamSeries($team)) ||
