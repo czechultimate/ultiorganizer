@@ -190,7 +190,7 @@ foreach ($respGameArray as $reservationgroup => $resArray) {
         $html .= "<td style='width:20%'>" . utf8entities($game['phometeamname']) . "</td><td>-</td><td style='width:20%'>" . utf8entities($game['pvisitorteamname']) . "</td>";
       }
 
-      if ($_SESSION['massinput']) {
+      if ($_SESSION['massinput'] && hasEditGameEventsRight($gameId)) {
         $html .= "<td colspan='3' style='white-space: nowrap'>
       		<input type='hidden' id='scoreId" . $gameId . "' name='scoreId[]' value='$gameId'/>
       		<input type='text' style='width:5ex' size='2' maxlength='3' value='" . (is_null($game['homescore']) ? "" : intval($game['homescore'])) . "' id='homescore$gameId' name='homescore[]' oninput='confirmLeave(this, true, null);' tabindex='" . ++$tab . "'/> 
@@ -204,9 +204,12 @@ foreach ($respGameArray as $reservationgroup => $resArray) {
         $html .= "<td></td>";
       }
       if ($game['hometeam'] && $game['visitorteam']) {
-        $html .= "<td class='right'><a href='?view=user/addresult&amp;game=" . $gameId . "'>" . _("Result") . "</a> | ";
-        $html .= "<a href='?view=user/addplayerlists&amp;game=" . $gameId . "'>" . _("Players") . "</a> | ";
-        $html .= "<a href='?view=user/addscoresheet&amp;game=$gameId'>" . _("Scoresheet") . "</a>";
+        $html .= "<td class='right'>";
+        if(hasEditGameEventsRight($gameId)){
+          $html .= "<a href='?view=user/addresult&amp;game=" . $gameId . "'>" . _("Result") . "</a> | ";
+          $html .= "<a href='?view=user/addplayerlists&amp;game=" . $gameId . "'>" . _("Players") . "</a> | ";
+          $html .= "<a href='?view=user/addscoresheet&amp;game=$gameId'>" . _("Scoresheet") . "</a>";
+        }
         if ((isset($seasoninfo['spiritmode']) && $seasoninfo['spiritmode'] > 0) && isSeasonAdmin($seasoninfo['season_id'])) {
           $html .= " | <a href='?view=user/addspirit&amp;game=$gameId'>" . _("Spirit") . "</a>";
         } elseif (isset($seasoninfo['spiritmode']) && $seasoninfo['spiritmode'] > 0) {

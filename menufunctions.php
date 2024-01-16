@@ -700,7 +700,7 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
   echo "<tr><td>";
   echo "<a class='subnav' href='?view=ext/index'>&raquo; " . utf8entities(_("Ultiorganizer links")) . "</a>\n";
   echo "<a class='subnav' href='?view=ext/export'>&raquo; " . utf8entities(_("Data export")) . "</a>\n";
-  echo "<a class='subnav' href='?view=mobile/index'>&raquo; " . utf8entities(_("Mobile Administration")) . "</a>\n";
+ // echo "<a class='subnav' href='?view=mobile/index'>&raquo; " . utf8entities(_("Mobile Administration")) . "</a>\n";
   echo "<a class='subnav' href='./scorekeeper/'>&raquo; " . utf8entities(_("Scorekeeper")) . "</a>\n";
   echo "</td></tr>\n";
   echo "</table>";
@@ -757,7 +757,7 @@ function getEditSeasonLinks()
         $links['?view=admin/reservations&amp;season=' . $season] = _("Scheduling");
         $links['?view=admin/seasongames&amp;season=' . $season] = _("Games");
         $links['?view=admin/seasonstandings&amp;season=' . $season] = _("Standings");
-        $links['?view=admin/accreditation&amp;season=' . $season] = _("Accreditation");
+       // $links['?view=admin/accreditation&amp;season=' . $season] = _("Accreditation");
         $respgamesset[$season] = "set";
       }
       $ret[$season] = $links;
@@ -772,7 +772,7 @@ function getEditSeasonLinks()
           $links['?view=admin/seasonteams&amp;season=' . $season . '&amp;series=' . $series] = $seriesname . " " . _("Teams");
           $links['?view=admin/seasongames&amp;season=' . $season . '&amp;series=' . $series] = $seriesname . " " . _("Games");
           $links['?view=admin/seasonstandings&amp;season=' . $season . '&amp;series=' . $series] = $seriesname . " " . _("Pool standings");
-          $links['?view=admin/accreditation&amp;season=' . $seriesseason] = _("Accreditation");
+          //$links['?view=admin/accreditation&amp;season=' . $seriesseason] = _("Accreditation");
           $ret[$seriesseason] = $links;
           $respgamesset[$seriesseason] = "set";
         }
@@ -820,7 +820,7 @@ function getEditSeasonLinks()
       } else {
         $links = $ret[$season];
         $links['?view=user/respteams&amp;season=' . $season] = _("Team responsibilities");
-        $links['?view=admin/accreditation&amp;season=' . $season] = _("Accreditation");
+       // $links['?view=admin/accreditation&amp;season=' . $season] = _("Accreditation");
         $ret[$season] = $links;
       }
     }

@@ -22,7 +22,9 @@ $html .= "</td></tr><tr><td>\n";
 if (mysqli_num_rows($goals) <= 0) {
 	$html .= _("Not fed in");
 	$html .= "</td></tr><tr><td>\n";
-	$html .=  "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game_result['hometeam'] . "'>" . _("Feed in score sheet") . "</a>";
+	if(hasEditGameEventsRight($gameId)){
+		$html .=  "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game_result['hometeam'] . "'>" . _("Feed in score sheet") . "</a>";
+	}
 } else {
 	$prevgoal = 0;
 	while ($goal = mysqli_fetch_assoc($goals)) {

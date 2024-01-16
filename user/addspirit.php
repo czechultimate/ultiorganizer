@@ -41,10 +41,11 @@ if ($season['spiritmode'] > 0) {
     $game_result = GameResult($gameId);
   }
 
-
-  $menutabs[_("Result")] = "?view=user/addresult&game=$gameId";
-  $menutabs[_("Players")] = "?view=user/addplayerlists&game=$gameId";
-  $menutabs[_("Score sheet")] = "?view=user/addscoresheet&game=$gameId";
+  if(hasEditGameEventsRight($gameId)){
+    $menutabs[_("Result")] = "?view=user/addresult&game=$gameId";
+    $menutabs[_("Players")] = "?view=user/addplayerlists&game=$gameId";
+    $menutabs[_("Score sheet")] = "?view=user/addscoresheet&game=$gameId";
+  }
   $menutabs[_("Spirit points")] = "?view=user/addspirit&game=$gameId";
   if (ShowDefenseStats()) {
     $menutabs[_("Defense sheet")] = "?view=user/adddefensesheet&game=$gameId&amp;team=$teamId";
