@@ -41,7 +41,7 @@ if ($list == "teamstandings") {
       }
       $html .= "<h3>" . U_($seriestype) . "</h3>\n";
       $html .= "<table style='width:100%' border='1'><tr>
-				<th>" . _("Event") . "</th><th>" . _("Gold") . "</th><th>" . _("Silver") . "</th><th>" . _("Bronze") . "</th></tr>\n";
+				<th>" . _("Event") . "</th><th>" . _("1st") . "</th><th>" . _("2nd") . "</th><th>" . _("3rd") . "</th></tr>\n";
 
       foreach ($serstats as $series) {
         $standings = TeamStandingsSeries($series['series_id']);
