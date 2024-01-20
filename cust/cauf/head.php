@@ -11,5 +11,5 @@ function logo()
 
 function pageHeader()
 {
-	return "<a href='https://www.caufrisbee.cz'><img class='header_logo' src='cust/cauf/logo.png'/></a>";
+	return "<a href='https://www.czechultimate.cz/'><img class='header_logo' style='height: 68px;' src='cust/cauf/logo.svg'/></a>";
 }
