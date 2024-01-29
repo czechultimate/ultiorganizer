@@ -23,6 +23,7 @@ if (!empty($player['profile_id'])) {
   $profile = PlayerProfile($playerId);
 }
 
+
 $curseason = CurrentSeason();
 
 if ($player['num']) {
@@ -36,7 +37,7 @@ if ($player['num']) {
 } else {
   $html .= "<h1>" . utf8entities($profile['firstname'] . " " . $profile['lastname']) . "</h1>";
 }
-$html .= "<p>" . _("Team") . ": <a class='headerlink' href='?view=teamcard&amp;team=" . $player['team'] . "'>" . utf8entities($player['teamname']) . "</a></p>";
+//$html .= "<p>" . _("Team") . ": <a class='headerlink' href='?view=teamcard&amp;team=" . $player['team'] . "'>" . utf8entities($player['teamname']) . "</a></p>";
 
 if ($profile) {
   $publicfields = explode("|", $profile['public']);
@@ -386,7 +387,6 @@ if (ShowDefenseStats()) {
 
 
       foreach ($playedSeasons as $season) {
-
         if ($season['season'] != $prevseason) {
           $seasoncounter++;
           $prevseason = $season['season'];
@@ -424,8 +424,8 @@ if (ShowDefenseStats()) {
           $html_tmp .= "<tr>";
         }
         $html_tmp .= "<td>" . utf8entities(U_($season['seasonname'])) . "</td>
-						<td>" . utf8entities(U_($season['seriesname'])) . "</td>
-						<td>" . utf8entities(U_($season['teamname'])) . "</td>
+						<td><a href='?view=seriesstatus&series=" . $season['series'] . "'>" . utf8entities(U_($season['seriesname'])) . "</a></td>
+						<td><a href='?view=teamcard&team=" . $season['team']. "'>". utf8entities(U_($season['teamname'])) . "</a></td>
 						<td>" . $pp['games'] . "</td>
 						<td>" . $pp['passes'] . "</td>
 						<td>" . $pp['goals'] . "</td>
@@ -531,7 +531,6 @@ $html .= "<p></p>\n";
 //Current season stats
 
 $games = PlayerSeasonGames($playerId, $curseason);
-
 if (count($games)) {
   $html .= "<h2>" . utf8entities(CurrentSeasonName()) . " " . _("game events") . ":</h2>\n";
 

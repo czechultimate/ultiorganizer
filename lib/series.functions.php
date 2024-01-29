@@ -395,7 +395,7 @@ function SeriesDefenseBoard($seriesId, $sorting, $limit)
 function SeriesSpiritBoard($seriesId)
 {
   $query = sprintf(
-    "SELECT st.team_id, te.name, st.category_id, st.value, pool.series
+    "SELECT st.team_id, te.name, te.club, st.category_id, st.value, pool.series
       FROM uo_team AS te
       LEFT JOIN uo_spirit_score AS st ON (te.team_id=st.team_id)
       LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
@@ -432,7 +432,7 @@ function SeriesSpiritBoard($seriesId)
           $averages[$last_team] = $teamline;
           $total = 0;
         }
-        $teamline = array('teamname' => $row['name']);
+        $teamline = array('teamname' => $row['name'], 'team_id' => $row['team_id'], 'club' => $row['club']);
       }
 
       $sum = 0;

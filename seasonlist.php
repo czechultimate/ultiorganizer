@@ -26,6 +26,7 @@ while ($season = mysqli_fetch_assoc($seasons)) {
 
   $html .= "<div><a href='?view=teams&amp;season=" . $season['season_id'] . "'>" . _("Teams") . "</a><br/>";
   $html .= "<a href='?view=games&amp;season=" . $season['season_id'] . "'>" . _("Played games") . "</a><br/>";
+  $html .= "<a href='?view=clubspirit&amp;season=" . $season['season_id'] . "'>" . _("Club spirit") . "</a><br/>";
   $html .= "<a href='?view=teams&amp;season=" . $season['season_id'] . "&amp;list=bystandings'>" . _("Final standings") . "</a></div>";
   $series = SeasonSeries($season['season_id'], true);
 
