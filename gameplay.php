@@ -47,7 +47,7 @@ if (GameHasStarted($game_result) > 0) {
 
     $html .= "<table width='100%' cellspacing='0' cellpadding='0' border='0'>\n";
     $html .= "<tr style='height=20'><td align='center'><b>";
-    $html .= utf8entities($game_result['hometeamname']) . "</b></td></tr>\n";
+    $html .= "<a href=?view=teamcard&amp;team=" . $game_result['hometeam'] . ">" . utf8entities($game_result['hometeamname']) . "</a></b></td></tr>\n";
     $html .= "</table><table width='100%' cellspacing='0' cellpadding='3' border='0'>";
     $html .= "<tr><th class='home'>#</th><th class='home'>" . _("Name");
 
@@ -79,7 +79,7 @@ if (GameHasStarted($game_result) > 0) {
 
     $html .= "<table width='100%' cellspacing='0' cellpadding='0' border='0'>";
     $html .= "<tr><td><b>";
-    $html .= utf8entities($game_result['visitorteamname']) . "</b></td></tr>\n";
+    $html .= "<a href=?view=teamcard&amp;team=" . $game_result['visitorteam'] . ">" . utf8entities($game_result['visitorteamname']) . "</a></b></td></tr>\n";
     $html .= "</table><table width='100%' cellspacing='0' cellpadding='3' border='0'>";
     $html .= "<tr><th class='guest'>#</th><th class='guest'>" . _("Name");
     if($poolinfo["stats"] == 1){

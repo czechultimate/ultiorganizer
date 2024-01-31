@@ -60,7 +60,7 @@ function TeamInfo($teamId)
 {
   $query = sprintf(
     "SELECT team.name, team.club, club.name AS clubname, team.pool, pool.name AS poolname, ser.name AS seriesname,
-		team.series, ser.type, ser.season, s.name AS seasonname, team.abbreviation, team.country, c.name AS countryname, c.flagfile
+		team.series, ser.type, ser.season, ser.stats, s.name AS seasonname, team.abbreviation, team.country, c.name AS countryname, c.flagfile
 		FROM uo_team team 
 		LEFT JOIN uo_pool pool ON (team.pool=pool.pool_id) 
 		LEFT JOIN uo_series ser ON (ser.series_id=team.series)

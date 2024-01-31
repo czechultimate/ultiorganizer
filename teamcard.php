@@ -153,10 +153,13 @@ if (ShowDefenseStats()) {
 
     $html .= "<table style='width:80%'>\n";
     $html .= "<tr><th style='width:40%'>" . _("Name") . "</th>
-		<th class='center' style='width:15%'>" . _("Games") . "</th>
-		<th class='center' style='width:15%'>" . _("Passes") . "</th>
-		<th class='center' style='width:15%'>" . _("Goals") . "</th>
-		<th class='center' style='width:15%'>" . _("Tot.") . "</th></tr>\n";
+		<th class='center' style='width:15%'>" . _("Games") . "</th>";
+
+    if($teaminfo['stats'] == 1){
+      $html .= "<th class='center' style='width:15%'>" . _("Passes") . "</th>
+      <th class='center' style='width:15%'>" . _("Goals") . "</th>
+      <th class='center' style='width:15%'>" . _("Tot.") . "</th></tr>\n";
+    }
 
 
     while ($player = mysqli_fetch_assoc($players)) {
@@ -182,14 +185,17 @@ if (ShowDefenseStats()) {
       }
       $html .= "</td>";
       $html .= "<td class='center'>" . $player['games'] . "</td>";
-      $html .= "<td class='center'>" . $player['fedin'] . "</td>";
-      $html .= "<td class='center'>" . $player['done'] . "</td>";
-      $html .= "<td class='center'>" . $player['total'] . "</td></tr>\n";
+      if($teaminfo['stats'] == 1){
+        $html .= "<td class='center'>" . $player['fedin'] . "</td>";
+        $html .= "<td class='center'>" . $player['done'] . "</td>";
+        $html .= "<td class='center'>" . $player['total'] . "</td></tr>\n";
+      }
     }
     $html .= "</table>\n";
   }
 }
 $allgames = TimetableGames($teamId, "team", "all", "time");
+
 if ($allgames) {
   $html .= "<h2>" . U_(SeasonName($teaminfo['season'])) . ":</h2>\n";
   $html .=  "<p>" . _("Event") . ": <a href='?view=poolstatus&amp;series=" . $teaminfo['series'] . "'>" . utf8entities(U_($teaminfo['seriesname'])) . "</a></p>";
