@@ -153,13 +153,13 @@ if ($list == "allteams" || $list == "byseeding") {
         $html .= "&nbsp;&nbsp;";
 
         if ($pool['type'] == 2) {
-          $html .= "<a href='?view=scorestatus&amp;team=" . $team['team_id'] . "&amp;pools=" . $playoffpools . "'>" . _("Pool") . "</a>";
+          $html .= "<a href='?view=poolstatus&pool=" . $pool['pool_id'] . "'>" . _("Pool") . "</a>";
         } else {
-          $html .= "<a href='?view=scorestatus&amp;team=" . $team['team_id'] . "&amp;pool=" . $pool['pool_id'] . "'>" . _("Pool") . "</a>";
+          $html .= "<a href='?view=poolstatus&pool=" . $pool['pool_id'] . "'>" . _("Pool") . "</a>";
         }
         $html .= "&nbsp;&nbsp;";
 
-        $html .= "<a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Division") . "</a></td>";
+        $html .= "<a href='?view=seriesstatus&series=" . $row['series_id'] . "'>" . _("Tournament") . "</a></td>";
         $html .= "</tr>\n";
       }
       $html .= "</table>\n";
@@ -264,7 +264,7 @@ if ($list == "allteams" || $list == "byseeding") {
 
 
       foreach ($spiritAvg as $teamAvg) {
-        $html .= "<td>" . utf8entities($teamAvg['teamname']) . "</td>";
+        $html .= "<td><a href='?view=teamcard&team=" . $teamAvg['team_id'] . "'>" . utf8entities($teamAvg['teamname']) . "</a></td>";
         $html .= "<td>" . $teamAvg['games'] . "</td>";
         foreach ($categories as $cat) {
           if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])) {

@@ -595,6 +595,10 @@ foreach($allgames as $game){
 }
 
 if ($spiritfrom) {
+  $spirtFromAvg = array( 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0);
+  $iterator = 1;
+  $totalTeam = 0;
+  $totalRec = 0;
   $html .= "<h2>" . _("Spirit points received") . "</h2>";
   
   $html .= "<table border='1' cellspacing='2' width='100%'><tr>";
@@ -606,8 +610,9 @@ if ($spiritfrom) {
   <th class='center' style='width:7%'>" . _("Comm.") . "</th>
   <th class='center' style='width:7%'>" . _("Total") . "</th>
   <th style='width:40%'>" . _("Comments") . "</th></tr>\n";
-
+  
   foreach($spiritfrom as $spfrom){
+    $totalTeam++;
     $total = 0;
     $comment = "";
     $html .= "<tr>";
@@ -618,19 +623,41 @@ if ($spiritfrom) {
         $flag = false;
       }
       if($key != $spnoteID){
+        $spirtFromAvg[$iterator] += $sp;
        $html .= "<td class='center'>" . $sp . "</td>";
        $total += $sp;
+       $iterator++;
+       if($iterator == 6){
+        $iterator = 1;
+       }
       } else {
         $comment = $sp;
       }
       
     }
     if($total > 0){
+      $totalRec += $total;
       $html .= "<td class='center'>" . $total . "</td>";
       $html .= "<td class='center'>" . $comment . "</td>";
     }
     $html .= "</tr>";
   }
+
+
+  $html .= "<tr>";
+  $html .= "<td><b>Average received</b></td>";
+  foreach($spirtFromAvg as $spirit){
+    $html .= "<td class='center'><b>" . number_format(SafeDivide($spirit, $totalTeam),2) . "</b></td>";
+  }
+  $html .= "<td class='center'><b>" . number_format(SafeDivide($totalRec, $totalTeam),2) . "</b></td>";
+  $html .= "<td class='center'></td>";
+  $html .= "</tr>";
+
+  $html .= "<tr>";
+  $html .= "<td colspan='6' ><b>Total spirit points received</b></td>";
+  $html .= "<td class='center'><b>" . $totalRec . "</b></td>";
+  $html .= "<td class='center'></td>";
+  $html .= "</tr>";
  // $curSeason = Currentseason();
 
   /*foreach ($played as $row) {
@@ -659,6 +686,10 @@ if ($spiritfrom) {
 }
 
 if ($spiritto) {
+  $totalGiven = 0;
+  $spirtGivenAvg = array( 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0);
+  $iterator = 1;
+  $totalTeam = 0;
   $html .= "<h2>" . _("Spirit points given to the other teams:") . "</h2>";
 
   $html .= "<table border='1' cellspacing='2' width='100%'><tr>";
@@ -672,6 +703,7 @@ if ($spiritto) {
   <th style='width:40%'>" . _("Comments") . "</th></tr>\n";
 
   foreach($spiritto as $spto){
+    $totalTeam++;
     $total = 0;
     $comment = "";
     $html .= "<tr>";
@@ -682,19 +714,40 @@ if ($spiritto) {
         $flag = false;
       }
       if($key != $spnoteID){
-       $html .= "<td class='center'>" . $sp . "</td>";
-       $total += $sp;
-      } else {
-        $comment = $sp;
-      }
+        $spirtGivenAvg[$iterator] += $sp;
+        $html .= "<td class='center'>" . $sp . "</td>";
+        $total += $sp;
+        $iterator++;
+        if($iterator == 6){
+         $iterator = 1;
+        }
+       } else {
+         $comment = $sp;
+       }
       
     }
     if($total > 0){
+      $totalGiven += $total;
       $html .= "<td class='center'>" . $total . "</td>";
       $html .= "<td class='center'>" . $comment . "</td>";
     }
     $html .= "</tr>";
   }
+
+  $html .= "<tr>";
+  $html .= "<td><b>Average given</b></td>";
+  foreach($spirtGivenAvg as $spirit){
+    $html .= "<td class='center'><b>" . number_format(SafeDivide($spirit, $totalTeam),2) . "</b></td>";
+  }
+  $html .= "<td class='center'><b>" . number_format(SafeDivide($totalGiven, $totalTeam),2) . "</b></td>";
+  $html .= "<td class='center'></td>";
+  $html .= "</tr>";
+
+  $html .= "<tr>";
+  $html .= "<td colspan='6' ><b>Total spirit points given to the other teams</b></td>";
+  $html .= "<td class='center'><b>" . $totalGiven . "</b></td>";
+  $html .= "<td class='center'></td>";
+  $html .= "</tr>";
  // $curSeason = Currentseason();
 
   /*foreach ($played as $row) {

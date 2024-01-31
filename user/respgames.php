@@ -162,7 +162,7 @@ foreach ($respGameArray as $reservationgroup => $resArray) {
   }
 
   foreach ($resArray as $resId => $gameArray) {
-    $html .= "<table cellpadding='2' border='0' style='width:100%'>";
+    $html .= "<table cellpadding='2' border='0' style='width:100%' id='multicoloured'>";
     $html .= "<tr><th class='left' colspan='8'>";
     $html .= DefWeekDateFormat($gameArray['starttime']) . " ";
     if ($resId)

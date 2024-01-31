@@ -297,3 +297,6 @@ yuicalendar.table {
     background-color: #DAF0F7;
 }
 
+.tdcontent table#multicoloured  tr:hover td {
+    background-color: #FDFD97 !important;
+}
