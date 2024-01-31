@@ -262,7 +262,7 @@ function GamePlayers($gameId, $teamId)
 		(int)$gameId,
 		(int)$teamId
 	);
-
+	print_r(DBQueryToArray($query));
 	return DBQueryToArray($query);
 }
 

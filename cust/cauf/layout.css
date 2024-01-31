@@ -286,17 +286,14 @@ yuicalendar.table {
 }
 
 .tdcontent table#clubspirit  tr:nth-child(even) td {
-    background-color: #ACD1E9;
+    background-color: #DAF0F7;
 }
-
-/*.tdcontent table#clubspirit  td:nth-child(even) {
-    background-color: #eef;
-}
-
-.tdcontent table#clubspirit  tr:nth-child(even) td:nth-child(even) {
-    background-color: #bbe;
-}*/
 
 .tdcontent table#clubspirit  tr:hover td {
-    background-color: #FFA9A9 !important;
+    background-color: #FDFD97 !important;
 }
+
+.tdcontent table#multicoloured  tr:nth-child(even) td {
+    background-color: #DAF0F7;
+}
+

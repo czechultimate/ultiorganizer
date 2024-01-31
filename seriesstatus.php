@@ -278,7 +278,7 @@ $html .= "<a href='?view=poolstatus&amp;series=" . $seriesinfo['series_id'] . "'
 
 if($seriesinfo["stats"] == 1){
   $html .= "<h2>" . _("Scoreboard leaders") . "</h2>\n";
-  $html .= "<table cellspacing='0' border='0' width='100%'>\n";
+  $html .= "<table cellspacing='0' border='0' width='100%' id='multicoloured'>\n";
   $html .= "<tr><th style='width:200px'>" . _("Player") . "</th><th style='width:200px'>" . _("Team") . "</th><th class='center'>" . _("Games") . "</th>
   <th class='center'>" . _("Assists") . "</th><th class='center'>" . _("Goals") . "</th><th class='center'>" . _("Tot.") . "</th></tr>\n";
 
@@ -339,7 +339,7 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
   $html .= "<a name='spiritboard'></a>";
   $html .= "<h2>" . _("Spirit points average per category") . "</h2>\n";
 
-  $html .= "<table cellspacing='0' border='0' width='100%'>\n";
+  $html .= "<table cellspacing='0' border='0' width='100%' id='multicoloured'>\n";
   //$html .= "<tr><th style='width:150px'>" . _("Team") . "</th>";
 	if ($spsort == "teamname") {
 	  $html .= "<th style='width:150px'>" . _("Team") . "</th>";

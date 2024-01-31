@@ -206,7 +206,6 @@ if ($team == 'H') {
 $html .= "<label for='pass' class='select'>" . _("Assist") . "</label>";
 $html .= "<select id='pass' name='pass' >";
 $html .= "<option value='0' selected='selected'>-</option>";
-
 foreach ($played_players as $player) {
 
   $selected = "";
@@ -305,6 +304,11 @@ echo $html;
                   echo "\"";
                   echo "<option value='0'>-</option>";
                   $played_players = GamePlayers($gameId, $game_result['hometeam']);
+
+                  usort($played_players, function ($a, $b) {
+                    return $a['num'] > $b['num'];
+                  });
+
                   foreach ($played_players as $player) {
                     echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " . $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
                   }
@@ -315,6 +319,11 @@ echo $html;
   var awaylist = <?php
                   echo "\"";
                   $played_players = GamePlayers($gameId, $game_result['visitorteam']);
+
+                  usort($played_players, function ($a, $b) {
+                    return $a['num'] > $b['num'];
+                  });
+                  
                   echo "<option value='0'>-</option>";
                   foreach ($played_players as $player) {
                     echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " .  $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
