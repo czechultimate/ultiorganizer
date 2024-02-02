@@ -262,7 +262,6 @@ function GamePlayers($gameId, $teamId)
 		(int)$gameId,
 		(int)$teamId
 	);
-	print_r(DBQueryToArray($query));
 	return DBQueryToArray($query);
 }
 
@@ -464,6 +463,21 @@ function GameEvents($gameId)
 	);
 
 	return DBQueryToArray($query);
+}
+
+function GameLastEvent($gameId)
+{
+	$query = sprintf(
+		"SELECT time,ishome,type 
+		FROM (SELECT time,ishome,'timeout' AS type FROM `uo_timeout` 
+			WHERE game='%s' UNION ALL SELECT time,ishome,type FROM uo_gameevent WHERE game='%s') AS tapahtuma 
+		WHERE type!='media'
+		ORDER BY time DESC",
+		DBEscapeString($gameId),
+		DBEscapeString($gameId)
+	);
+
+	return DBQueryToRow($query);
 }
 
 function GameMediaEvents($gameId)

@@ -184,7 +184,7 @@ if (GameHasStarted($game_result) > 0) {
     
     //zacatek asi tady
     if($poolinfo["stats"] == 1){
-    $html .= "<table border='1' cellpadding='2' width='100%'>\n";
+	$html .= "<table border='1' cellpadding='2' width='100%' id='matchstats'>\n";
     $html .= "<tr><th>" . _("Scores") . "</th><th>" . _("Assist") . "</th><th>" . _("Goal") . "</th><th>" . _("Time") . "</th><th>" . _("Dur.") . "</th>";
     if (count($gameevents) || count($mediaevents)) {
       $html .= "<th>" . _("Game events ") . "</th>";
@@ -550,24 +550,24 @@ if (GameHasStarted($game_result) > 0) {
         $html .= _($cat['text']);
         $html .= ":</td>";
         $html .= "<td class='home'>";
-        if (isset($homepoints[$id]) && !is_null($homepoints[$id])) {
-		  if (is_numeric($homepoints[$id])){
-			  $html .= intval($homepoints[$id]);
-		  } else {
-			  $html .= $homepoints[$id];
-		  }
+        if (isset($homepoints[$id]) && !is_null($homepoints[$id]) && isset($visitorpoints[$id]) && !is_null($visitorpoints[$id])) {
+          if (is_numeric($homepoints[$id])){
+            $html .= intval($homepoints[$id]);
+          } else {
+            $html .= $homepoints[$id];
+          }
         } else {
           $html .= "-";
         }
 
         $html .= "</td>";
         $html .= "<td class='guest'>";
-        if (isset($visitorpoints[$id]) && !is_null($visitorpoints[$id])) {
-		  if (is_numeric($visitorpoints[$id])){
-			$html .= intval($visitorpoints[$id]);
-		  } else {
-			$html .= $visitorpoints[$id];
-		  }
+        if (isset($homepoints[$id]) && !is_null($homepoints[$id]) && isset($visitorpoints[$id]) && !is_null($visitorpoints[$id])) {
+          if (is_numeric($visitorpoints[$id])){
+          $html .= intval($visitorpoints[$id]);
+          } else {
+          $html .= $visitorpoints[$id];
+          }
           
         } else {
           $html .= "-";
@@ -710,3 +710,89 @@ if (GameHasStarted($game_result) > 0) {
   $html .= "</p>";
 }
 showPage($title, $html);
+
+?>
+
+<script>
+  const gameId = <?php echo $gameId; ?>;
+  const ongoing = <?php echo $game_result['isongoing']; ?>;
+if(ongoing == 1){
+  const eventSource = new EventSource(`sse.php?game=${gameId}`);
+
+  eventSource.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      if (data.action === "init") {
+          // Inicializace klienta na základě aktuálního stavu
+          console.log('Received message:', event.data);
+      } else if (data.action === "update") {
+        addNewRow(data);
+          // Zavolej metodu PrintNewTable() nebo provedi další akce na základě aktualizace
+          console.log('Received message:', event.data);
+          //PrintNewTable();
+      } else {
+        console.log('Received message:', event.data);
+      }
+  };
+}
+
+function addNewRow(data) {
+        // Zde můžeš zpracovat jednotlivé klíče
+        const action = data.action;
+        const gameId = data.gameId;
+        const num = data.num;
+        const gameevent = data.gameevent;
+        const time = data.time;
+        const home = data.home;
+        const homescore = data.homescore;
+        const visitorscore = data.visitorscore;
+        const assistFirstName = data.assistfirstname;
+        const assistLastName = data.assistlastname;
+        const scorerFirstName = data.scorerfirstname;
+        const scorerLastName = data.scorerlastname;
+        const timeout = data.timeout;
+
+        
+
+        var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+        var newRow = table.insertRow(table.rows.length - 1); // Inserts before the last row (dashed border row)
+
+        var prePreLastRow = table.rows[table.rows.length - 3];
+
+        // Získání hodnoty z buňky cell5
+        var prevTime = prePreLastRow.cells[3].innerHTML;
+
+        // You can customize the content of the new row here
+        var cell1 = newRow.insertCell(0);
+        var scoreClass = (home == 1) ? "home" : "guest";
+        cell1.innerHTML = homescore + " - " + visitorscore;
+        cell1.setAttribute("style", "width:45px;white-space: nowrap");
+        cell1.setAttribute("class", scoreClass);
+
+        var cell2 = newRow.insertCell(1);
+        cell2.innerHTML = assistFirstName + " " + assistLastName ;
+
+        var cell3 = newRow.insertCell(2);
+        cell3.innerHTML = scorerFirstName + " " + scorerLastName ;
+
+        var cell4 = newRow.insertCell(3);
+        cell4.innerHTML = time;
+
+
+        var cell5 = newRow.insertCell(4);
+        if(num == 0){
+          cell5.innerHTML = time;
+        }else {
+          cell5.innerHTML = (time - prevTime).toFixed(2);
+        }
+
+        if(gameevent == 1){
+          var cell6 = newRow.insertCell(5);
+          if(timeout == 1){
+            var timeoutClass = (data.timeouthome == 1) ? "home" : "guest";
+            cell6.setAttribute("class", timeoutClass);
+            cell6.innerHTML = "Time-out " + data.timeouttime;
+          }
+        }
+
+    }
+</script>

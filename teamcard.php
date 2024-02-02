@@ -5,6 +5,7 @@ include_once 'lib/common.functions.php';
 include_once 'lib/season.functions.php';
 include_once 'lib/statistical.functions.php';
 include_once 'lib/timetable.functions.php';
+include_once 'sse.php';
 
 $html = "";
 
@@ -585,17 +586,25 @@ foreach($allgames as $game){
   if($teamId == $game['hometeam']){
     $tmpa1 = array('team' => $game['visitorteamname'],'teamid' => $game['visitorteam']);
     $tmpa1['spirit'] = GameGetSpiritPoints($game['game_id'], $game['hometeam']);
-    $spiritfrom[$game['game_id']] = $tmpa1;
+
     $tmpa2 = array('team' => $game['visitorteamname'], 'teamid' => $game['visitorteam']);
     $tmpa2['spirit'] = GameGetSpiritPoints($game['game_id'], $game['visitorteam']);
-    $spiritto[$game['game_id']] = $tmpa2;
+
+    if(!empty($tmpa1['spirit']) && !empty($tmpa2['spirit'])){
+      $spiritfrom[$game['game_id']] = $tmpa1;
+      $spiritto[$game['game_id']] = $tmpa2;
+    }
   } else {
     $tmpa1 = array('team' => $game['hometeamname'], 'teamid' => $game['hometeam']);
     $tmpa1['spirit'] = GameGetSpiritPoints($game['game_id'], $game['hometeam']);
-    $spiritto[$game['game_id']] = $tmpa1;
+
     $tmpa2 = array('team' => $game['hometeamname'], 'teamid' => $game['hometeam']);
     $tmpa2['spirit'] = GameGetSpiritPoints($game['game_id'], $game['visitorteam']);
-    $spiritfrom[$game['game_id']] = $tmpa2;
+
+    if(!empty($tmpa1['spirit']) && !empty($tmpa2['spirit'])){
+      $spiritfrom[$game['game_id']] = $tmpa1;
+      $spiritto[$game['game_id']] = $tmpa2;
+    }
   }
 
 }
