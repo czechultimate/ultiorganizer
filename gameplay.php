@@ -186,9 +186,9 @@ if (GameHasStarted($game_result) > 0) {
     if($poolinfo["stats"] == 1){
 	$html .= "<table border='1' cellpadding='2' width='100%' id='matchstats'>\n";
     $html .= "<tr><th>" . _("Scores") . "</th><th>" . _("Assist") . "</th><th>" . _("Goal") . "</th><th>" . _("Time") . "</th><th>" . _("Dur.") . "</th>";
-    if (count($gameevents) || count($mediaevents)) {
-      $html .= "<th>" . _("Game events ") . "</th>";
-    }
+   // if (count($gameevents) || count($mediaevents)) {
+    $html .= "<th>" . _("Game events ") . "</th>";
+   // }
     $html .= "</tr>\n";
 
     $bHt = false;
@@ -221,7 +221,7 @@ if (GameHasStarted($game_result) > 0) {
 
       $html .= "<td>" . SecToMin($duration) . "</td>";
 
-      if (count($gameevents) || count($mediaevents)) {
+      //if (count($gameevents) || count($mediaevents)) {
         $html .= "<td>";
         //gameevents
         foreach ($gameevents as $event) {
@@ -261,7 +261,7 @@ if (GameHasStarted($game_result) > 0) {
           $html .= "<div class='mediaevent'>" . $tmphtml . "</div>\n";
         }
         $html .= "</td>";
-      }
+     // }
       $html .= "</tr>";
       $prevgoal = intval($goal['time']);
     }
@@ -722,13 +722,19 @@ if(ongoing == 1){
   eventSource.onmessage = function(event) {
       const data = JSON.parse(event.data);
       if (data.action === "init") {
-          // Inicializace klienta na základě aktuálního stavu
           console.log('Received message:', event.data);
       } else if (data.action === "update") {
         addNewRow(data);
-          // Zavolej metodu PrintNewTable() nebo provedi další akce na základě aktualizace
-          console.log('Received message:', event.data);
-          //PrintNewTable();
+        console.log('Received message:', event.data);
+      }  else if (data.action === "timeout") {
+        addTimeOut(data);
+        console.log('Received message:', event.data);
+      }  else if (data.action === "halftime"){
+        addHalftime(data);
+        console.log('Received message:', event.data);
+      } else if (data.action === "close"){
+        eventSource.close();
+        console.log('Received message:', event.data);
       } else {
         console.log('Received message:', event.data);
       }
@@ -736,11 +742,9 @@ if(ongoing == 1){
 }
 
 function addNewRow(data) {
-        // Zde můžeš zpracovat jednotlivé klíče
         const action = data.action;
         const gameId = data.gameId;
         const num = data.num;
-        const gameevent = data.gameevent;
         const time = data.time;
         const home = data.home;
         const homescore = data.homescore;
@@ -749,19 +753,16 @@ function addNewRow(data) {
         const assistLastName = data.assistlastname;
         const scorerFirstName = data.scorerfirstname;
         const scorerLastName = data.scorerlastname;
-        const timeout = data.timeout;
 
         
 
         var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
-        var newRow = table.insertRow(table.rows.length - 1); // Inserts before the last row (dashed border row)
+        var newRow = table.insertRow(table.rows.length - 1);
 
         var prePreLastRow = table.rows[table.rows.length - 3];
 
-        // Získání hodnoty z buňky cell5
         var prevTime = prePreLastRow.cells[3].innerHTML;
 
-        // You can customize the content of the new row here
         var cell1 = newRow.insertCell(0);
         var scoreClass = (home == 1) ? "home" : "guest";
         cell1.innerHTML = homescore + " - " + visitorscore;
@@ -785,14 +786,50 @@ function addNewRow(data) {
           cell5.innerHTML = (time - prevTime).toFixed(2);
         }
 
-        if(gameevent == 1){
-          var cell6 = newRow.insertCell(5);
-          if(timeout == 1){
-            var timeoutClass = (data.timeouthome == 1) ? "home" : "guest";
-            cell6.setAttribute("class", timeoutClass);
-            cell6.innerHTML = "Time-out " + data.timeouttime;
-          }
+        var cell6 = newRow.insertCell(5);
+    }
+
+function addTimeOut(data){
+    var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+    var j = 1;
+      for(var i = 1; i < table.rows.length; i++){
+
+        if(i > 1){
+          j = i-1;
         }
 
+        if(table.rows[i].cells[0].getAttribute("class") == "halftime"){
+          continue;
+        } else if(table.rows[j].cells[0].getAttribute("class") == "halftime"){
+          j = j-1;
+        }
+
+        if((parseFloat(table.rows[i].cells[3].innerHTML) > parseFloat(data.timeouttime) && parseFloat(table.rows[j].cells[3].innerHTML) < parseFloat(data.timeouttime)) || table.rows.length==3){
+          var timeoutClass = (data.timeouthome == 1) ? "home" : "guest";
+
+          var divElement = document.createElement("div");
+
+          divElement.setAttribute("class", timeoutClass);
+
+          divElement.innerHTML = "Time-out " + data.timeouttime;
+          table.rows[i].cells[5].appendChild(divElement);
+          console.log('Received message:');
+          break;
+        }
+      }
     }
+
+    function addHalftime(data){
+      var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+      for(var i = 1; i < table.rows.length; i++){
+        if((parseFloat(table.rows[i].cells[3].innerHTML) > parseFloat(data.halftime) && parseFloat(table.rows[i-1].cells[3].innerHTML) < parseFloat(data.halftime))){
+          var newRow = table.insertRow(i);
+          var cell1 = newRow.insertCell(0);
+          cell1.innerHTML = "Half-time";
+          cell1.setAttribute("colspan", 6);
+          cell1.setAttribute("class", "halftime");
+          break;
+        }
+      }
+}
 </script>

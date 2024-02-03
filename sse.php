@@ -1,10 +1,5 @@
 <?php
 
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 include_once 'lib/database.php';
 OpenConnection();
 global $include_prefix;
@@ -15,7 +10,9 @@ header('Cache-Control: no-cache');
 
 $lastNum = -1;
 $prevPoint = -1;
-
+$actualPoint = -1;
+$timeoutFlag = 0;
+$halftimeFlag = 0;
 
 function sendSSE($data) {
     echo "data: " . json_encode($data) . "\n\n";
@@ -26,54 +23,67 @@ function sendSSE($data) {
 function checkForUpdates($gameId) {
     global $lastNum;
     global $prevPoint;
-    $lastscore = GameLastGoal($gameId);
-    $gameevents = GameEvents($gameId);
-    $lastevent = GameLastEvent($gameId);
-    $gameevent = 0;
-    if(count($gameevents)){
-       $gameevent = 1;
+    global $actualPoint;
+    global $timeoutFlag;
+    global $halftimeFlag; 
+    $lastscores = GameLastGoals($gameId, $lastNum);
+    $lastevents = GameAllTimeouts($gameId);
+    $gameinfo = GameInfoLight($gameId);
 
-    }
-
-    if($lastscore['num'] > $lastNum){
-        $lastNum = $lastscore['num'];  
-        
-        
-        if($lastscore['iscallahan'] == 1){
-            if($lastevent["type"] == "timeout" && ($lastevent['time'] > $prevPoint)){
-                sendSSE(["action" => "update", "gameId" => $gameId, "gameevent" => $gameevent, "num" => $lastscore['num'], "time" => SecToMin($lastscore['time']),  "home" => $lastscore['ishomegoal'], "homescore" => $lastscore['homescore'], "visitorscore" => $lastscore['visitorscore'], "assistfirstname" => "Callahan", "assistlastname" => "- goal", "scorerfirstname" => $lastscore['scorerfirstname'], "scorerlastname" => $lastscore['scorerlastname'], "timeout" => 1, "timeouttime" => SecToMin($lastevent["time"]), "timeouthome" => $lastevent["ishome"]]);
-            }else{
-                sendSSE(["action" => "update", "gameId" => $gameId, "gameevent" => $gameevent, "num" => $lastscore['num'], "time" => SecToMin($lastscore['time']),  "home" => $lastscore['ishomegoal'], "homescore" => $lastscore['homescore'], "visitorscore" => $lastscore['visitorscore'], "assistfirstname" => "Callahan", "assistlastname" => "- goal", "scorerfirstname" => $lastscore['scorerfirstname'], "scorerlastname" => $lastscore['scorerlastname'], "timeout" => 0]);
-            }
-        } else {
-            if($lastevent["type"] == "timeout" && ($lastevent["time"] > $prevPoint)){
-                sendSSE(["action" => "update", "gameId" => $gameId, "gameevent" => $gameevent, "num" => $lastscore['num'], "time" => SecToMin($lastscore['time']), "home" => $lastscore['ishomegoal'], "homescore" => $lastscore['homescore'], "visitorscore" => $lastscore['visitorscore'], "assistfirstname" => $lastscore['assistfirstname'], "assistlastname" => $lastscore['assistlastname'], "scorerfirstname" => $lastscore['scorerfirstname'], "scorerlastname" => $lastscore['scorerlastname'], "timeout" => 1, "timeouttime" => SecToMin($lastevent["time"]), "timeouthome" => $lastevent["ishome"]]);
-            } else {
-                sendSSE(["action" => "update", "gameId" => $gameId, "gameevent" => $gameevent, "num" => $lastscore['num'], "time" => SecToMin($lastscore['time']), "home" => $lastscore['ishomegoal'], "homescore" => $lastscore['homescore'], "visitorscore" => $lastscore['visitorscore'], "assistfirstname" => $lastscore['assistfirstname'], "assistlastname" => $lastscore['assistlastname'], "scorerfirstname" => $lastscore['scorerfirstname'], "scorerlastname" => $lastscore['scorerlastname'], "timeout" => 0]);
+    if($timeoutFlag == 1){
+        foreach($lastevents as $lastevent){
+            if ($lastevent['time'] > $prevPoint && $lastevent['time'] < $actualPoint){
+                sendSSE(["action" => "timeout", "gameId" => $gameId, "timeouttime" => SecToMin($lastevent["time"]), "timeouthome" => $lastevent["ishome"]]);
             }
         }
-        $prevPoint = $lastscore['time'];
-    } else {
-        sendSSE(["action" => "hearthbeat", "gameId" => $gameId]); 
+    $timeoutFlag = 0;
     }
-    // Zde by měl být tvůj kód pro kontrolu změn v databázi
-    // Například, dotaz na tabulku uo_goal pro daný gameid
-    // Pokud je nový bod, odešli zprávu klientovi
-    // Zde je jen příklad pro ilustraci:
-   // tvůj kód pro kontrolu nových bodů
+
+    if(!is_null($gameinfo['halftime']) && $halftimeFlag == 0){
+        if($gameinfo['halftime'] > $prevPoint && $gameinfo['halftime'] < $actualPoint){
+            sendSSE(["action" => "halftime", "halftime" => SecToMin($gameinfo['halftime'])]);
+            $halftimeFlag = 1;
+        }
+    }
+
+    if(!empty($lastscores)){
+        foreach($lastscores as $lastscore){
+            $lastNum = $lastscore['num'];  
+            
+            if($lastscore['iscallahan'] == 1){
+                    sendSSE(["action" => "update", "gameId" => $gameId, "num" => $lastscore['num'], "time" => SecToMin($lastscore['time']),  "home" => $lastscore['ishomegoal'], "homescore" => $lastscore['homescore'], "visitorscore" => $lastscore['visitorscore'], "assistfirstname" => "Callahan", "assistlastname" => "- goal", "scorerfirstname" => $lastscore['scorerfirstname'], "scorerlastname" => $lastscore['scorerlastname']]);
+            } else {
+                    sendSSE(["action" => "update", "gameId" => $gameId, "num" => $lastscore['num'], "time" => SecToMin($lastscore['time']), "home" => $lastscore['ishomegoal'], "homescore" => $lastscore['homescore'], "visitorscore" => $lastscore['visitorscore'], "assistfirstname" => $lastscore['assistfirstname'], "assistlastname" => $lastscore['assistlastname'], "scorerfirstname" => $lastscore['scorerfirstname'], "scorerlastname" => $lastscore['scorerlastname']]);
+            }
+            $prevPoint = $actualPoint;
+            $actualPoint = $lastscore['time'];
+            $timeoutFlag = 1;
+    }
+    }/* else {
+        sendSSE(["action" => "hearthbeat", "gameId" => $gameId]); 
+    }*/
+
+    return $gameinfo["isongoing"];
 }
 
-// Přijmi gameid od klienta
 $gameId = $_GET['game'];
 $lastscore = GameLastGoal($gameId);
-$lastNum = $lastscore['num'];  
-$prevPoint = $lastscore['time'];
-// Při připojení odešli aktuální stav
+$halftime = GameInfoLight($gameId);
+if(!is_null($halftime["halftime"])){
+    $halftimeFlag = 1;
+}
+
+if (!is_null($lastscore['num'])){
+    $lastNum = $lastscore['num'];  
+    $actualPoint = $lastscore['time'];
+}
+
 sendSSE(["action" => "init", "gameId" => $gameId]);
 
-// Kontrola změn každých 30 sekund
-while (true) {
-    checkForUpdates($gameId);
-    sleep(10); // Přizpůsobte podle potřeby
+
+while (checkForUpdates($gameId)) {
+    sleep(5);
 }
+
+sendSSE(["action" => "close"]);
 ?>
