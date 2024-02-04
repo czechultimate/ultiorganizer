@@ -7,6 +7,7 @@ include_once $include_prefix . 'lib/game.functions.php';
 
 header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
+header('Connection: keep-alive');
 
 $lastNum = -1;
 $prevPoint = -1;
@@ -28,7 +29,10 @@ function checkForUpdates($gameId) {
     global $halftimeFlag; 
     $lastscores = GameLastGoals($gameId, $lastNum);
     $lastevents = GameAllTimeouts($gameId);
-    $gameinfo = GameInfoLight($gameId);
+
+    if($halftimeFlag == 0){
+        $gameinfo = GameInfoLight($gameId);
+    }
 
     if($timeoutFlag == 1){
         foreach($lastevents as $lastevent){
