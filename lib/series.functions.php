@@ -836,7 +836,7 @@ function ConfirmEnrolledTeam($seriesId, $id)
 
 
     $seriesInfo = SeriesInfo($seriesId);
-    AddSeasonUserRole($teaminfo['userid'], "teamadmin:" . $teamId, $seriesInfo['season']);
+    //AddSeasonUserRole($teaminfo['userid'], "teamadmin:" . $teamId, $seriesInfo['season']);
     $query = sprintf(
       "UPDATE uo_enrolledteam SET status=1 WHERE id=%d",
       (int)$id

@@ -706,7 +706,7 @@ function printCrossmatchPool($seasoninfo, $poolinfo)
   $i = 0;
   $pos = 1;
   $winnerpools = array();
-  $loserpools = array();
+  $loserspools = array();
 
   while ($game = mysqli_fetch_assoc($games)) {
     $i++;
@@ -785,36 +785,56 @@ function printCrossmatchPool($seasoninfo, $poolinfo)
   }
   $ret .= "</table>\n";
 
-  $ret .= "<table style='white-space: nowrap' cellpadding='2' width='100%'><tr>\n";
-
-  $ret .= "<td>" . _("Winners continues in:") . "</td>";
-  foreach ($winnerpools as $winnerId => $color) {
-    $ret .= "<td style='background-color:#" . $color . ";background-color:" . RGBtoRGBa($color, 0.3) . ";color:#" . textColor($color) . ";width:" . (50 / count($winnerpools)) . "%'>";
-    if ($winnerspool['visible']) {
-      $ret .= "<a href='?view=poolstatus&amp;pool=" . $winnerId . "'>" . utf8entities(U_(PoolName($winnerId))) . "</a>";
-    } else {
-      $ret .= utf8entities(U_(PoolName($winnerId)));
-    }
-    $ret .= "</td>";
+  $teams = PoolTeams($poolinfo['pool_id']);
+  $steams = PoolSchedulingTeams($poolinfo['pool_id']);
+  if (count($teams) < count($steams)) {
+    $teams = $steams;
+    $totalteams = count($steams);
+  } else {
+    $totalteams = count($teams);
   }
 
-    $ret .= "<td>" . _("Losers continues in:") . "</td>";
+  $ret .= "<table style='white-space: nowrap' cellpadding='2' width='100%'><tr>\n";
+  
+  foreach ($winnerpools as $winnerId => $color) {
+    if (PoolName($winnerId) == -1 && $poolinfo['placementpool'] == 1){
+      $ret .= "<tr><td>" . _("Winners placement:") . "</td>";
+      $ret .= "<td style='background-color:white;color:black;width:" . (50 / count($loserspools)) . "%'>";
+      $placement = PoolPlacementString($poolinfo['pool_id'], $totalteams-1);
+      $placementname = "<b>" . U_($placement) . "</b> ";
+      $ret .= $placementname;
+    } else {
+      $ret .= "<tr><td>" . _("Winners continues in:") . "</td>";
+      $ret .= "<td style='background-color:#" . $color . ";background-color:" . RGBtoRGBa($color, 0.3) . ";color:#" . textColor($color) . ";width:" . (50 / count($winnerpools)) . "%'>";
+      if ($winnerspool['visible']) {
+        $ret .= "<a href='?view=poolstatus&amp;pool=" . $winnerId . "'>" . utf8entities(U_(PoolName($winnerId))) . "</a>";
+      } else {
+        $ret .= utf8entities(U_(PoolName($winnerId)));
+      }
+    }
+    $ret .= "</td></tr>";
+  }
+
+    
     foreach ($loserspools as $loserId => $color) {
       
       if (PoolName($loserId) == -1 && $poolinfo['placementpool'] == 1){
+        $ret .= "<tr><td>" . _("Losers placement:") . "</td>";
         $ret .= "<td style='background-color:white;color:black;width:" . (50 / count($loserspools)) . "%'>";
-        $placement = PoolPlacementString($poolinfo['pool_id'], $i);
+        $placement = PoolPlacementString($poolinfo['pool_id'], $totalteams);
         $placementname = "<b>" . U_($placement) . "</b> ";
         $ret .= $placementname;
       } else {
+        $ret .= "<tr><td>" . _("Losers continues in:") . "</td>";
         $ret .= "<td style='background-color:#" . $color . ";background-color:" . RGBtoRGBa($color, 0.3) . ";color:#" . textColor($color) . ";width:" . (50 / count($loserspools)) . "%'>";
           if ($loserspool['visible']) {
             $ret .= "<a href='?view=poolstatus&amp;pool=" . $loserId . "'>" . utf8entities(PoolName($loserId)) . "</a>";
           } else {
             $ret .= utf8entities(PoolName($loserId));
           }
-          $ret .= "</td>";
+          
         }
+        $ret .= "</td></tr>";
       }
   $ret .= "</tr></table>\n";
 

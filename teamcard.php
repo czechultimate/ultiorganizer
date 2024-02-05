@@ -5,7 +5,6 @@ include_once 'lib/common.functions.php';
 include_once 'lib/season.functions.php';
 include_once 'lib/statistical.functions.php';
 include_once 'lib/timetable.functions.php';
-include_once 'sse.php';
 
 $html = "";
 
