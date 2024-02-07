@@ -849,3 +849,52 @@ CREATE TABLE `uo_visitor_counter` (
   `visits` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
+
+CREATE VIEW uo_game_stats AS
+SELECT game_id, time, event_type, 
+       CASE 
+           WHEN events.event_type = 'goal' THEN JSON_OBJECT(
+               'time', events.time,
+               'event_type', events.event_type,
+               'homescore', events.homescore,
+               'visitorscore', events.visitorscore,
+               'assistfirstname', events.assistfirstname,
+               'assistlastname', events.assistlastname,
+               'scorerfirstname', events.scorerfirstname,
+               'scorerlastname', events.scorerlastname,
+               'iscallahan', events.iscallahan,
+               'num', events.num,
+			   'ishomegoal', events.ishomegoal
+           )
+           WHEN events.event_type = 'halftime' THEN JSON_OBJECT(
+               'time', events.time,
+               'event_type', events.event_type
+           )
+           WHEN events.event_type = 'timeout' THEN JSON_OBJECT(
+               'time', events.time,
+               'event_type', events.event_type,
+               'timeout_ishome', events.timeout_ishome
+           )
+       END AS event_data
+FROM (
+    SELECT game_id, time, event_type, iscallahan, homescore, visitorscore,
+           assistfirstname, assistlastname, scorerfirstname, scorerlastname, timeout_ishome, num, ishomegoal
+    FROM (
+        SELECT g.game_id, g.halftime AS time, 'halftime' AS event_type, NULL AS iscallahan, NULL AS homescore, NULL AS visitorscore, NULL AS assistfirstname, NULL AS assistlastname, NULL AS scorerfirstname, NULL AS scorerlastname, NULL AS timeout_ishome, NULL AS num, NULL AS ishomegoal
+        FROM uo_game AS g
+        WHERE  g.isongoing = 1
+        UNION ALL
+        SELECT m.game, m.time, 'goal' AS event_type, m.iscallahan, m.homescore, m.visitorscore, s.firstname AS assistfirstname, s.lastname AS assistlastname, t.firstname AS scorerfirstname, t.lastname AS scorerlastname, NULL AS timeout_ishome, m.num, m.ishomegoal
+        FROM uo_goal AS m 
+        LEFT JOIN uo_player AS s ON m.assist = s.player_id 
+        LEFT JOIN uo_player AS t ON m.scorer = t.player_id
+        INNER JOIN uo_game AS g ON m.game = g.game_id
+        WHERE g.isongoing = 1
+        UNION ALL
+        SELECT o.game, o.time, 'timeout' AS event_type, NULL AS iscallahan,  NULL AS homescore, NULL AS visitorscore, NULL AS assistfirstname, NULL AS assistlastname, NULL AS scorerfirstname, NULL AS scorerlastname, o.ishome AS timeout_ishome, NULL AS num, NULL AS ishomegoal
+        FROM uo_timeout AS o
+        INNER JOIN uo_game AS g ON o.game = g.game_id
+        WHERE g.isongoing = 1
+    ) AS subquery
+) AS events
+ORDER BY game_id, time ASC
