@@ -957,3 +957,19 @@ function SeriesGetAdvance($serieId){
 
   return $advance;
 }
+
+function GetUpcomingSeries(){
+
+    $query = sprintf(
+      "SELECT g.reservation, l.name, p.series, s.name AS seriesname, MIN(DATE(r.starttime)) AS starttime, MAX(DATE(r.endtime)) AS endtime 
+      FROM `uo_game` g
+      INNER JOIN uo_reservation r ON g.reservation = r.id
+      INNER JOIN uo_location l ON r.location = l.id
+      INNER JOIN uo_pool p ON p.pool_id = g.pool
+      INNER JOIN uo_series s ON s.series_id = p.series
+      WHERE DATE(r.endtime) >= CURDATE()
+      GROUP BY p.series"
+    );
+
+    return DBQueryToArray($query);
+}
