@@ -377,6 +377,7 @@ if (GameHasStarted($game_result) > 0) {
         }
       }
       //whom start the game, starts offence
+      
       $bHOffence = $bHStartTheGame;
 
       //return internal pointers to first row
@@ -385,7 +386,7 @@ if (GameHasStarted($game_result) > 0) {
       //loop all goals
       while ($goal = mysqli_fetch_assoc($allgoals)) {
         //halftime passed
-        if (($nClockTime <= intval($game_result['halftime'])) && (intval($goal['time']) >= intval($game_result['halftime']))) {
+        if (!is_null($game_result['halftime']) && ($nClockTime <= intval($game_result['halftime'])) && (intval($goal['time']) >= intval($game_result['halftime']))) {
           $nClockTime = intval($game_result['halftime']);
 
           if ($bHStartTheGame) {
@@ -508,7 +509,7 @@ if (GameHasStarted($game_result) > 0) {
 				<td class='guest'>" . $nVLosesDisc . "</td></tr>";
       }
 
-      $html .= "<tr><td>" . _("Goals from turnovers") . ":</td>
+      $html .= "<tr><td>" . _("Breaks") . ":</td>
 			<td class='home'>" . $nHBreaks . "</td>
 			<td class='guest'>" . $nVBreaks . "</td></tr>";
 

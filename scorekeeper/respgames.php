@@ -147,13 +147,22 @@ foreach ($respGameArray as $tournament => $resArray) {
               if(hasEditGameEventsRight($gameId)){
                 $html .= "<a href='?view=addresult&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Result") . "</a>";
                 $html .= "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Players") . "</a>";
-                $html .= "<a href='?view=addscoresheet&amp;game=$gameId' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
+                if(mysqli_num_rows(GetPlayersFromGame($gameId)) < 1){
+                  $html .= "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
+                }else{
+                  $html .= "<a href='?view=addscoresheet&amp;game=$gameId' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
+                }
+
               }
               if (intval($seasoninfo['spiritmode'] > 0) && isSeasonAdmin($seasoninfo['season_id'])) {
                 $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
               } else if(hasEditGameSpiritRight($gameId)){
                 $team = FindTeamInArray($teamAdminIdArray, $game['hometeam'], $game['visitorteam']);
-                $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
+                if(empty(GameGetSpiritPoints($gameId,$team))){
+                  $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false' style='color: red;border: 2px solid red;'>" . _("Spirit") . "</a>";
+                } else{
+                  $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
+                }
               }
               $html .= "</div>\n";
             $html .= "</div>\n";

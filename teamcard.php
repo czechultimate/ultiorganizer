@@ -595,10 +595,10 @@ foreach($allgames as $game){
     }
   } else {
     $tmpa1 = array('team' => $game['hometeamname'], 'teamid' => $game['hometeam']);
-    $tmpa1['spirit'] = GameGetSpiritPoints($game['game_id'], $game['hometeam']);
+    $tmpa1['spirit'] = GameGetSpiritPoints($game['game_id'], $game['visitorteam']);
 
     $tmpa2 = array('team' => $game['hometeamname'], 'teamid' => $game['hometeam']);
-    $tmpa2['spirit'] = GameGetSpiritPoints($game['game_id'], $game['visitorteam']);
+    $tmpa2['spirit'] = GameGetSpiritPoints($game['game_id'], $game['hometeam']);
 
     if(!empty($tmpa1['spirit']) && !empty($tmpa2['spirit'])){
       $spiritfrom[$game['game_id']] = $tmpa1;

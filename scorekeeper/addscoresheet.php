@@ -146,7 +146,7 @@ $html .= "<form action='?view=addscoresheet' method='post' data-ajax='false'>\n"
 
 if (isset($_POST['start'])){
   StartGame($gameId);
-  $html .= _("Game started\n");
+  $html .= _("<b>Game started!</b><br>");
 }
 
 //last score
