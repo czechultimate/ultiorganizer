@@ -1108,3 +1108,39 @@ function CheckTwoTeamsSpirit($game, $home, $visitor){
     }
 
 }
+
+function SeriesMissingSpirit($series){
+  $query = sprintf(
+    "SELECT
+    uo_game.game_id,
+    uo_game.hometeam,
+    uo_game.visitorteam,
+	uo_team_home.name AS home_team_name,
+    uo_team_visitor.name AS visitor_team_name,
+	uo_game.homescore,
+	uo_game.visitorscore,
+    uo_spirit_score.team_id,
+    COUNT(uo_spirit_score.value) AS value_count
+FROM
+    uo_game
+LEFT JOIN
+    uo_game_pool ON uo_game.game_id = uo_game_pool.game
+LEFT JOIN
+    uo_pool ON uo_game_pool.pool = uo_pool.pool_id
+LEFT JOIN
+    uo_spirit_score ON uo_game.game_id = uo_spirit_score.game_id
+LEFT JOIN
+    uo_team AS uo_team_home ON uo_game.hometeam = uo_team_home.team_id
+LEFT JOIN
+    uo_team AS uo_team_visitor ON uo_game.visitorteam = uo_team_visitor.team_id
+WHERE
+    uo_pool.series = %d
+GROUP BY
+    uo_game.game_id,
+    uo_spirit_score.team_id",
+    (int)$series
+  );
+
+  return DBQueryToArray($query);
+
+}
