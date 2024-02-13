@@ -267,13 +267,13 @@ if (GameHasStarted($game_result) > 0) {
     }
     if (intval($game_result['isongoing'])) {
       $html .= "<tr style='border-style:dashed;border-width:1px;'>";
-      $html .= "<td>&nbsp;</td>";
-      $html .= "<td>&nbsp;</td>";
-      $html .= "<td>&nbsp;</td>";
-      $html .= "<td>&nbsp;</td>";
-      $html .= "<td>&nbsp;</td>";
+      $html .= "<td></td>";
+      $html .= "<td></td>";
+      $html .= "<td></td>";
+      $html .= "<td></td>";
+      $html .= "<td></td>";
       if (count($gameevents) || count($mediaevents)) {
-        $html .= "<td>&nbsp;</td>";
+        $html .= "<td></td>";
       }
       $html .= "</tr>";
     }
@@ -727,10 +727,10 @@ if(ongoing == 1){
       } else if (data.event_type === "goal") {
         addNewRow(data);
         console.log('Received message:', event.data);
-      } /* else if (data.event_type === "timeout") {
+      }  else if (data.event_type === "timeout") {
         addTimeOut(data);
         console.log('Received message:', event.data);
-      } */ else if (data.event_type === "halftime"){
+      }  else if (data.event_type === "halftime"){
         addHalftime(data);
         console.log('Received message:', event.data);
       } else if (data.event_type === "close"){
@@ -742,92 +742,103 @@ if(ongoing == 1){
   };
 }
 
+function addEmptyRow() {
+    var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow(-1);
+    var numCells = table.rows[0].cells.length;
+
+    for (var i = 0; i < numCells; i++) {
+        var newCell = newRow.insertCell(i);
+    }
+}
+
 function addNewRow(data) {
-        const num = data.num;
-        const time = data.time;
-        const ishomegoal = data.ishomegoal;
-        const homescore = data.homescore;
-        const iscallahan = data.iscallahan;
-        const visitorscore = data.visitorscore;
-        const assistFirstName = data.assistfirstname;
-        const assistLastName = data.assistlastname;
-        const scorerFirstName = data.scorerfirstname;
-        const scorerLastName = data.scorerlastname;
+    const num = data.num;
+    const time = data.time;
+    const ishomegoal = data.ishomegoal;
+    const homescore = data.homescore;
+    const iscallahan = data.iscallahan;
+    const visitorscore = data.visitorscore;
+    const assistFirstName = data.assistfirstname;
+    const assistLastName = data.assistlastname;
+    const scorerFirstName = data.scorerfirstname;
+    const scorerLastName = data.scorerlastname;
 
-        var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
-        var newRow = table.insertRow(table.rows.length - 1);
+    var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+    var lastRow = table.rows[table.rows.length - 1];
 
-        if(table.rows[table.rows.length - 3].cells[0].classList.contains("halftime")){
-          var prePreLastRow = table.rows[table.rows.length - 4];
-        }else {
-          var prePreLastRow = table.rows[table.rows.length - 3];
-        }
+    var prePreLastRow;
+    if (table.rows[table.rows.length - 2].cells[0].classList.contains("halftime")) {
+        prePreLastRow = table.rows[table.rows.length - 3];
+    } else {
+        prePreLastRow = table.rows[table.rows.length - 2];
+    }
 
-        var prevTime = prePreLastRow.cells[3].innerHTML;
+    var prevTime = prePreLastRow.cells[3].innerHTML;
 
-        var cell1 = newRow.insertCell(0);
-        var scoreClass = (ishomegoal == 1) ? "home" : "guest";
-        cell1.innerHTML = homescore + " - " + visitorscore;
-        cell1.setAttribute("style", "width:45px;white-space: nowrap");
-        cell1.setAttribute("class", scoreClass);
+    var cell1 = lastRow.cells[0];
+    var scoreClass = (ishomegoal == 1) ? "home" : "guest";
+    cell1.innerHTML = homescore + " - " + visitorscore;
+    cell1.setAttribute("style", "width:45px;white-space: nowrap");
+    cell1.setAttribute("class", scoreClass);
 
-        var cell2 = newRow.insertCell(1);
-        if(iscallahan == 1){
+    var cell2 = lastRow.cells[1];
+    if (iscallahan == 1) {
         cell2.innerHTML = "Callahan-goal";
         cell2.setAttribute("class", "callahan");
-        } else {
-        cell2.innerHTML = assistFirstName + " " + assistLastName ;
-        }
-
-        var cell3 = newRow.insertCell(2);
-        cell3.innerHTML = scorerFirstName + " " + scorerLastName ;
-
-        var cell4 = newRow.insertCell(3);
-        cell4.innerHTML = secToMin(time);
-
-
-        var cell5 = newRow.insertCell(4);
-        if(num == 0){
-          cell5.innerHTML = secToMin(time);
-        }else {
-          cell5.innerHTML = secToMin(time -  minToSec(prevTime));
-        }
-
-        var cell6 = newRow.insertCell(5);
+    } else {
+        cell2.innerHTML = assistFirstName + " " + assistLastName;
     }
 
-function addTimeOut(data){
+    var cell3 = lastRow.cells[2];
+    cell3.innerHTML = scorerFirstName + " " + scorerLastName;
 
-        var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+    var cell4 = lastRow.cells[3];
+    cell4.innerHTML = secToMin(time);
 
-          var newRow = table.insertRow(table.rows.length - 1);
-          var cell1 = newRow.insertCell(0);
-          var cell2 = newRow.insertCell(1);
-          var cell3 = newRow.insertCell(2);
-          var cell4 = newRow.insertCell(3);
-          var cell5 = newRow.insertCell(4);
-          var cell6 = newRow.insertCell(5);
-
-        var timeoutClass = (data.timeout_ishome == 1) ? "home" : "guest";
-
-          var divElement = document.createElement("div");
-
-          divElement.setAttribute("class", timeoutClass);
-
-          divElement.innerHTML = "Time-out " + secToMin(data.time);
-
-          cell6.appendChild(divElement);
+    var cell5 = lastRow.cells[4];
+    if (num == 0) {
+        cell5.innerHTML = secToMin(time);
+    } else {
+        cell5.innerHTML = secToMin(time - minToSec(prevTime));
     }
 
-    function addHalftime(data){
-      var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
-        var newRow = table.insertRow(table.rows.length - 1);
+    addEmptyRow();
+}
 
-        var cell1 = newRow.insertCell(0);
-          cell1.innerHTML = "Half-time";
-          cell1.setAttribute("colspan", 6);
-          cell1.setAttribute("class", "halftime");
+
+
+function addTimeOut(data) {
+    var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+    var lastRow = table.rows[table.rows.length - 1]; 
+    var cell6 = lastRow.cells[5]; 
+
+    var timeoutClass = (data.timeout_ishome == 1) ? "home" : "guest";
+
+    var divElement = document.createElement("div");
+    divElement.setAttribute("class", timeoutClass);
+    divElement.innerHTML = "Time-out " + secToMin(data.time);
+
+    cell6.appendChild(divElement);
+}
+
+function addHalftime(data) {
+    var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+    var lastRow = table.rows[table.rows.length - 1]; 
+
+    var cellsCount = lastRow.cells.length;
+    for (var i = cellsCount - 1; i > 0; i--) {
+        lastRow.deleteCell(i);
     }
+    lastRow.cells[0].setAttribute("colspan", 6);
+
+    lastRow.cells[0].innerHTML = "Half-time";
+    lastRow.cells[0].setAttribute("class", "halftime");
+
+    addEmptyRow();
+}
+
+
 
     function secToMin(sec) {
     var s = parseInt(sec);
