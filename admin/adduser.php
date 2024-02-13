@@ -15,16 +15,16 @@ if (!empty($_POST['save'])) {
   $newEmail = $_POST['Email'];
   $error = 0;
   $message = "";
-  if (empty($newUsername) || strlen($newUsername) < 3 || strlen($newUsername) > 50) {
-    $html .= "<p>" . _("Username is too short (min. 3 letters)") . ".</p>";
+  if (empty($newUsername) || strlen($newUsername) < 2 || strlen($newUsername) > 50) {
+    $html .= "<p>" . _("Username is too short (min. 2 letters)") . ".</p>";
     $error = 1;
   }
   if (IsRegistered($newUsername)) {
     $html .=  "<p>" . _("The username is already in use") . ".</p>";
     $error = 1;
   }
-  if (empty($newPassword) || strlen($newPassword) < 5 || strlen($newPassword) > 20) {
-    $html .=  "<p>" . _("Password is too short (min. 5 letters).") . ".</p>";
+  if (empty($newPassword) || strlen($newPassword) < 3 || strlen($newPassword) > 20) {
+    $html .=  "<p>" . _("Password is too short (min. 3 letters).") . ".</p>";
     $error = 1;
   }
   if (empty($newName)) {

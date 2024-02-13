@@ -118,6 +118,7 @@ if (isset($_POST['add']) || isset($_POST['forceadd'])) {
     $result = GameResult($gameId);
     //save as result, if result is not already set
     if (($uo_goal['homescore'] + $uo_goal['visitorscore']) > ($result['homescore'] + $result['visitorscore'])) {
+      //Ongoing set here
       GameUpdateResult($gameId, $uo_goal['homescore'], $uo_goal['visitorscore']);
     }
     header("location:?view=addscoresheet&game=" . $gameId);
@@ -145,7 +146,7 @@ $html .= "<form action='?view=addscoresheet' method='post' data-ajax='false'>\n"
 
 if (isset($_POST['start'])){
   StartGame($gameId);
-  $html .= _("Game started\n");
+  $html .= _("<b>Game started!</b><br>");
 }
 
 //last score
@@ -206,7 +207,6 @@ if ($team == 'H') {
 $html .= "<label for='pass' class='select'>" . _("Assist") . "</label>";
 $html .= "<select id='pass' name='pass' >";
 $html .= "<option value='0' selected='selected'>-</option>";
-
 foreach ($played_players as $player) {
 
   $selected = "";
@@ -305,6 +305,11 @@ echo $html;
                   echo "\"";
                   echo "<option value='0'>-</option>";
                   $played_players = GamePlayers($gameId, $game_result['hometeam']);
+
+                  usort($played_players, function ($a, $b) {
+                    return $a['num'] > $b['num'];
+                  });
+
                   foreach ($played_players as $player) {
                     echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " . $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
                   }
@@ -315,6 +320,11 @@ echo $html;
   var awaylist = <?php
                   echo "\"";
                   $played_players = GamePlayers($gameId, $game_result['visitorteam']);
+
+                  usort($played_players, function ($a, $b) {
+                    return $a['num'] > $b['num'];
+                  });
+                  
                   echo "<option value='0'>-</option>";
                   foreach ($played_players as $player) {
                     echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " .  $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";

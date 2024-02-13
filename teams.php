@@ -51,7 +51,7 @@ if ($list == "allteams" || $list == "byseeding") {
 
   foreach ($series as $row) {
 
-    $html .= "<table border='0' cellspacing='0' cellpadding='2' width='100%'>\n";
+    $html .= "<table border='0' cellspacing='0' cellpadding='2' width='100%' id='multicoloured'>\n";
     $html .= "<tr>";
     $html .= "<th colspan='$cols'>";
     $html .= utf8entities(U_($row['name'])) . "</th>\n";
@@ -115,7 +115,7 @@ if ($list == "allteams" || $list == "byseeding") {
       continue;
     }
     foreach ($pools as $pool) {
-      $html .= "<table border='0' cellspacing='0' cellpadding='2' width='100%'>\n";
+      $html .= "<table border='0' cellspacing='0' cellpadding='2' width='100%' id='multicoloured'>\n";
       $html .= "<tr>";
       $html .= "<th colspan='" . ($cols - 1) . "'>" . utf8entities(U_(PoolSeriesName($pool['pool_id'])) . ", " . U_($pool['name'])) . "</th><th class='right'>" . _("Scoreboard") . "</th>\n";
       $html .= "</tr>\n";
@@ -153,13 +153,13 @@ if ($list == "allteams" || $list == "byseeding") {
         $html .= "&nbsp;&nbsp;";
 
         if ($pool['type'] == 2) {
-          $html .= "<a href='?view=scorestatus&amp;team=" . $team['team_id'] . "&amp;pools=" . $playoffpools . "'>" . _("Pool") . "</a>";
+          $html .= "<a href='?view=poolstatus&pool=" . $pool['pool_id'] . "'>" . _("Pool") . "</a>";
         } else {
-          $html .= "<a href='?view=scorestatus&amp;team=" . $team['team_id'] . "&amp;pool=" . $pool['pool_id'] . "'>" . _("Pool") . "</a>";
+          $html .= "<a href='?view=poolstatus&pool=" . $pool['pool_id'] . "'>" . _("Pool") . "</a>";
         }
         $html .= "&nbsp;&nbsp;";
 
-        $html .= "<a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Division") . "</a></td>";
+        $html .= "<a href='?view=seriesstatus&series=" . $row['series_id'] . "'>" . _("Tournament") . "</a></td>";
         $html .= "</tr>\n";
       }
       $html .= "</table>\n";
@@ -252,7 +252,7 @@ if ($list == "allteams" || $list == "byseeding") {
         return $a['total'] < $b['total'];
       });
       $html .= "<div class='TableContainer3'>\n";
-      $html .= "<table cellspacing='0' border='0' width='100%'>\n";
+      $html .= "<table cellspacing='0' border='0' width='100%' id='multicoloured'>\n";
       $html .= "<tr><th style='width:150px'>" . utf8entities(U_($row['name'])) . "</th>";
       $html .= "<th>" . _("Games") . "</th>";
       foreach ($categories as $cat) {
@@ -264,7 +264,7 @@ if ($list == "allteams" || $list == "byseeding") {
 
 
       foreach ($spiritAvg as $teamAvg) {
-        $html .= "<td>" . utf8entities($teamAvg['teamname']) . "</td>";
+        $html .= "<td><a href='?view=teamcard&team=" . $teamAvg['team_id'] . "'>" . utf8entities($teamAvg['teamname']) . "</a></td>";
         $html .= "<td>" . $teamAvg['games'] . "</td>";
         foreach ($categories as $cat) {
           if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])) {

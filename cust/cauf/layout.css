@@ -284,3 +284,19 @@ yuicalendar.table {
 	border-collapse:collapse;
 	border:1px solid black;
 }
+
+.tdcontent table#clubspirit  tr:nth-child(even) td {
+    background-color: #DAF0F7;
+}
+
+.tdcontent table#clubspirit  tr:hover td {
+    background-color: #FDFD97 !important;
+}
+
+.tdcontent table#multicoloured  tr:nth-child(even) td {
+    background-color: #DAF0F7;
+}
+
+.tdcontent table#multicoloured  tr:hover td {
+    background-color: #FDFD97 !important;
+}

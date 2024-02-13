@@ -7,8 +7,18 @@ $_SESSION['game'] = $gameId;
 $game_result = GameResult($gameId);
 $timemm = "";
 $timess = "";
+$time = 0;
+if(is_null($game_result['starttime'])){
+  $timestart = strtotime($game_result['time']);
+  $actualtime = time();
+  $time = $actualtime -$timestart;
+} else{
+  $timestart = strtotime($game_result['starttime']);
+  $actualtime = time();
+  $time = $actualtime -$timestart;
+}
 
-if (isset($_POST['save'])) {
+if (isset($_POST['set'])) {
   $timemm = "0";
   $timess = "0";
 
@@ -24,6 +34,17 @@ if (isset($_POST['save'])) {
   header("location:?view=addscoresheet&game=" . $gameId);
 }
 
+if (isset($_POST['add'])) {
+  GameSetHalftime($gameId, $time);
+
+  header("location:?view=addscoresheet&game=" . $gameId);
+}
+
+if (isset($_POST['clear'])) {
+  GameSetHalftime($gameId, NULL);
+
+  header("location:?view=addscoresheet&game=" . $gameId);
+}
 
 $html .= "<div data-role='header'>\n";
 $html .= "<h1>" . _("Halftime ends") . ": " . utf8entities($game_result['hometeamname']) . " - " . utf8entities($game_result['visitorteamname']) . "</h1>\n";
@@ -32,6 +53,8 @@ $html .= "</div><!-- /header -->\n\n";
 $html .= "<div data-role='content'>\n";
 
 $html .= "<form action='?view=addhalftime' method='post' data-ajax='false'>\n";
+$html .= "<input type='submit' name='add' data-ajax='false' value='" . _("Add Half-time") . "'/>";
+$html .= "<input type='submit' name='clear' data-ajax='false' value='" . _("Clear Half-time") . "'/><br>";
 
 $html .= "<label for='timemm' class='select'>" . _("Halftime ends at") . " " . _("min") . ":" . _("sec") . "</label>";
 $html .= "<div class='ui-grid-b'>";
@@ -64,7 +87,7 @@ $html .= "</select>";
 $html .= "</div>";
 $html .= "</div>";
 
-$html .= "<input type='submit' name='save' data-ajax='false' value='" . _("Save") . "'/>";
+$html .= "<input type='submit' name='set' data-ajax='false' value='" . _("Set") . "'/>";
 $html .= "<a href='?view=addscoresheet&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Back to score sheet") . "</a>";
 $html .= "</form>";
 $html .= "</div><!-- /content -->\n\n";

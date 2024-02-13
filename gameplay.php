@@ -47,7 +47,7 @@ if (GameHasStarted($game_result) > 0) {
 
     $html .= "<table width='100%' cellspacing='0' cellpadding='0' border='0'>\n";
     $html .= "<tr style='height=20'><td align='center'><b>";
-    $html .= utf8entities($game_result['hometeamname']) . "</b></td></tr>\n";
+    $html .= "<a href=?view=teamcard&amp;team=" . $game_result['hometeam'] . ">" . utf8entities($game_result['hometeamname']) . "</a></b></td></tr>\n";
     $html .= "</table><table width='100%' cellspacing='0' cellpadding='3' border='0'>";
     $html .= "<tr><th class='home'>#</th><th class='home'>" . _("Name");
 
@@ -79,7 +79,7 @@ if (GameHasStarted($game_result) > 0) {
 
     $html .= "<table width='100%' cellspacing='0' cellpadding='0' border='0'>";
     $html .= "<tr><td><b>";
-    $html .= utf8entities($game_result['visitorteamname']) . "</b></td></tr>\n";
+    $html .= "<a href=?view=teamcard&amp;team=" . $game_result['visitorteam'] . ">" . utf8entities($game_result['visitorteamname']) . "</a></b></td></tr>\n";
     $html .= "</table><table width='100%' cellspacing='0' cellpadding='3' border='0'>";
     $html .= "<tr><th class='guest'>#</th><th class='guest'>" . _("Name");
     if($poolinfo["stats"] == 1){
@@ -184,11 +184,11 @@ if (GameHasStarted($game_result) > 0) {
     
     //zacatek asi tady
     if($poolinfo["stats"] == 1){
-    $html .= "<table border='1' cellpadding='2' width='100%'>\n";
+	$html .= "<table border='1' cellpadding='2' width='100%' id='matchstats'>\n";
     $html .= "<tr><th>" . _("Scores") . "</th><th>" . _("Assist") . "</th><th>" . _("Goal") . "</th><th>" . _("Time") . "</th><th>" . _("Dur.") . "</th>";
-    if (count($gameevents) || count($mediaevents)) {
-      $html .= "<th>" . _("Game events ") . "</th>";
-    }
+   // if (count($gameevents) || count($mediaevents)) {
+    $html .= "<th>" . _("Game events ") . "</th>";
+   // }
     $html .= "</tr>\n";
 
     $bHt = false;
@@ -221,7 +221,7 @@ if (GameHasStarted($game_result) > 0) {
 
       $html .= "<td>" . SecToMin($duration) . "</td>";
 
-      if (count($gameevents) || count($mediaevents)) {
+      //if (count($gameevents) || count($mediaevents)) {
         $html .= "<td>";
         //gameevents
         foreach ($gameevents as $event) {
@@ -261,7 +261,7 @@ if (GameHasStarted($game_result) > 0) {
           $html .= "<div class='mediaevent'>" . $tmphtml . "</div>\n";
         }
         $html .= "</td>";
-      }
+     // }
       $html .= "</tr>";
       $prevgoal = intval($goal['time']);
     }
@@ -377,6 +377,7 @@ if (GameHasStarted($game_result) > 0) {
         }
       }
       //whom start the game, starts offence
+      
       $bHOffence = $bHStartTheGame;
 
       //return internal pointers to first row
@@ -385,7 +386,7 @@ if (GameHasStarted($game_result) > 0) {
       //loop all goals
       while ($goal = mysqli_fetch_assoc($allgoals)) {
         //halftime passed
-        if (($nClockTime <= intval($game_result['halftime'])) && (intval($goal['time']) >= intval($game_result['halftime']))) {
+        if (!is_null($game_result['halftime']) && ($nClockTime <= intval($game_result['halftime'])) && (intval($goal['time']) >= intval($game_result['halftime']))) {
           $nClockTime = intval($game_result['halftime']);
 
           if ($bHStartTheGame) {
@@ -508,7 +509,7 @@ if (GameHasStarted($game_result) > 0) {
 				<td class='guest'>" . $nVLosesDisc . "</td></tr>";
       }
 
-      $html .= "<tr><td>" . _("Goals from turnovers") . ":</td>
+      $html .= "<tr><td>" . _("Breaks") . ":</td>
 			<td class='home'>" . $nHBreaks . "</td>
 			<td class='guest'>" . $nVBreaks . "</td></tr>";
 
@@ -550,24 +551,24 @@ if (GameHasStarted($game_result) > 0) {
         $html .= _($cat['text']);
         $html .= ":</td>";
         $html .= "<td class='home'>";
-        if (isset($homepoints[$id]) && !is_null($homepoints[$id])) {
-		  if (is_numeric($homepoints[$id])){
-			  $html .= intval($homepoints[$id]);
-		  } else {
-			  $html .= $homepoints[$id];
-		  }
+        if (isset($homepoints[$id]) && !is_null($homepoints[$id]) && isset($visitorpoints[$id]) && !is_null($visitorpoints[$id])) {
+          if (is_numeric($homepoints[$id])){
+            $html .= intval($homepoints[$id]);
+          } else {
+            $html .= $homepoints[$id];
+          }
         } else {
           $html .= "-";
         }
 
         $html .= "</td>";
         $html .= "<td class='guest'>";
-        if (isset($visitorpoints[$id]) && !is_null($visitorpoints[$id])) {
-		  if (is_numeric($visitorpoints[$id])){
-			$html .= intval($visitorpoints[$id]);
-		  } else {
-			$html .= $visitorpoints[$id];
-		  }
+        if (isset($homepoints[$id]) && !is_null($homepoints[$id]) && isset($visitorpoints[$id]) && !is_null($visitorpoints[$id])) {
+          if (is_numeric($visitorpoints[$id])){
+          $html .= intval($visitorpoints[$id]);
+          } else {
+          $html .= $visitorpoints[$id];
+          }
           
         } else {
           $html .= "-";
@@ -710,3 +711,126 @@ if (GameHasStarted($game_result) > 0) {
   $html .= "</p>";
 }
 showPage($title, $html);
+
+?>
+
+<script>
+  const gameId = <?php echo $gameId; ?>;
+  const ongoing = <?php echo $game_result['isongoing']; ?>;
+if(ongoing == 1){
+  const eventSource = new EventSource(`sse.php?game=${gameId}`);
+
+  eventSource.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      if (data.action === "init") {
+          console.log('Received message:', event.data);
+      } else if (data.action === "update") {
+        addNewRow(data);
+        console.log('Received message:', event.data);
+      }  else if (data.action === "timeout") {
+        addTimeOut(data);
+        console.log('Received message:', event.data);
+      }  else if (data.action === "halftime"){
+        addHalftime(data);
+        console.log('Received message:', event.data);
+      } else if (data.action === "close"){
+        eventSource.close();
+        console.log('Received message:', event.data);
+      } else {
+        console.log('Received message:', event.data);
+      }
+  };
+}
+
+function addNewRow(data) {
+        const action = data.action;
+        const gameId = data.gameId;
+        const num = data.num;
+        const time = data.time;
+        const home = data.home;
+        const homescore = data.homescore;
+        const visitorscore = data.visitorscore;
+        const assistFirstName = data.assistfirstname;
+        const assistLastName = data.assistlastname;
+        const scorerFirstName = data.scorerfirstname;
+        const scorerLastName = data.scorerlastname;
+
+        
+
+        var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+        var newRow = table.insertRow(table.rows.length - 1);
+
+        var prePreLastRow = table.rows[table.rows.length - 3];
+
+        var prevTime = prePreLastRow.cells[3].innerHTML;
+
+        var cell1 = newRow.insertCell(0);
+        var scoreClass = (home == 1) ? "home" : "guest";
+        cell1.innerHTML = homescore + " - " + visitorscore;
+        cell1.setAttribute("style", "width:45px;white-space: nowrap");
+        cell1.setAttribute("class", scoreClass);
+
+        var cell2 = newRow.insertCell(1);
+        cell2.innerHTML = assistFirstName + " " + assistLastName ;
+
+        var cell3 = newRow.insertCell(2);
+        cell3.innerHTML = scorerFirstName + " " + scorerLastName ;
+
+        var cell4 = newRow.insertCell(3);
+        cell4.innerHTML = time;
+
+
+        var cell5 = newRow.insertCell(4);
+        if(num == 0){
+          cell5.innerHTML = time;
+        }else {
+          cell5.innerHTML = (time - prevTime).toFixed(2);
+        }
+
+        var cell6 = newRow.insertCell(5);
+    }
+
+function addTimeOut(data){
+    var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+    var j = 1;
+      for(var i = 1; i < table.rows.length; i++){
+
+        if(i > 1){
+          j = i-1;
+        }
+
+        if(table.rows[i].cells[0].getAttribute("class") == "halftime"){
+          continue;
+        } else if(table.rows[j].cells[0].getAttribute("class") == "halftime"){
+          j = j-1;
+        }
+
+        if((parseFloat(table.rows[i].cells[3].innerHTML) > parseFloat(data.timeouttime) && parseFloat(table.rows[j].cells[3].innerHTML) < parseFloat(data.timeouttime)) || table.rows.length==3){
+          var timeoutClass = (data.timeouthome == 1) ? "home" : "guest";
+
+          var divElement = document.createElement("div");
+
+          divElement.setAttribute("class", timeoutClass);
+
+          divElement.innerHTML = "Time-out " + data.timeouttime;
+          table.rows[i].cells[5].appendChild(divElement);
+          console.log('Received message:');
+          break;
+        }
+      }
+    }
+
+    function addHalftime(data){
+      var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+      for(var i = 1; i < table.rows.length; i++){
+        if((parseFloat(table.rows[i].cells[3].innerHTML) > parseFloat(data.halftime) && parseFloat(table.rows[i-1].cells[3].innerHTML) < parseFloat(data.halftime))){
+          var newRow = table.insertRow(i);
+          var cell1 = newRow.insertCell(0);
+          cell1.innerHTML = "Half-time";
+          cell1.setAttribute("colspan", 6);
+          cell1.setAttribute("class", "halftime");
+          break;
+        }
+      }
+}
+</script>

@@ -262,7 +262,6 @@ function GamePlayers($gameId, $teamId)
 		(int)$gameId,
 		(int)$teamId
 	);
-
 	return DBQueryToArray($query);
 }
 
@@ -437,6 +436,22 @@ function GameLastGoal($gameId)
 	return DBQueryToRow($query);
 }
 
+function GameLastGoals($gameId, $num)
+{
+	$query = sprintf(
+		"SELECT m.*, s.firstname AS assistfirstname, s.lastname AS assistlastname, t.firstname AS scorerfirstname, t.lastname AS scorerlastname 
+		FROM (uo_goal AS m LEFT JOIN uo_player AS s ON (m.assist = s.player_id)) 
+		LEFT JOIN uo_player AS t ON (m.scorer=t.player_id) 
+		WHERE m.game='%s' AND m.num > '%s'
+		ORDER BY m.num ASC",
+		DBEscapeString($gameId),
+		DBEscapeString($num)
+	);
+
+	return DBQueryToArray($query);
+}
+
+
 function GameAllGoals($gameId)
 {
 	$query = sprintf(
@@ -464,6 +479,48 @@ function GameEvents($gameId)
 	);
 
 	return DBQueryToArray($query);
+}
+
+function GameLastEvent($gameId)
+{
+	$query = sprintf(
+		"SELECT time,ishome,type 
+		FROM (SELECT time,ishome,'timeout' AS type FROM `uo_timeout` 
+			WHERE game='%s' UNION ALL SELECT time,ishome,type FROM uo_gameevent WHERE game='%s') AS tapahtuma 
+		WHERE type!='media'
+		ORDER BY time DESC",
+		DBEscapeString($gameId),
+		DBEscapeString($gameId)
+	);
+
+	return DBQueryToRow($query);
+}
+
+function GameAllTimeouts($gameId)
+{
+	$query = sprintf(
+		"SELECT time,ishome,type 
+		FROM (SELECT time,ishome,'timeout' AS type FROM `uo_timeout` 
+			WHERE game='%s' UNION ALL SELECT time,ishome,type FROM uo_gameevent WHERE game='%s') AS tapahtuma 
+		WHERE type ='timeout'
+		ORDER BY time",
+		DBEscapeString($gameId),
+		DBEscapeString($gameId)
+	);
+
+	return DBQueryToArray($query);
+}
+
+function GameInfoLight($gameId)
+{
+	$query = sprintf(
+		"SELECT halftime, isongoing
+		FROM uo_game
+		WHERE game_id='%s'",
+		DBEscapeString($gameId)
+	);
+
+	return DBQueryToRow($query);
 }
 
 function GameMediaEvents($gameId)
@@ -1200,7 +1257,7 @@ function GameSetCaptain($gameId, $teamId, $playerId)
 function GameSetStartingTeam($gameId, $home)
 {
 	if (hasEditGameEventsRight($gameId)) {
-		if ($home == NULL) {
+		if (is_null($home)) {
 			$query = sprintf(
 				"DELETE FROM uo_gameevent WHERE game=%d AND type='offence'",
 				(int)$gameId

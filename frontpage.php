@@ -1,4 +1,6 @@
 <?php
+include_once 'lib/series.functions.php';
+
 $html = "";
 $title = _("Frontpage");
 
@@ -9,13 +11,19 @@ if (iget("hideseason")) {
   exit;
 }
 
-$htmlfile = 'locale/' . getSessionLocale() . '/LC_MESSAGES/welcome.html';
+$html .= "<h1> TURNAJE </h1>";
 
-if (is_file('cust/' . CUSTOMIZATIONS . '/' . $htmlfile)) {
-  $html .= file_get_contents('cust/' . CUSTOMIZATIONS . '/' . $htmlfile);
-} else {
-  $html .= file_get_contents($htmlfile);
+$series = GetUpcomingSeries();
+
+foreach($series as $s){
+  $html .= "<p><a href=https://www.uniulti.cz/?view=games&series=" . $s['series']. "&filter=upcoming&group=all><h1>" . $s['seriesname'] . "</a></h1>
+              <ul>
+                <li><b>Místo konání:</b> <a href=https://www.uniulti.cz/?view=reservationinfo&reservation=" . $s['reservation'] . ">" . $s['name'] . "</a></li>
+                <li><b>Termín konání:</b> " . date("d-m-Y", strtotime($s['starttime'])) . " - " . date("d-m-Y", strtotime($s['endtime'])) . "</li>
+                </ul>
+            </p>";
 }
+
 
 $html .= "<p>";
 $html .= "<a href='?view=user_guide'>" . _("User Guide") . "</a>\n";

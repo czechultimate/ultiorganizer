@@ -94,12 +94,14 @@ function SeriesTypes()
     "master women",
     "master mixed",
     "grand master",
-    "U17 open",
-    "U17 women",
-    "U17 mixed",
     "U20 open",
     "U20 women",
     "U20 mixed",
+    "U23 open",
+    "U23 women",
+    "U23 mixed",
+    "junior open",
+    "junior women"
   );
 }
 
@@ -319,6 +321,129 @@ function SeriesScoreBoard($seriesId, $sorting, $limit)
   return DBQuery($query);
 }
 
+function SeriesScoreBoardAvg($seriesId, $sorting, $limit){
+  $query = sprintf(
+    "SELECT 
+    p.player_id, 
+    p.firstname, 
+    p.lastname, 
+    j.name AS teamname, 
+    COALESCE(t.done,0) AS done, 
+    COALESCE(t1.callahan,0) AS callahan, 
+    COALESCE(s.fedin,0) AS fedin, 
+    (COALESCE(t.done,0) + COALESCE(s.fedin,0)) AS total, 
+    pel.games,
+    ROUND(
+        CASE 
+            WHEN pel.games > 0 THEN (COALESCE(t.done,0) + COALESCE(s.fedin,0)) / pel.games
+            ELSE 0
+        END, 
+        2
+    ) AS avg
+FROM 
+    uo_player AS p 
+LEFT JOIN (
+    SELECT 
+        m.scorer AS scorer, 
+        COUNT(*) AS done 
+    FROM 
+        uo_goal AS m 
+    LEFT JOIN 
+        uo_game_pool AS ps ON (m.game=ps.game)
+    LEFT JOIN 
+        uo_pool pool ON(ps.pool=pool.pool_id)
+    LEFT JOIN 
+        uo_game AS g1 ON (ps.game=g1.game_id)
+    WHERE 
+        pool.series=%d AND 
+        ps.timetable=1 AND 
+        scorer IS NOT NULL AND 
+        g1.isongoing=0 
+    GROUP BY 
+        scorer
+) AS t ON (p.player_id=t.scorer)
+LEFT JOIN (
+    SELECT 
+        m1.scorer AS scorer1, 
+        COUNT(*) AS callahan 
+    FROM 
+        uo_goal AS m1 
+    LEFT JOIN 
+        uo_game_pool AS ps1 ON (m1.game=ps1.game)
+    LEFT JOIN 
+        uo_pool pool ON(ps1.pool=pool.pool_id)
+    LEFT JOIN 
+        uo_game AS g2 ON (ps1.game=g2.game_id)
+    WHERE 
+        pool.series=%d AND 
+        ps1.timetable=1 AND 
+        m1.scorer IS NOT NULL AND 
+        g2.isongoing=0  AND 
+        iscallahan=1 
+    GROUP BY 
+        m1.scorer
+) AS t1 ON (p.player_id=t1.scorer1)
+LEFT JOIN (
+    SELECT 
+        m2.assist AS assist, 
+        COUNT(*) AS fedin 
+    FROM 
+        uo_goal AS m2 
+    LEFT JOIN 
+        uo_game_pool AS ps2 ON (m2.game=ps2.game) 
+    LEFT JOIN 
+        uo_game AS g3 ON (ps2.game=g3.game_id)
+    LEFT JOIN 
+        uo_pool pool ON(ps2.pool=pool.pool_id)
+    WHERE 
+        pool.series=%d AND 
+        ps2.timetable=1 AND 
+        g3.isongoing=0 
+    GROUP BY 
+        assist
+) AS s ON (p.player_id=s.assist) 
+LEFT JOIN 
+    uo_team AS j ON (p.team=j.team_id) 
+LEFT JOIN (
+    SELECT 
+        up.player, 
+        COUNT(*) AS games 
+    FROM 
+        uo_played up
+    LEFT JOIN 
+        uo_game AS g4 ON (up.game=g4.game_id)
+    LEFT JOIN 
+        uo_pool pool ON(g4.pool=pool.pool_id)
+    WHERE 
+        pool.series=%d AND 
+        g4.isongoing=0 
+    GROUP BY 
+        player
+) AS pel ON (p.player_id=pel.player) 
+WHERE 
+    pel.games > 0 AND 
+    j.series=%d
+ORDER BY 
+    avg DESC, 
+    total DESC, 
+    done DESC, 
+    fedin DESC, 
+    lastname ASC",
+    (int)$seriesId,
+    (int)$seriesId,
+    (int)$seriesId,
+    (int)$seriesId,
+    (int)$seriesId
+
+);
+
+if ($limit > 0) {
+  $query .= " limit $limit";
+}
+
+return DBQuery($query);
+}
+
 /**
  * Get division defense board.
  * @param int $seriesId uo_series.series_id
@@ -393,7 +518,7 @@ function SeriesDefenseBoard($seriesId, $sorting, $limit)
 function SeriesSpiritBoard($seriesId)
 {
   $query = sprintf(
-    "SELECT st.team_id, te.name, st.category_id, st.value, pool.series
+    "SELECT st.team_id, te.name, te.club, st.category_id, st.value, pool.series
       FROM uo_team AS te
       LEFT JOIN uo_spirit_score AS st ON (te.team_id=st.team_id)
       LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
@@ -430,7 +555,7 @@ function SeriesSpiritBoard($seriesId)
           $averages[$last_team] = $teamline;
           $total = 0;
         }
-        $teamline = array('teamname' => $row['name']);
+        $teamline = array('teamname' => $row['name'], 'team_id' => $row['team_id'], 'club' => $row['club']);
       }
 
       $sum = 0;
@@ -834,7 +959,7 @@ function ConfirmEnrolledTeam($seriesId, $id)
 
 
     $seriesInfo = SeriesInfo($seriesId);
-    AddSeasonUserRole($teaminfo['userid'], "teamadmin:" . $teamId, $seriesInfo['season']);
+    //AddSeasonUserRole($teaminfo['userid'], "teamadmin:" . $teamId, $seriesInfo['season']);
     $query = sprintf(
       "UPDATE uo_enrolledteam SET status=1 WHERE id=%d",
       (int)$id
@@ -954,4 +1079,68 @@ function SeriesGetAdvance($serieId){
   }
 
   return $advance;
+}
+
+function GetUpcomingSeries(){
+
+    $query = sprintf(
+      "SELECT g.reservation, l.name, p.series, s.name AS seriesname, MIN(DATE(r.starttime)) AS starttime, MAX(DATE(r.endtime)) AS endtime 
+      FROM `uo_game` g
+      INNER JOIN uo_reservation r ON g.reservation = r.id
+      INNER JOIN uo_location l ON r.location = l.id
+      INNER JOIN uo_pool p ON p.pool_id = g.pool
+      INNER JOIN uo_series s ON s.series_id = p.series
+      WHERE DATE(r.endtime) >= CURDATE()
+      GROUP BY p.series"
+    );
+
+    return DBQueryToArray($query);
+}
+
+function CheckTwoTeamsSpirit($game, $home, $visitor){
+    $spiritH = GameGetSpiritPoints($game, $home);
+    $spiritV = GameGetSpiritPoints($game, $visitor);
+
+    if(!empty($spiritH) && !empty($spiritV)){
+      return true;
+    } else {
+      return false;
+    }
+
+}
+
+function SeriesMissingSpirit($series){
+  $query = sprintf(
+    "SELECT
+    uo_game.game_id,
+    uo_game.hometeam,
+    uo_game.visitorteam,
+	uo_team_home.name AS home_team_name,
+    uo_team_visitor.name AS visitor_team_name,
+	uo_game.homescore,
+	uo_game.visitorscore,
+    uo_spirit_score.team_id,
+    COUNT(uo_spirit_score.value) AS value_count
+FROM
+    uo_game
+LEFT JOIN
+    uo_game_pool ON uo_game.game_id = uo_game_pool.game
+LEFT JOIN
+    uo_pool ON uo_game_pool.pool = uo_pool.pool_id
+LEFT JOIN
+    uo_spirit_score ON uo_game.game_id = uo_spirit_score.game_id
+LEFT JOIN
+    uo_team AS uo_team_home ON uo_game.hometeam = uo_team_home.team_id
+LEFT JOIN
+    uo_team AS uo_team_visitor ON uo_game.visitorteam = uo_team_visitor.team_id
+WHERE
+    uo_pool.series = %d
+GROUP BY
+    uo_game.game_id,
+    uo_spirit_score.team_id",
+    (int)$series
+  );
+
+  return DBQueryToArray($query);
+
 }

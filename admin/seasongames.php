@@ -152,7 +152,7 @@ $html .= "<form method='post' action='?view=admin/seasongames&amp;season=$season
 
 $pools = SeriesPools($series_id);
 
-$html .= "<table class='admintable'>\n";
+$html .= "<table class='admintable' id='multicoloured'>\n";
 
 foreach ($pools as $pool) {
   if ($showpool && $showpool != $pool['pool_id'])

@@ -278,19 +278,20 @@ $html .= "<a href='?view=poolstatus&amp;series=" . $seriesinfo['series_id'] . "'
 
 if($seriesinfo["stats"] == 1){
   $html .= "<h2>" . _("Scoreboard leaders") . "</h2>\n";
-  $html .= "<table cellspacing='0' border='0' width='100%'>\n";
+  $html .= "<table cellspacing='0' border='0' width='100%' id='multicoloured'>\n";
   $html .= "<tr><th style='width:200px'>" . _("Player") . "</th><th style='width:200px'>" . _("Team") . "</th><th class='center'>" . _("Games") . "</th>
-  <th class='center'>" . _("Assists") . "</th><th class='center'>" . _("Goals") . "</th><th class='center'>" . _("Tot.") . "</th></tr>\n";
+  <th class='center'>" . _("Assists") . "</th><th class='center'>" . _("Goals") . "</th><th class='center'>" . _("Tot.") . "</th><th class='center'>" . _("Avg.") . "</th></tr>\n";
 
 
-  $scores = SeriesScoreBoard($seriesinfo['series_id'], "total", 10);
+  $scores = SeriesScoreBoardAvg($seriesinfo['series_id'], "total", 10);
   while ($row = mysqli_fetch_assoc($scores)) {
     $html .= "<tr><td>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</td>";
     $html .= "<td>" . utf8entities($row['teamname']) . "</td>";
     $html .= "<td class='center'>" . intval($row['games']) . "</td>";
     $html .= "<td class='center'>" . intval($row['fedin']) . "</td>";
     $html .= "<td class='center'>" . intval($row['done']) . "</td>";
-    $html .= "<td class='center'>" . intval($row['total']) . "</td></tr>\n";
+    $html .= "<td class='center'>" . intval($row['total']) . "</td>";
+    $html .= "<td class='center'>" . $row['avg'] . "</td></tr>\n";
   }
 
   $html .= "</table>";
@@ -339,7 +340,7 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
   $html .= "<a name='spiritboard'></a>";
   $html .= "<h2>" . _("Spirit points average per category") . "</h2>\n";
 
-  $html .= "<table cellspacing='0' border='0' width='100%'>\n";
+  $html .= "<table cellspacing='0' border='0' width='100%' id='multicoloured'>\n";
   //$html .= "<tr><th style='width:150px'>" . _("Team") . "</th>";
 	if ($spsort == "teamname") {
 	  $html .= "<th style='width:150px'>" . _("Team") . "</th>";

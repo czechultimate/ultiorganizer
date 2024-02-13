@@ -53,7 +53,7 @@ function TournamentView($games, $grouping = true)
         $ret .= "</table>\n";
         $isTableOpen = false;
       }
-      $ret .= "<table cellpadding='2' border='0' cellspacing='0'>\n";
+      $ret .= "<table cellpadding='2' border='0' cellspacing='0' id='multicoloured'>\n";
       $isTableOpen = true;
       $ret .= SeriesAndPoolHeaders($game);
     }
@@ -109,7 +109,7 @@ function SeriesView($games, $date = true, $time = false)
         $ret .= "</table>\n";
         $isTableOpen = false;
       }
-      $ret .= "<table cellpadding='2' border='0' cellspacing='0'>\n";
+      $ret .= "<table cellpadding='2' border='0' cellspacing='0' id='multicoloured'>\n";
       $isTableOpen = true;
       $ret .= PoolHeaders($game);
     }
@@ -177,7 +177,7 @@ function PlaceView($games, $grouping = true)
         $ret .= "</table>\n";
         $isTableOpen = false;
       }
-      $ret .= "<table cellpadding='2' border='0' cellspacing='0'>\n";
+      $ret .= "<table cellpadding='2' border='0' cellspacing='0' id='multicoloured'>\n";
       $isTableOpen = true;
       $ret .= PlaceHeaders($game, true);
     }
@@ -219,7 +219,7 @@ function TimeView($games, $grouping = true)
         $isTableOpen = false;
       }
       $ret .= "<h3>" . DefWeekDateFormat($game['time']) . " " . DefHourFormat($game['time']) . "</h3>\n";
-      $ret .= "<table cellpadding='2' border='0' cellspacing='0'>\n";
+      $ret .= "<table cellpadding='2' border='0' cellspacing='0' id='multicoloured'>\n";
       $isTableOpen = true;
     }
 
@@ -255,7 +255,7 @@ function UpcomingView($games, $grouping = true)
         $isTableOpen = false;
       }
       $ret .= "<h3>" . DefWeekDateFormat($game['time']) . " " . DefHourFormat($game['time']) . "</h3>\n";
-      $ret .= "<table cellpadding='2' border='0' cellspacing='0'>\n";
+      $ret .= "<table cellpadding='2' border='0' cellspacing='0' id='multicoloured'>\n";
       $isTableOpen = true;
     }
 
@@ -503,9 +503,8 @@ function GameRow($game, $date = false, $time = true, $field = true, $series = fa
     else
       $ret .= "<td style='$fieldw'></td>\n";
   }
-
   if ($game['hometeam']) {
-    $ret .= "<td class='right' style='$teamw'><span>" . utf8entities($game['hometeamname']) . "</span></td>\n";
+    $ret .= "<td class='right' style='$teamw'><span><a href='?view=teamcard&team=" . $game['hometeam'] . "'>" . utf8entities($game['hometeamname']) . "</a></span></td>\n";
   } else {
     $ret .= "<td class='right' style='$teamw'><span class='schedulingname'>" . utf8entities(U_($game['phometeamname'])) . "</span></td>\n";
   }
@@ -529,7 +528,7 @@ function GameRow($game, $date = false, $time = true, $field = true, $series = fa
   }
 
   if ($game['visitorteam']) {
-    $ret .= "<td style='$teamw'><span>" . utf8entities($game['visitorteamname']) . "</span></td>\n";
+    $ret .= "<td style='$teamw'><span><a href='?view=teamcard&team=" . $game['visitorteam'] . "'>"  . utf8entities($game['visitorteamname']) . "</a></span></td>\n";
   } else {
     $ret .= "<td style='$teamw'><span class='schedulingname'>" . utf8entities(U_($game['pvisitorteamname'])) . "</span></td>\n";
   }
@@ -638,7 +637,7 @@ function GameRowUpcoming($game, $date = false, $time = true, $field = true, $ser
   }
 
   if ($game['hometeam']) {
-    $ret .= "<td class='right' style='$teamw'><span>" . utf8entities($game['hometeamname']) . "</span></td>\n";
+    $ret .= "<td class='right' style='$teamw'><span><a href='?view=teamcard&team=" . $game['hometeam'] . "'>" . utf8entities($game['hometeamname']) . "</a></span></td>\n";
   } else {
     $ret .= "<td class='right' style='$teamw'><span class='schedulingname'>" . utf8entities(U_($game['phometeamname'])) . "</span></td>\n";
   }
@@ -662,7 +661,7 @@ function GameRowUpcoming($game, $date = false, $time = true, $field = true, $ser
   }
 
   if ($game['visitorteam']) {
-    $ret .= "<td style='$teamw'><span>" . utf8entities($game['visitorteamname']) . "</span></td>\n";
+    $ret .= "<td style='$teamw'><span><a href='?view=teamcard&team=" . $game['visitorteam'] . "'>"  . utf8entities($game['visitorteamname']) . "</a></span></td>\n";
   } else {
     $ret .= "<td style='$teamw'><span class='schedulingname'>" . utf8entities(U_($game['pvisitorteamname'])) . "</span></td>\n";
   }

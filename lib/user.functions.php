@@ -1477,6 +1477,54 @@ function GameResponsibilityArray($season, $series = null)
 	return  $ret;
 }
 
+function GameResponsibilityArrayByName($season, $series = null)
+{
+	$gameResponsibilities = GameResponsibilities($season);
+	if (!$gameResponsibilities) {
+		return array();
+	}
+	$query = sprintf(
+		"SELECT game_id, hometeam, kj.name as hometeamname, visitorteam,
+			vj.name as visitorteamname, pp.pool as pool, time, homescore, visitorscore,
+			pool.timecap, pool.timeslot, pool.series AS series, res.reservationgroup,
+			ser.name, pool.name as poolname, res.id as res_id, res.starttime,
+			loc.name AS locationname, res.fieldname AS fieldname, res.location,
+			COALESCE(m.goals,0) AS goals, phome.name AS phometeamname, pvisitor.name AS pvisitorteamname,
+	        pp.isongoing, pp.hasstarted
+		FROM uo_game pp left join uo_reservation res on (pp.reservation=res.id) 
+			left join uo_pool pool on (pp.pool=pool.pool_id)
+			left join uo_series ser on (pool.series=ser.series_id)
+			left join uo_location loc on (res.location=loc.id)
+			left join uo_team kj on (pp.hometeam=kj.team_id)
+			left join uo_team vj on (pp.visitorteam=vj.team_id)
+			LEFT JOIN uo_scheduling_name AS phome ON (pp.scheduling_name_home=phome.scheduling_id)
+			LEFT JOIN uo_scheduling_name AS pvisitor ON (pp.scheduling_name_visitor=pvisitor.scheduling_id)
+			left join (SELECT COUNT(*) AS goals, game FROM uo_goal GROUP BY game) AS m ON (pp.game_id=m.game)
+		WHERE game_id IN (" . implode(",", array_column($gameResponsibilities, 'game_id')) . ")"
+			. ($series ? " AND pool.series=%d" : "") . "
+		ORDER BY res.starttime ASC, ser.name ASC, pp.time ASC",
+		$series ? (int)$series : 0
+	);
+
+	$result = DBQuery($query);
+
+	$ret = array();
+	while ($row = mysqli_fetch_assoc($result)) {
+		if (!isset($ret[$row['name']])) {
+			$ret[$row['name']] = array();
+		}
+		if (!isset($ret[$row['name']][$row['series']])) {
+			$ret[$row['name']][$row['series']] = array();
+		}
+		$gamesArray = $ret[$row['name']][$row['series']];
+		$gamesArray['starttime'] = $row['starttime'];
+		$gamesArray['locationname'] = utf8entities($row['locationname']);
+		$gamesArray[$row['game_id']] = $row;
+		$ret[$row['name']][$row['series']] = $gamesArray;
+	}
+	return  $ret;
+}
+
 function UserResetPassword($userId)
 {
 	Log1("user", "change", $userId, "", "reset password");
