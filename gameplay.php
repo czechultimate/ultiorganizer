@@ -722,18 +722,18 @@ if(ongoing == 1){
 
   eventSource.onmessage = function(event) {
       const data = JSON.parse(event.data);
-      if (data.action === "init") {
+      if (data.event_type === "init") {
           console.log('Received message:', event.data);
-      } else if (data.action === "update") {
+      } else if (data.event_type === "goal") {
         addNewRow(data);
         console.log('Received message:', event.data);
-      }  else if (data.action === "timeout") {
+      } /* else if (data.event_type === "timeout") {
         addTimeOut(data);
         console.log('Received message:', event.data);
-      }  else if (data.action === "halftime"){
+      } */ else if (data.event_type === "halftime"){
         addHalftime(data);
         console.log('Received message:', event.data);
-      } else if (data.action === "close"){
+      } else if (data.event_type === "close"){
         eventSource.close();
         console.log('Received message:', event.data);
       } else {
@@ -743,94 +743,111 @@ if(ongoing == 1){
 }
 
 function addNewRow(data) {
-        const action = data.action;
-        const gameId = data.gameId;
         const num = data.num;
         const time = data.time;
-        const home = data.home;
+        const ishomegoal = data.ishomegoal;
         const homescore = data.homescore;
+        const iscallahan = data.iscallahan;
         const visitorscore = data.visitorscore;
         const assistFirstName = data.assistfirstname;
         const assistLastName = data.assistlastname;
         const scorerFirstName = data.scorerfirstname;
         const scorerLastName = data.scorerlastname;
 
-        
-
         var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
         var newRow = table.insertRow(table.rows.length - 1);
 
-        var prePreLastRow = table.rows[table.rows.length - 3];
+        if(table.rows[table.rows.length - 3].cells[0].classList.contains("halftime")){
+          var prePreLastRow = table.rows[table.rows.length - 4];
+        }else {
+          var prePreLastRow = table.rows[table.rows.length - 3];
+        }
 
         var prevTime = prePreLastRow.cells[3].innerHTML;
 
         var cell1 = newRow.insertCell(0);
-        var scoreClass = (home == 1) ? "home" : "guest";
+        var scoreClass = (ishomegoal == 1) ? "home" : "guest";
         cell1.innerHTML = homescore + " - " + visitorscore;
         cell1.setAttribute("style", "width:45px;white-space: nowrap");
         cell1.setAttribute("class", scoreClass);
 
         var cell2 = newRow.insertCell(1);
+        if(iscallahan == 1){
+        cell2.innerHTML = "Callahan-goal";
+        cell2.setAttribute("class", "callahan");
+        } else {
         cell2.innerHTML = assistFirstName + " " + assistLastName ;
+        }
 
         var cell3 = newRow.insertCell(2);
         cell3.innerHTML = scorerFirstName + " " + scorerLastName ;
 
         var cell4 = newRow.insertCell(3);
-        cell4.innerHTML = time;
+        cell4.innerHTML = secToMin(time);
 
 
         var cell5 = newRow.insertCell(4);
         if(num == 0){
-          cell5.innerHTML = time;
+          cell5.innerHTML = secToMin(time);
         }else {
-          cell5.innerHTML = (time - prevTime).toFixed(2);
+          cell5.innerHTML = secToMin(time -  minToSec(prevTime));
         }
 
         var cell6 = newRow.insertCell(5);
     }
 
 function addTimeOut(data){
-    var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
-    var j = 1;
-      for(var i = 1; i < table.rows.length; i++){
 
-        if(i > 1){
-          j = i-1;
-        }
+        var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
 
-        if(table.rows[i].cells[0].getAttribute("class") == "halftime"){
-          continue;
-        } else if(table.rows[j].cells[0].getAttribute("class") == "halftime"){
-          j = j-1;
-        }
+          var newRow = table.insertRow(table.rows.length - 1);
+          var cell1 = newRow.insertCell(0);
+          var cell2 = newRow.insertCell(1);
+          var cell3 = newRow.insertCell(2);
+          var cell4 = newRow.insertCell(3);
+          var cell5 = newRow.insertCell(4);
+          var cell6 = newRow.insertCell(5);
 
-        if((parseFloat(table.rows[i].cells[3].innerHTML) > parseFloat(data.timeouttime) && parseFloat(table.rows[j].cells[3].innerHTML) < parseFloat(data.timeouttime)) || table.rows.length==3){
-          var timeoutClass = (data.timeouthome == 1) ? "home" : "guest";
+        var timeoutClass = (data.timeout_ishome == 1) ? "home" : "guest";
 
           var divElement = document.createElement("div");
 
           divElement.setAttribute("class", timeoutClass);
 
-          divElement.innerHTML = "Time-out " + data.timeouttime;
-          table.rows[i].cells[5].appendChild(divElement);
-          console.log('Received message:');
-          break;
-        }
-      }
+          divElement.innerHTML = "Time-out " + secToMin(data.time);
+
+          cell6.appendChild(divElement);
     }
 
     function addHalftime(data){
       var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
-      for(var i = 1; i < table.rows.length; i++){
-        if((parseFloat(table.rows[i].cells[3].innerHTML) > parseFloat(data.halftime) && parseFloat(table.rows[i-1].cells[3].innerHTML) < parseFloat(data.halftime))){
-          var newRow = table.insertRow(i);
-          var cell1 = newRow.insertCell(0);
+        var newRow = table.insertRow(table.rows.length - 1);
+
+        var cell1 = newRow.insertCell(0);
           cell1.innerHTML = "Half-time";
           cell1.setAttribute("colspan", 6);
           cell1.setAttribute("class", "halftime");
-          break;
-        }
-      }
+    }
+
+    function secToMin(sec) {
+    var s = parseInt(sec);
+    var str = s % 60;
+
+    if (str.toString().length === 1)
+        str = "0" + str;
+
+    s = s / 60;
+    return parseInt(s) + "." + str;
+  }
+
+  function minToSec(min) {
+    var parts = min.toString().split('.'); 
+    var wholeMinutes = parseInt(parts[0]); 
+    var seconds = parseInt(parts[1]);
+
+    var totalSeconds = (wholeMinutes * 60) + seconds; 
+    return totalSeconds;
 }
+
+
 </script>

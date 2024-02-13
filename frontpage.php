@@ -15,6 +15,10 @@ $html .= "<h1> TURNAJE </h1>";
 
 $series = GetUpcomingSeries();
 
+if(empty($series)){
+  $html .= "<p> V nejbližší době se nekoná žádný turnaj. </p>";
+}
+
 foreach($series as $s){
   $html .= "<p><a href=https://www.uniulti.cz/?view=games&series=" . $s['series']. "&filter=upcoming&group=all><h1>" . $s['seriesname'] . "</a></h1>
               <ul>

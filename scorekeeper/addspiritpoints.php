@@ -70,6 +70,19 @@ if ($season['spiritmode'] > 0) {
         utf8entities($game_result['hometeamname']) . "</a>";
     }
   }
+
+  if(GameRespTeamBoth($gameId) == 1){
+    if ($ishome) {
+      $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['visitorteam'] .
+        "' data-role='button' data-ajax='false'>" . _("Spirit points for") . " " .
+        utf8entities($game_result['visitorteamname']) . "</a>";
+    } else {
+      $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['hometeam'] .
+        "' data-role='button' data-ajax='false'>" . _("Spirit points for") . " " .
+        utf8entities($game_result['hometeamname']) . "</a>";
+    }
+  }
+
   } else {
     $html .= "<p>" . sprintf(_("Spirit points not given for %s."), utf8entities($season['name'])) . "</p>";
   }

@@ -82,7 +82,9 @@ foreach ($respGameArray as $tournament => $resArray) {
 
         if (!empty($prevrg)) {
           $html .= "<li><a href='#' data-role='button' data-rel='back'>" . _("Back") . "</a></li>";
-          $html .= "<li><a href='?view=checkspirit&amp;series=". $prevseries . "' data-role='button' data-ajax='false'>" . _("Check missing spirit") . "</a></li>";
+          if(hasEditGamesRight($prevseries)){
+            $html .= "<li><a href='?view=checkspirit&amp;series=". $prevseries . "' data-role='button' data-ajax='false'>" . _("Check missing spirit") . "</a></li>";
+          }
           $html .= "</ul></li>\n";
         }
         $html .= "<li>\n";
@@ -184,7 +186,9 @@ if (!empty($prevrg)) {
 
 if (!empty($prevloc)) {
   $html .= "<li><a href='#' data-role='button' data-rel='back'>" . _("Back") . "</a></li>";
-  $html .= "<li><a href='?view=checkspirit&amp;series=". $prevseries . "' data-role='button' data-ajax='false'>" . _("Check missing spirit") . "</a></li>";
+  if(hasEditGamesRight($prevseries)){
+   $html .= "<li><a href='?view=checkspirit&amp;series=". $prevseries . "' data-role='button' data-ajax='false'>" . _("Check missing spirit") . "</a></li>";
+  }
   $html .= "</ul></li>\n";
 }
 

@@ -180,6 +180,27 @@ function GameRespTeam($gameId)
 	return -1;
 }
 
+function GameRespTeamBoth($gameId)
+{
+	$query = sprintf(
+		"SELECT hometeam, visitorteam 
+		FROM uo_game  
+		WHERE game_id='%s'",
+		(int)$gameId
+	);
+	$result = DBQuery($query);
+	if (!$result) {
+		die('Invalid query: ');// . mysql_error());
+	}
+
+	$row = mysqli_fetch_assoc($result);
+	if (isset($_SESSION['userproperties']['userrole']['teamadmin'][$row['hometeam']]) && isset($_SESSION['userproperties']['userrole']['teamadmin'][$row['visitorteam']])) {
+		return 1;
+	}
+
+	return -1;
+}
+
 /**
  * Returns game admins (scorekeepers) for given game.
  *
@@ -1945,4 +1966,24 @@ function AddSpiritScore($gameId, $teamId, $categoryId, $value = -1, $note = ""){
 	} else {
 		die('Insufficient rights to edit game');
 	}
+}
+
+function GetGameLastPoint($gameId){
+	$query = sprintf(
+		"SELECT * FROM `uo_game_stats` WHERE game_id = %d ORDER BY time DESC",
+		(int)$gameId
+	);
+	
+	return DBQueryToRow($query);
+}
+
+function GetGameLastGoals($gameId, $time)
+{
+	$query = sprintf(
+		"SELECT * FROM `uo_game_stats` WHERE game_id = %d AND time > %d ORDER BY time ASC",
+		(int)$gameId,
+		(int)$time
+	);
+
+	return DBQueryToArray($query);
 }
