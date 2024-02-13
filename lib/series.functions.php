@@ -94,14 +94,12 @@ function SeriesTypes()
     "master women",
     "master mixed",
     "grand master",
-    "U19 open",
-    "U19 women",
-    "U19 mixed",
-    "U23 open",
-    "U23 women",
-    "U23 mixed",
-    "junior open",
-    "junior women"
+    "U17 open",
+    "U17 women",
+    "U17 mixed",
+    "U20 open",
+    "U20 women",
+    "U20 mixed",
   );
 }
 
