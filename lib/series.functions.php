@@ -509,6 +509,84 @@ function SeriesDefenseBoard($seriesId, $sorting, $limit)
   return DBQuery($query);
 }
 
+function SeriesSpiritBoardOnlyFilled($seriesId){
+  $query = sprintf(
+    "SELECT g1.game_id,st.team_id, te.name, te.club, st.category_id, st.value, pool.series
+      FROM uo_team AS te
+      LEFT JOIN uo_spirit_score AS st ON (te.team_id=st.team_id)
+      LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
+      LEFT JOIN uo_pool pool ON(gp.pool=pool.pool_id)
+      LEFT JOIN uo_game AS g1 ON (gp.game=g1.game_id)
+      WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0 AND st.value IS NOT NULL
+      ORDER BY st.team_id, st.category_id",
+    $seriesId
+  );
+
+  $scores = DBQueryToArray($query);
+  $last_team = null;
+  $last_category = null;
+  $averages = array();
+  $total = 0;
+  $sum = 0;
+  $games = 0;
+
+  $results = SeriesMissingSpirit($seriesId);
+  $game_ids_grouped = GroupSpiritResult($results);
+
+  $missing_records = [];
+  foreach($game_ids_grouped as $gameId => $game){
+      if(is_null($game['spirit1']) || is_null($game['spirit2'])){
+        array_push($missing_records,$gameId);
+      } 
+  }
+    
+  foreach ($scores as $row) {
+    if(!in_array($row['game_id'],$missing_records)){
+      if ($last_team != $row['team_id'] || $last_category != $row['category_id']) {
+        if (!is_null($last_category)) {
+          if (!isset($factor[$last_category])) {
+            $factor[$last_category] = DBQueryToArray(sprintf("SELECT * FROM uo_spirit_category WHERE category_id=%d", (int) $last_category))[0]['factor'];
+          }
+          $teamline[$last_category] = SafeDivide($sum, $games);
+          $total += SafeDivide($factor[$last_category] * $sum, $games);
+        }
+
+        if ($last_team != $row['team_id']) {
+          if (!is_null($last_team)) {
+            $teamline['total'] = $total;
+            $teamline['games'] = $games;
+            $averages[$last_team] = $teamline;
+            $total = 0;
+          }
+          $teamline = array('teamname' => $row['name'], 'team_id' => $row['team_id'], 'club' => $row['club']);
+        }
+
+        $sum = 0;
+        $games = 0;
+        $last_team = $row['team_id'];
+        $last_category = $row['category_id'];
+      }
+
+      
+      $sum += $row['value'];
+      ++$games;
+    }
+  }
+
+  
+
+  if (!is_null($last_team)) {
+    $factor[$last_category] = DBQueryToArray(sprintf("SELECT * FROM uo_spirit_category WHERE category_id=%d", (int) $last_category))[0]['factor'];
+    $teamline[$last_category] = SafeDivide($sum, $games);
+    $total += SafeDivide($factor[$last_category] * $sum, $games);
+    $teamline['total'] = $total;
+    $teamline['games'] = $games;
+    $averages[$last_team] = $teamline;
+  }
+
+  return $averages;
+}
+
 /**
  * Get division spirit score per category.
  * @param int $seriesId uo_series.series_id
@@ -518,7 +596,7 @@ function SeriesDefenseBoard($seriesId, $sorting, $limit)
 function SeriesSpiritBoard($seriesId)
 {
   $query = sprintf(
-    "SELECT st.team_id, te.name, te.club, st.category_id, st.value, pool.series
+    "SELECT g1.game_id,st.team_id, te.name, te.club, st.category_id, st.value, pool.series
       FROM uo_team AS te
       LEFT JOIN uo_spirit_score AS st ON (te.team_id=st.team_id)
       LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
@@ -581,6 +659,44 @@ function SeriesSpiritBoard($seriesId)
   }
 
   return $averages;
+}
+
+function SeriesAllSpiritPointsOnlyFilled($seriesId)
+{
+  $query = sprintf(
+    "SELECT g1.game_id, st.team_id, te.name, SUM(st.value) AS total_value, pool.series
+    FROM uo_team AS te
+    LEFT JOIN uo_spirit_score AS st ON (te.team_id=st.team_id)
+    LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
+    LEFT JOIN uo_pool pool ON(gp.pool=pool.pool_id)
+    LEFT JOIN uo_game AS g1 ON (gp.game=g1.game_id)
+    WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0
+    GROUP BY st.team_id, te.name, pool.series
+    ORDER BY st.team_id;",
+    $seriesId
+  );
+
+  $spirits = DBQueryToArray($query);
+  $spiritSum = array();
+  
+  $results = SeriesMissingSpirit($seriesId);
+  $game_ids_grouped = GroupSpiritResult($results);
+
+  $missing_records = [];
+  foreach($game_ids_grouped as $gameId => $game){
+      if(is_null($game['spirit1']) || is_null($game['spirit2'])){
+        array_push($missing_records,$gameId);
+      } 
+  }
+
+  foreach ($spirits as $row) {
+    if(!in_array($row['game_id'],$missing_records)){
+      $teamline['total_value'] = $row['total_value'];
+      $spiritSum[$row['team_id']] = $teamline;
+    }
+  }
+
+  return $spiritSum;
 }
 
 /**
@@ -1143,4 +1259,26 @@ GROUP BY
 
   return DBQueryToArray($query);
 
+}
+
+function GroupSpiritResult($results){
+  $game_ids_grouped = [];
+  $current_game_id = null;
+  foreach ($results as $result) {
+      $game_id = $result['game_id'];
+      if ($game_id === $current_game_id) {
+          $game_ids_grouped[$game_id]['spirit2'] = $result['team_id'];
+      } else {
+          $game_ids_grouped[$game_id]['hometeam'] = $result['hometeam'];
+          $game_ids_grouped[$game_id]['visitorteam'] = $result['visitorteam'];
+          $game_ids_grouped[$game_id]['homescore'] = $result['homescore'];
+          $game_ids_grouped[$game_id]['visitorscore'] = $result['visitorscore'];
+          $game_ids_grouped[$game_id]['homename'] = $result['home_team_name'];
+          $game_ids_grouped[$game_id]['visitname'] = $result['visitor_team_name'];
+          $game_ids_grouped[$game_id]['spirit1'] = $result['team_id'];
+          $current_game_id = $game_id;
+      }
+  }
+
+  return $game_ids_grouped;
 }

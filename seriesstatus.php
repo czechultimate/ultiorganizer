@@ -32,8 +32,9 @@ if (iget("spsort")) {
 $teamstats = array();
 $allteams = array();
 $teams = SeriesTeams($seriesinfo['series_id']);
-$spiritAvg = SeriesSpiritBoard($seriesinfo['series_id']);
-$spiritTtl = SeriesAllSpiritPoints($seriesinfo['series_id']);
+$spiritAvg = SeriesSpiritBoardOnlyFilled($seriesinfo['series_id']);
+$spiritTtl = SeriesAllSpiritPointsOnlyFilled($seriesinfo['series_id']);
+
 foreach ($teams as $team) {
   $stats = TeamStats($team['team_id']);
   $points = TeamPoints($team['team_id']);
