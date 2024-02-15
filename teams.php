@@ -246,7 +246,7 @@ if ($list == "allteams" || $list == "byseeding") {
     $html .= "</div>\n";
 
     foreach ($series as $row) {
-      $spiritAvg = SeriesSpiritBoard($row['series_id']);
+      $spiritAvg = SeriesSpiritBoardOnlyFilled($row['series_id']);
 
       usort($spiritAvg, function ($a, $b) {
         return $a['total'] < $b['total'];
