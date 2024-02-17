@@ -14,7 +14,8 @@ $LAYOUT_ID = SEASONGAMES;
 $html = "";
 $season = $_GET["season"];
 $series = SeasonSeries($season);
-$series_id = CurrentSeries($season);
+$series_id = isset($_GET['series']) ? $_GET['series'] : $series[0]['series_id'];//CurrentSeries($season);
+
 $seasoninfo = SeasonInfo($season);
 
 $title = utf8entities(SeasonName($season)) . ": " . _("Games");

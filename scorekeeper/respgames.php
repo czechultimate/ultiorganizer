@@ -160,11 +160,19 @@ foreach ($respGameArray as $tournament => $resArray) {
               if (intval($seasoninfo['spiritmode'] > 0) && isSeasonAdmin($seasoninfo['season_id'])) {
                 $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
               } else if(hasEditGameSpiritRight($gameId)){
-                $team = FindTeamInArray($teamAdminIdArray, $game['hometeam'], $game['visitorteam']);
-                if(empty(GameGetSpiritPoints($gameId,$team))){
-                  $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false' style='color: red;border: 2px solid red;'>" . _("Spirit") . "</a>";
-                } else{
-                  $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
+                if(GameRespTeamBoth($gameId) == 1){
+                  if(empty(GameGetSpiritPoints($gameId, $game['hometeam'])) || empty(GameGetSpiritPoints($gameId,$game['visitorteam']))){
+                    $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false' style='color: red;border: 2px solid red;'>" . _("Spirit") . "</a>";
+                  } else{
+                    $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
+                  }
+                } else {
+                  $team = FindTeamInArray($teamAdminIdArray, $game['hometeam'], $game['visitorteam']);
+                  if(empty(GameGetSpiritPoints($gameId,$team))){
+                    $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false' style='color: red;border: 2px solid red;'>" . _("Spirit") . "</a>";
+                  } else{
+                    $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
+                  }
                 }
               }
               $html .= "</div>\n";

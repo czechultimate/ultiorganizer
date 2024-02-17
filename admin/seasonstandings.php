@@ -10,7 +10,8 @@ include_once 'lib/pool.functions.php';
 $LAYOUT_ID = SEASONSTANDINGS;
 
 $season = $_GET["season"];
-$series_id = CurrentSeries($season);
+$series = SeasonSeries($season);
+$series_id = isset($_GET['series']) ? $_GET['series'] : $series[0]['series_id'];//CurrentSeries($season);
 
 $title = utf8entities(SeasonName($season)) . ": " . _("Pool standings");
 

@@ -73,13 +73,25 @@ if ($season['spiritmode'] > 0) {
 
   if(GameRespTeamBoth($gameId) == 1){
     if ($ishome) {
+      if(empty(GameGetSpiritPoints($gameId,$game_result['visitorteam']))){
+        $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['visitorteam'] .
+        "' data-role='button' data-ajax='false' style='color: red;border: 2px solid red;'>" . _("Spirit points for") . " " .
+        utf8entities($game_result['visitorteamname']) . "</a>";
+      } else {
       $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['visitorteam'] .
         "' data-role='button' data-ajax='false'>" . _("Spirit points for") . " " .
         utf8entities($game_result['visitorteamname']) . "</a>";
+      }
     } else {
+      if(empty(GameGetSpiritPoints($gameId,$game_result['hometeam']))){
+        $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['hometeam'] .
+        "' data-role='button' data-ajax='false' style='color: red;border: 2px solid red;'>" . _("Spirit points for") . " " .
+        utf8entities($game_result['hometeamname']) . "</a>";
+      } else {
       $html .= "<a href='?view=addspiritpoints&game=" . $gameId . "&team=" . $game_result['hometeam'] .
         "' data-role='button' data-ajax='false'>" . _("Spirit points for") . " " .
         utf8entities($game_result['hometeamname']) . "</a>";
+      }
     }
   }
 

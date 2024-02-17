@@ -34,12 +34,15 @@ if (isset($_GET['season'])) {
 } else {
   $season = CurrentSeason();
 }
+
+$series = SeasonSeries($season);
+
 if (isset($_GET['series'])) {
   $series_id = $_GET['series'];
 } else {
-  $series_id = null;
+  $series_id = $series[0]['series_id'];
 }
-$series = SeasonSeries($season);
+
 
 
 $hidestarted = -1;
