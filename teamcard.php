@@ -576,7 +576,6 @@ if ($played) {
   $html .= "</table>";
 }
 
-$spnoteID = GetSpiritCommentID();
 $allgames = TimetableGames($teamId, "team", "all", "time");
 
 $spiritto = array();
@@ -585,10 +584,12 @@ foreach($allgames as $game){
   if($teamId == $game['hometeam']){
     $tmpa1 = array('team' => $game['visitorteamname'],'teamid' => $game['visitorteam']);
     $tmpa1['spirit'] = GameGetSpiritPoints($game['game_id'], $game['hometeam']);
+    $tmpa1['note'] = GameGetSpiritComment($game['game_id'], $game['hometeam'])['note'];
 
     $tmpa2 = array('team' => $game['visitorteamname'], 'teamid' => $game['visitorteam']);
     $tmpa2['spirit'] = GameGetSpiritPoints($game['game_id'], $game['visitorteam']);
-
+    $tmpa2['note'] = GameGetSpiritComment($game['game_id'], $game['visitorteam'])['note'];
+    
     if(!empty($tmpa1['spirit']) && !empty($tmpa2['spirit'])){
       $spiritfrom[$game['game_id']] = $tmpa1;
       $spiritto[$game['game_id']] = $tmpa2;
@@ -596,9 +597,11 @@ foreach($allgames as $game){
   } else {
     $tmpa1 = array('team' => $game['hometeamname'], 'teamid' => $game['hometeam']);
     $tmpa1['spirit'] = GameGetSpiritPoints($game['game_id'], $game['visitorteam']);
+    $tmpa1['note'] = GameGetSpiritComment($game['game_id'], $game['visitorteam'])['note'];
 
     $tmpa2 = array('team' => $game['hometeamname'], 'teamid' => $game['hometeam']);
     $tmpa2['spirit'] = GameGetSpiritPoints($game['game_id'], $game['hometeam']);
+    $tmpa2['note'] = GameGetSpiritComment($game['game_id'], $game['hometeam'])['note'];
 
     if(!empty($tmpa1['spirit']) && !empty($tmpa2['spirit'])){
       $spiritfrom[$game['game_id']] = $tmpa1;
@@ -624,11 +627,10 @@ if ($spiritfrom) {
   <th class='center' style='width:7%'>" . _("Comm.") . "</th>
   <th class='center' style='width:7%'>" . _("Total") . "</th>
   <th style='width:40%'>" . _("Comments") . "</th></tr>\n";
-  
-  foreach($spiritfrom as $spfrom){
+
+    foreach($spiritfrom as $spfrom){
     $totalTeam++;
     $total = 0;
-    $comment = "";
     $html .= "<tr>";
     $flag = true;
     foreach($spfrom['spirit'] as $key => $sp){
@@ -636,7 +638,6 @@ if ($spiritfrom) {
         $html .= "<td><a href=\"?view=teamcard&amp;team=" . $spfrom['teamid'] . "\">" . $spfrom['team'] . "</a></td>";
         $flag = false;
       }
-      if($key != $spnoteID){
         $spirtFromAvg[$iterator] += $sp;
        $html .= "<td class='center'>" . $sp . "</td>";
        $total += $sp;
@@ -644,15 +645,14 @@ if ($spiritfrom) {
        if($iterator == 6){
         $iterator = 1;
        }
-      } else {
-        $comment = $sp;
-      }
+
       
     }
     if($total > 0){
       $totalRec += $total;
       $html .= "<td class='center'>" . $total . "</td>";
-      $html .= "<td class='center'>" . $comment . "</td>";
+
+      $html .= "<td>" . $spfrom['note'] . "</td>";
     }
     $html .= "</tr>";
   }
@@ -715,11 +715,9 @@ if ($spiritto) {
   <th class='center' style='width:7%'>" . _("Comm.") . "</th>
   <th class='center' style='width:7%'>" . _("Total") . "</th>
   <th style='width:40%'>" . _("Comments") . "</th></tr>\n";
-
   foreach($spiritto as $spto){
     $totalTeam++;
     $total = 0;
-    $comment = "";
     $html .= "<tr>";
     $flag = true;
     foreach($spto['spirit'] as $key => $sp){
@@ -727,7 +725,6 @@ if ($spiritto) {
         $html .= "<td><a href=\"?view=teamcard&amp;team=" . $spto['teamid'] . "\">" . $spto['team'] . "</a></td>";
         $flag = false;
       }
-      if($key != $spnoteID){
         $spirtGivenAvg[$iterator] += $sp;
         $html .= "<td class='center'>" . $sp . "</td>";
         $total += $sp;
@@ -735,15 +732,11 @@ if ($spiritto) {
         if($iterator == 6){
          $iterator = 1;
         }
-       } else {
-         $comment = $sp;
-       }
-      
     }
     if($total > 0){
       $totalGiven += $total;
       $html .= "<td class='center'>" . $total . "</td>";
-      $html .= "<td class='center'>" . $comment . "</td>";
+      $html .= "<td>" . $spto['note'] . "</td>";
     }
     $html .= "</tr>";
   }

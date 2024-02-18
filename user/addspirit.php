@@ -56,25 +56,27 @@ if ($season['spiritmode'] > 0) {
 
   if ($teamId > 0) {
     if ($teamId == $game_result['visitorteam']) {
-  $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['hometeamname']) . "</h3>\n";
-
-  $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
-  $html .= SpiritTable($game_result, $points, $categories, true);
+      $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['hometeamname']) . "</h3>\n";
+      $comment = GameGetSpiritComment($gameId, $game_result['hometeam']);
+      $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
+      $html .= SpiritTable($game_result, $points, $categories,0, $comment['note'], true);
     }
     if ($teamId == $game_result['hometeam']) {
-  $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['visitorteamname']) . "</h3>\n";
-
-  $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
-  $html .= SpiritTable($game_result, $points, $categories, false);
+      $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['visitorteamname']) . "</h3>\n";
+      $comment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
+      $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
+      $html .= SpiritTable($game_result, $points, $categories, 1, $comment['note'], true);
     }
   } else {
     $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['hometeamname']) . "</h3>\n";
 
     $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
-    $html .= SpiritTable($game_result, $points, $categories, true);
+    $comment = GameGetSpiritComment($gameId, $game_result['hometeam']);
+    $html .= SpiritTable($game_result, $points, $categories,1,$comment['note'], true);
     $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['visitorteamname']) . "</h3>\n";
     $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
-    $html .= SpiritTable($game_result, $points, $categories, false);
+    $comment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
+    $html .= SpiritTable($game_result, $points, $categories,0,$comment['note'], true);
   }
   $html .= "<p>";
   $html .= "<input class='button' type='submit' name='save' value='" . _("Save") . "'/>";

@@ -43,14 +43,14 @@ if ($season['spiritmode'] > 0) {
   $html .= "<form action='?view=addspiritpoints' method='post' data-ajax='false'>\n";
   if ($ishome) {
     $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['hometeamname']) . "</h3>\n";
-
+    $comment = GameGetSpiritComment($gameId, $game_result['hometeam']);
     $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
-    $html .= SpiritTable($game_result, $points, $categories, true, false);
+    $html .= SpiritTable($game_result, $points, $categories, true, $comment['note'], false);
   } else {
     $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['visitorteamname']) . "</h3>\n";
-
+    $comment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
     $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
-    $html .= SpiritTable($game_result, $points, $categories, false, false);
+    $html .= SpiritTable($game_result, $points, $categories, false, $comment['note'], false);
   }
 
   $html .= "<p>";

@@ -1826,27 +1826,15 @@ function ResultsToCsv($season, $separator)
 	return ResultsetToCsv($result, $separator);
 }
 
-function SpiritTable($gameinfo, $points, $categories, $home, $wide = true)
+function SpiritTable($gameinfo, $points, $categories, $home, $comment, $wide = true)
 {
 	$home = $home ? "home" : "vis";
 	$html = "<table>\n";
 	$html .= "<tr>";
 	if ($wide)
 		$html .= "<th style='width:70%;text-align: right;'></th>";
-	$vmin = 99999;
-	$vmax = -99999;
-	foreach ($categories as $cat) {
-		if ($vmin > $cat['min'])
-			$vmin = $cat['min'];
-		if ($vmax < $cat['max'])
-			$vmax = $cat['max'];
-	}
-
-	if ($vmax - $vmin < 12) {
 		$colspan = ($wide ? 3 : 2);
 		$html .= "<th></th></tr>\n";
-
-		$spnoteID = GetSpiritCommentID();
 
 		foreach ($categories as $cat) {
 			if ($cat['index'] == 0)
@@ -1863,45 +1851,36 @@ function SpiritTable($gameinfo, $points, $categories, $home, $wide = true)
 				$html .= "</td>";
 			else
 				$html .= "</td></tr>\n<tr>";
-			if ($id == $spnoteID){
-				$html .= "<td class='center'>
-				  <textarea rows='4' maxlength='500' id='" . $home . "cat" . $id . "_0' name='" . $home . "cat" . $id . "' >" . $points[$id] . "</textarea></td>";
-			} else {
+
 				$html .= "<td><fieldset id='" . $home . "cat'" . $id . "_0' data-role='controlgroup' data-type='horizontal' >";
-				for ($i = $vmin; $i <= $vmax; ++$i) {
-					if ($i < $cat['min']) {
-						// $html .= "<td></td>";
-					} else {
-						
+				for ($i = 0; $i <= 4; ++$i) {
 						$id = $cat['category_id'];
 						$checked = (isset($points[$id]) && !is_null($points[$id]) && $points[$id] == $i) ? "checked='checked'" : "";
 						$html .= "<label for='" . $home . "cat" . $id . "_" . $i . "'>$i</label>";
 						$html .= "<input type='radio' id='" . $home . "cat" . $id . "_" . $i . "' name='" . $home . "cat" . $id . "' value='$i' $checked/>";
-
-						// $html .= "<td class='center'>
-						// <input type='radio' id='".$home."cat".$id."_".$i."' name='".$home."cat". $id . "' value='$i'  $checked/></td>";
-					}
 				}
 				$html .= "</fieldset></td>";
-			}
 			$html .= "</tr>\n";
 		}
-	} else {
-		$colspan = 2;
-		$html .= "<th colspan='2'></th></tr>\n";
+		
+		$html .= "<tr>";
+		if ($wide)
+			$html .= "<td style='width:70%'>";
+		else
+			$html .= "<td colspan='$colspan'>";
 
-		foreach ($categories as $cat) {
-			if ($cat['index'] == 0)
-				continue;
-			$id = $cat['category_id'];
-			$html .= "<tr>";
-			$html .= "<td style='width:70%'>" . _($cat['text']);
-			$html .= "<input type='hidden' id='" . $home . "valueId$id' name='" . $home . "valueId[]' value='$id'/></td>";
-			$html .= "<td class='center'>
-      <input type='text' id='" . $home . "cat" . $id . "_0' name='" . $home . "cat$id' value='" . $points[$id] . "'/></td>";
-			$html .= "</tr>\n";
-		}
-	}
+		$html .= _("Spirit comment");
+		$html .= "<input type='hidden' id='" . $home . "valueId$id' name='" . $home . "valueId[]' value='$id'/>";
+
+		if ($wide)
+			$html .= "</td>";
+		else
+			$html .= "</td></tr>\n<tr>";
+
+		$html .= "<td class='center'>
+				<textarea rows='4' maxlength='500' id='" . $home . "catcomment_0' name='" . $home . "catcatcomment' >" . $comment . "</textarea></td>";
+		$html .= "</tr>\n";
+
 
 
 	$html .= "<tr>";
