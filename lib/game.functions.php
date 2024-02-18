@@ -1159,22 +1159,8 @@ function GameSetSpiritPoints($gameId, $teamId, $home, $points, $categories)
 		);
 		DBQuery($query);
 
-		$spnoteID = GetSpiritCommentID();
 
 		foreach ($points as $cat => $value) {
-			if ($cat == $spnoteID) {
-				if (!is_null($value) && $value != "") {
-					$query = sprintf(
-						"INSERT INTO uo_spirit_score (`game_id`, `team_id`, `category_id`, `note`)
-				VALUES (%d, %d, %d, '%s')",
-						(int) $gameId,
-						(int) $teamId,
-						(int) $cat,
-						 $value
-					);
-					DBQuery($query);
-				}
-			}else{
 				if (!is_null($value)) {
 					$query = sprintf(
 						"INSERT INTO uo_spirit_score (`game_id`, `team_id`, `category_id`, `value`)
@@ -1186,7 +1172,6 @@ function GameSetSpiritPoints($gameId, $teamId, $home, $points, $categories)
 					);
 					DBQuery($query);
 				}
-			}
 		}
 	} else {
 		die('Insufficient rights to edit game');
@@ -1215,7 +1200,7 @@ function GameSetSpiritComment($gameId, $teamId, $note)
 		);
 		DBQuery($query);
 
-
+		if (!is_null($note) && $note != "") {
 		$query = sprintf(
 			"INSERT INTO uo_spirit_comment (`game_id`, `team_id`, `note`)
 			VALUES (%d, %d,'%s')",
@@ -1223,7 +1208,9 @@ function GameSetSpiritComment($gameId, $teamId, $note)
 			(int) $teamId,
 			 $note
 		);
+	
 		DBQuery($query);
+	}
 	} else {
 		die('Insufficient rights to edit game');
 	}
@@ -1907,20 +1894,6 @@ function StartGame($gameId){
 		DBQuery($query);
 	} else {
 		die('Insufficient rights to edit game');
-	}
-}
-
-function GetSpiritCommentID(){
-	$query = sprintf(
-		"SELECT `category_id` FROM `uo_spirit_category` WHERE `text`='Spirit Comment'"
-	);
-
-	$result = DBQuery($query);
-	if($result->num_rows > 0){
-		$row = $result->fetch_assoc();
-		return $row['category_id'];
-	}	else{
-		return 0;
 	}
 }
 
