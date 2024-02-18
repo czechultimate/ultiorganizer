@@ -541,6 +541,8 @@ if (GameHasStarted($game_result) > 0) {
       $categories = SpiritCategories($seasoninfo['spiritmode']);
       $homepoints = GameGetSpiritPoints($gameId, $game_result['hometeam']);
       $visitorpoints = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
+      $homecomment = GameGetSpiritComment($gameId, $game_result['hometeam']);
+      $visitorcomment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
       $html .= "<table style='width:80%' border='1' cellpadding='2' cellspacing='0'><tr><th></th><th style='width:25%'>" . utf8entities($game_result['hometeamname']) .
         "</th><th  style='width:25%'>" . utf8entities($game_result['visitorteamname']) . "</th></tr>";
       foreach ($categories as $cat) {

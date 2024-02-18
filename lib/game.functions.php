@@ -1135,7 +1135,6 @@ function GameAddTimeout($gameId, $number, $time, $home)
 
 function GameGetSpiritPoints($gameId, $teamId)
 {
-	$spnoteID = GetSpiritCommentID();
 	$query = sprintf(
 		"SELECT * FROM uo_spirit_score WHERE game_id=%d AND team_id=%d",
 		(int)$gameId,
@@ -1144,11 +1143,7 @@ function GameGetSpiritPoints($gameId, $teamId)
 	$scores = DBQueryToArray($query);
 	$points = array();
 	foreach ($scores as $score) {
-		if($score['category_id'] == $spnoteID){
-			$points[$score['category_id']] = $score['note'];
-		}else{
 			$points[$score['category_id']] = $score['value'];
-		}
 	}
 	return $points;
 }
@@ -1193,6 +1188,42 @@ function GameSetSpiritPoints($gameId, $teamId, $home, $points, $categories)
 				}
 			}
 		}
+	} else {
+		die('Insufficient rights to edit game');
+	}
+}
+
+function GameGetSpiritComment($gameId, $teamId)
+{
+	$query = sprintf(
+		"SELECT * FROM uo_spirit_comment WHERE game_id=%d AND team_id=%d",
+		(int)$gameId,
+		(int)$teamId
+	);
+	$comment = DBQueryToArray($query);
+	return $comment;
+}
+
+function GameSetSpiritComment($gameId, $teamId, $note)
+{
+	if (hasEditGameSpiritRight($gameId)) {
+		$query = sprintf(
+			"DELETE FROM uo_spirit_comment 
+        WHERE game_id=%d AND team_id=%d",
+			(int) $gameId,
+			(int) $teamId
+		);
+		DBQuery($query);
+
+
+		$query = sprintf(
+			"INSERT INTO uo_spirit_comment (`game_id`, `team_id`, `note`)
+			VALUES (%d, %d,'%s')",
+			(int) $gameId,
+			(int) $teamId,
+			 $note
+		);
+		DBQuery($query);
 	} else {
 		die('Insufficient rights to edit game');
 	}

@@ -850,6 +850,13 @@ CREATE TABLE `uo_visitor_counter` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
 
+CREATE TABLE `uo_spirit_comment` (
+        `game_id` INT(10) NOT NULL,
+        `team_id` INT(10) NOT NULL,
+        `note` VARCHAR (500) NOT NULL,
+        PRIMARY KEY (`game_id`, `team_id`)
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE utf8_general_ci AUTO_INCREMENT=1000;
+
 CREATE VIEW uo_game_stats AS
 SELECT game_id, time, event_type, 
        CASE 
