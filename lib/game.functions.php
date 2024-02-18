@@ -1200,7 +1200,7 @@ function GameGetSpiritComment($gameId, $teamId)
 		(int)$gameId,
 		(int)$teamId
 	);
-	$comment = DBQueryToArray($query);
+	$comment = DBQueryToRow($query);
 	return $comment;
 }
 

@@ -543,7 +543,7 @@ if (GameHasStarted($game_result) > 0) {
       $visitorpoints = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
       $homecomment = GameGetSpiritComment($gameId, $game_result['hometeam']);
       $visitorcomment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
-      $html .= "<table style='width:80%' border='1' cellpadding='2' cellspacing='0'><tr><th></th><th style='width:25%'>" . utf8entities($game_result['hometeamname']) .
+      $html .= "<table style='width:100%' border='1' cellpadding='2' cellspacing='0'><tr><th></th><th style='width:25%'>" . utf8entities($game_result['hometeamname']) .
         "</th><th  style='width:25%'>" . utf8entities($game_result['visitorteamname']) . "</th></tr>";
       foreach ($categories as $cat) {
         if ($cat['index'] == 0)
@@ -575,8 +575,27 @@ if (GameHasStarted($game_result) > 0) {
         } else {
           $html .= "-";
         }
+
         $html .= "</td></tr>";
       }
+      $html .= "<tr><td>";
+        $html .= _('Spirit Comment');
+        $html .= ":</td>";
+        $html .= "<td class='home'>";
+        if(!is_null($homecomment['note']) && CheckTwoTeamsSpirit($gameId,$game_result['hometeam'], $game_result['visitorteam'])){
+          $html .= $homecomment['note'];
+        } else {
+          $html .= "-";
+        }
+
+        $html .= "</td>";
+        $html .= "<td class='guest'>";
+        if(!is_null($visitorcomment['note']) && CheckTwoTeamsSpirit($gameId,$game_result['hometeam'], $game_result['visitorteam'])){
+          $html .= $visitorcomment['note'];
+        } else {
+          $html .= "-";
+        }
+        $html .= "</td></tr>";
       $html .= "</table>";
     }
     $html .= "<p><a href='?view=gamecard&amp;team1=" . utf8entities($game_result['hometeam']) . "&amp;team2=" . utf8entities($game_result['visitorteam']) . "'>";
