@@ -1208,8 +1208,8 @@ function GameSetSpiritComment($gameId, $teamId, $note)
 			(int) $teamId,
 			 $note
 		);
-	
 		DBQuery($query);
+		
 	}
 	} else {
 		die('Insufficient rights to edit game');
@@ -1865,7 +1865,7 @@ function SpiritTable($gameinfo, $points, $categories, $home, $comment, $wide = t
 			$html .= "</td></tr>\n<tr>";
 
 		$html .= "<td class='center'>
-				<textarea rows='4' maxlength='500' id='" . $home . "catcomment_0' name='" . $home . "catcatcomment' >" . $comment . "</textarea></td>";
+				<textarea rows='4' maxlength='500' id='" . $home . "catcomment' name='" . $home . "catcomment' >" . $comment . "</textarea></td>";
 		$html .= "</tr>\n";
 
 

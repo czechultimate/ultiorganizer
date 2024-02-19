@@ -28,6 +28,11 @@ if ($season['spiritmode'] > 0) {
     }
     GameSetSpiritPoints($gameId, $game_result['hometeam'], 1, $points, $categories);
     }
+
+    if (isset($_POST['homecatcomment'])){
+      GameSetSpiritComment($gameId,$game_result['hometeam'],$_POST['homecatcomment']);
+    }
+
     if (isset($_POST['visvalueId'])) {
     $points = array();
     foreach ($_POST['visvalueId'] as $cat) {
@@ -37,6 +42,10 @@ if ($season['spiritmode'] > 0) {
         $missing = sprintf(_("Missing score for %s. "), $game_result['visitorteamname']);
     }
     GameSetSpiritPoints($gameId, $game_result['visitorteam'], 0, $points, $categories);
+    }
+
+    if (isset($_POST['viscatcomment'])){
+      GameSetSpiritComment($gameId,$game_result['visitorteam'],$_POST['viscatcomment']);
     }
     $game_result = GameResult($gameId);
   }
@@ -72,11 +81,11 @@ if ($season['spiritmode'] > 0) {
 
     $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
     $comment = GameGetSpiritComment($gameId, $game_result['hometeam']);
-    $html .= SpiritTable($game_result, $points, $categories,1,$comment['note'], true);
+    $html .= SpiritTable($game_result, $points, $categories,true,$comment['note'], true);
     $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['visitorteamname']) . "</h3>\n";
     $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
     $comment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
-    $html .= SpiritTable($game_result, $points, $categories,0,$comment['note'], true);
+    $html .= SpiritTable($game_result, $points, $categories,false,$comment['note'], true);
   }
   $html .= "<p>";
   $html .= "<input class='button' type='submit' name='save' value='" . _("Save") . "'/>";
