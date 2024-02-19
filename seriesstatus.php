@@ -351,7 +351,7 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
 
   //$html .= "<th>" . _("Games") . "</th>";
   foreach ($categories as $cat) {
-    if ($cat['index'] > 0 && $cat['index'] < 6)
+    if ($cat['index'] > 0 && $cat['index'])
       $html .= "<th class='center'>" . _($cat['index']) . "</th>";
 	}
 	if ($spsort == "total"){
@@ -365,7 +365,7 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
     $html .= "<td>" . utf8entities($teamAvg['teamname']) . "</td>";
     //$html .= "<td>" . $teamAvg['games'] . "</td>";
     foreach ($categories as $cat) {
-      if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])) {
+      if ($cat['index'] > 0 && isset($teamAvg[$cat['category_id']])) {
           $html .= "<td class='center'>" . number_format($teamAvg[$cat['category_id']], 2) . "</td>";
       }
     }
@@ -379,7 +379,7 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
   $catSum = 0;
   $teamCount = 0;
   foreach ($categories as $cat) {
-	if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])) {
+	if ($cat['index'] > 0 && isset($teamAvg[$cat['category_id']])) {
 		$catSum = 0;
 		$teamCount = 0;
 		foreach ($spiritAvg as $teamAvg) {
@@ -406,7 +406,7 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
   
   $html .= "<ul>";
   foreach ($categories as $cat) {
-    if ($cat['index'] > 0 && $cat['index'] < 6)
+    if ($cat['index'] > 0)
       $html .= "<li>" . $cat['index'] . " " . $cat['text'] . "</li>";
   }
   $html .= "</ul>\n";

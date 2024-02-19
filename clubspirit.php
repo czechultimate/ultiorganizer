@@ -30,7 +30,7 @@ $html .= CommentHTML(1, $season);
     $html .= "<div class='TableContainer3'>\n";
     $html .= "<ol>";
     foreach ($categories as $cat) {
-      if ($cat['index'] > 0 && $cat['index'] < 6)
+      if ($cat['index'] > 0 && $cat['index'])
         $html .= "<li>" . utf8entities(_($cat['text'])) . "</li>";
     }
     $html .= "</ol>\n";
@@ -47,7 +47,7 @@ $html .= CommentHTML(1, $season);
             $tmpArray['clubId'] = $clubId;
             $tmpArray['games'] = $teamAvg['games'];
             foreach ($categories as $cat) {
-                if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])){
+                if ($cat['index'] > 0 && isset($teamAvg[$cat['category_id']])){
                   $tmpArray[$cat['category_id']] = number_format($teamAvg[$cat['category_id']], 2);
                 }
             }
@@ -56,7 +56,7 @@ $html .= CommentHTML(1, $season);
         } else {
             $clubSpirit[$clubId]['games'] += $teamAvg['games'];
             foreach ($categories as $cat) {
-                if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])){
+                if ($cat['index'] > 0 && isset($teamAvg[$cat['category_id']])){
                     $clubSpirit[$clubId][$cat['category_id']] = SafeDivide($clubSpirit[$clubId][$cat['category_id']] + number_format($teamAvg[$cat['category_id']], 2), 2);
                 }
             }
@@ -74,7 +74,7 @@ $html .= CommentHTML(1, $season);
       $html .= "<tr><th style='width:150px'>" . _("Club") .  "</th>";
       $html .= "<th>" . _("Games") . "</th>";
       foreach ($categories as $cat) {
-        if ($cat['index'] > 0 && $cat['index'] < 6)
+        if ($cat['index'] > 0)
           $html .= "<th class='center'>" . _($cat['index']) . "</th>";
       }
       $html .= "<th class='center'>" . _("Tot.") . "</th>";
@@ -85,7 +85,7 @@ $html .= CommentHTML(1, $season);
         $html .= "<td><a href='?view=clubcard&club=" . $clubAvg['clubId'] . "'>" . $clubAvg['clubName'] . "</a></td>";
         $html .= "<td>" . $clubAvg['games'] . "</td>";
         foreach ($categories as $cat) {
-          if ($cat['index'] > 0 && $cat['index'] < 6 && isset($clubAvg[$cat['category_id']])) {
+          if ($cat['index'] > 0 && isset($clubAvg[$cat['category_id']])) {
             if ($cat['factor'] != 0)
               $html .= "<td class='center'><b>" . number_format($clubAvg[$cat['category_id']], 2) . "</b></td>";
             else

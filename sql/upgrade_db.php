@@ -625,10 +625,6 @@ function upgrade75()
 			'INSERT INTO uo_spirit_category (`mode`, `group`, `index`, `factor`, `text`) VALUES ("1004", 1, 10, 0, "Communication (ours)")'
 		);
 		_("Communication (ours)");
-		runQuery(
-			'INSERT INTO uo_spirit_category (`mode`, `group`, `index`, `factor`, `text`) VALUES ("1003", 1, 6, 0, "Spirit Comment")'
-		);
-		_("Spirit Comment");
 
 		runQuery("CREATE TABLE `uo_spirit_score` (
         `game_id` INT(10) NOT NULL,

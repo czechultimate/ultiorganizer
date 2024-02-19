@@ -239,7 +239,7 @@ if ($list == "allteams" || $list == "byseeding") {
     $html .= "<div class='TableContainer3'>\n";
     $html .= "<ol>";
     foreach ($categories as $cat) {
-      if ($cat['index'] > 0 && $cat['index'] < 6)
+      if ($cat['index'] > 0)
         $html .= "<li>" . utf8entities(_($cat['text'])) . "</li>";
     }
     $html .= "</ol>\n";
@@ -256,7 +256,7 @@ if ($list == "allteams" || $list == "byseeding") {
       $html .= "<tr><th style='width:150px'>" . utf8entities(U_($row['name'])) . "</th>";
       $html .= "<th>" . _("Games") . "</th>";
       foreach ($categories as $cat) {
-        if ($cat['index'] > 0 && $cat['index'] < 6)
+        if ($cat['index'] > 0)
           $html .= "<th class='center'>" . _($cat['index']) . "</th>";
       }
       $html .= "<th class='center'>" . _("Tot.") . "</th>";
@@ -267,7 +267,7 @@ if ($list == "allteams" || $list == "byseeding") {
         $html .= "<td><a href='?view=teamcard&team=" . $teamAvg['team_id'] . "'>" . utf8entities($teamAvg['teamname']) . "</a></td>";
         $html .= "<td>" . $teamAvg['games'] . "</td>";
         foreach ($categories as $cat) {
-          if ($cat['index'] > 0 && $cat['index'] < 6 && isset($teamAvg[$cat['category_id']])) {
+          if ($cat['index'] > 0 && isset($teamAvg[$cat['category_id']])) {
             if ($cat['factor'] != 0)
               $html .= "<td class='center'><b>" . number_format($teamAvg[$cat['category_id']], 2) . "</b></td>";
             else
