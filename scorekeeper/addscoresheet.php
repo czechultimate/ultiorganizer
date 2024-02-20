@@ -77,6 +77,14 @@ if (isset($_POST['add']) || isset($_POST['forceadd'])) {
     $errors .= "<p class='warning'>" . _("Time can not be the same or earlier than the previous point") . "!</p>\n";
   }
 
+  if (strcasecmp($uo_goal['assist'], 'ap') == 0){
+    $uo_goal['assist'] = -1;
+  }
+
+  if (strcasecmp($uo_goal['scorer'], 'ap') == 0){
+    $uo_goal['scorer'] = -1;
+  }
+
   if (strcasecmp($uo_goal['assist'], 'xx') == 0 || strcasecmp($uo_goal['assist'], 'x') == 0){
     $uo_goal['iscallahan'] = 1;
     $uo_goal['assist'] = 0;
@@ -267,7 +275,7 @@ $html .= "</div>";*/
 
 if (empty($errors)) {
   $html .= "<input type='submit' name='add' data-ajax='false' value='" . _("Save goal") . "'/>";
-  $html .= "<a href='?view=addresult&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Result") . "</a>";
+  //$html .= "<a href='?view=addresult&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Result") . "</a>";
   $html .= "<h3>" . _("Additional game data") . "</h3>";
   $html .= "<a href='?view=addtimeouts&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Time-outs") . "</a>";
   $html .= "<a href='?view=addhalftime&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Half time") . "</a>";
@@ -304,7 +312,7 @@ echo $html;
 <script type="text/javascript">
   var homelist = <?php
                   echo "\"";
-                  echo "<option value='0'>-</option>";
+                  echo "<option value='ap'>-</option>";
                   $played_players = GamePlayers($gameId, $game_result['hometeam']);
 
                   usort($played_players, function ($a, $b) {
@@ -315,6 +323,7 @@ echo $html;
                     echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " . $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
                   }
                   echo "<option value='xx'>XX " . _("Callahan Goal") . "</option>";
+                  echo "<option value='ap'>AP " . _("Anonymous Point") . "</option>";
                   echo "\"";
                   ?>;
 
@@ -326,11 +335,12 @@ echo $html;
                     return $a['num'] > $b['num'];
                   });
                   
-                  echo "<option value='0'>-</option>";
+                  echo "<option value='ap'>-</option>";
                   foreach ($played_players as $player) {
                     echo "<option value='" . utf8entities($player['player_id']) . "'>#" . $player['num'] . " " .  $player['lastname'] . " " . utf8entities($player['firstname']) . "</option>";
                   }
                   echo "<option value='xx'>XX " . _("Callahan Goal") . "</option>";
+                  echo "<option value='ap'>AP " . _("Anonymous Point") . "</option>";
                   echo "\"";
                   ?>;
 

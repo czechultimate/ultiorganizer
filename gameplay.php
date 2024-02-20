@@ -138,8 +138,17 @@ if (GameHasStarted($game_result) > 0) {
 
       $points[$i][0] = $ptLen;
       $points[$i][1] = intval($goal['ishomegoal']);
-      $points[$i][2] = utf8entities($goal['scorerlastname'] . " " . $goal['scorerfirstname']);
-      $points[$i][3] = utf8entities($goal['assistlastname'] . " " . $goal['assistfirstname']);
+      if(is_null($goal['scorerfirstname'])){
+        $points[$i][2] = "Anonymous Point";
+      } else {
+        $points[$i][2] = utf8entities($goal['scorerlastname'] . " " . $goal['scorerfirstname']);
+      }
+
+      if( is_null($goal['assistfirstname'])){
+        $points[$i][3] = "Anonymous Point";
+      } else {
+        $points[$i][3] = utf8entities($goal['assistlastname'] . " " . $goal['assistfirstname']);
+      }
       $points[$i][4] = intval($goal['time']);
       $points[$i][5] = $goal['homescore'];
       $points[$i][6] = $goal['visitorscore'];
@@ -213,9 +222,17 @@ if (GameHasStarted($game_result) > 0) {
       if (intval($goal['iscallahan'])) {
         $html .= "<td class='callahan'>" . _("Callahan-goal") . "&nbsp;</td>";
       } else {
+        if( is_null($goal['assistfirstname'])){
+          $html .= "<td>Anonymous Point&nbsp;</td>";
+        } else {
         $html .= "<td>" . utf8entities($goal['assistfirstname']) . " " . utf8entities($goal['assistlastname']) . "&nbsp;</td>";
+        }
       }
+      if( is_null($goal['scorerfirstname'])){
+        $html .= "<td>Anonymous Point&nbsp;</td>";
+      } else {
       $html .= "<td>" . utf8entities($goal['scorerfirstname']) . " " . utf8entities($goal['scorerlastname']) . "&nbsp;</td>";
+      }
       $html .= "<td>" . SecToMin($goal['time']) . "</td>";
       $duration = $goal['time'] - $prevgoal;
 
@@ -808,11 +825,19 @@ function addNewRow(data) {
         cell2.innerHTML = "Callahan-goal";
         cell2.setAttribute("class", "callahan");
     } else {
-        cell2.innerHTML = assistFirstName + " " + assistLastName;
+        if(assistFirstName == null){
+          cell2.innerHTML = "Anonymous Point";
+        } else {
+          cell2.innerHTML = assistFirstName + " " + assistLastName;
+        }
     }
 
     var cell3 = lastRow.cells[2];
-    cell3.innerHTML = scorerFirstName + " " + scorerLastName;
+    if(scorerFirstName == null){
+          cell3.innerHTML = "Anonymous Point";
+    } else {
+      cell3.innerHTML = scorerFirstName + " " + scorerLastName;
+    }
 
     var cell4 = lastRow.cells[3];
     cell4.innerHTML = secToMin(time);

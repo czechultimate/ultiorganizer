@@ -75,9 +75,17 @@ if (mysqli_num_rows($goals) <= 0) {
 		if (intval($goal['iscallahan'])) {
 			$html .= _("Callahan-goal") . "&nbsp;";
 		} else {
-			$html .= utf8entities($goal['assistfirstname']) . " " . utf8entities($goal['assistlastname']) . " --> ";
+			if( is_null($goal['assistfirstname'])){
+				$html .= "Anonymous Point --> ";
+			  } else {
+				$html .= utf8entities($goal['assistfirstname']) . " " . utf8entities($goal['assistlastname']) . " --> ";
+			  }
 		}
+		if( is_null($goal['scorerfirstname'])){
+			$html .= "Anonymous Point&nbsp;";
+		  } else {
 		$html .= utf8entities($goal['scorerfirstname']) . " " . utf8entities($goal['scorerlastname']) . "&nbsp;";
+		  }
 
 		$html .= "</td></tr>\n";
 
