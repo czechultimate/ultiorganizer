@@ -336,7 +336,7 @@ if (!$poolId || $addmore) {
 	$frompoolinfo = PoolInfo($frompoolValue);
 	// CS: Sometimes you want to change the visibility setting in Swissdraw
 	if (isset($frompoolinfo['ordering']) && rtrim($frompoolinfo['ordering'], "0..9") == rtrim($pp['ordering'], "0..9")) { // Playoff or Swissdraw
-		echo "<td><input class='input' disabled='disabled' type='checkbox' id='visible' name='visible'/></td>";
+		echo "<td><input class='input type='checkbox' id='visible' name='visible'/></td>";
 	} else {
 		if (intval($pp['visible']))
 			echo "<td><input class='input' type='checkbox' id='visible' name='visible' checked='checked'/></td>";
@@ -355,7 +355,7 @@ if (!$poolId || $addmore) {
 
 	echo "<tr><td class='infocell'>" . _("Continuing pool") . ":</td>";
 	if (isset($frompoolinfo['ordering']) && rtrim($frompoolinfo['ordering'], "0..9") == rtrim($pp['ordering'], "0..9")) { // Playoff or Swissdraw
-		echo "<td><input class='input' disabled='disabled' type='checkbox' id='continuationserie' name='continuationserie' checked='checked'/></td>";
+		echo "<td><input class='input' type='checkbox' id='continuationserie' name='continuationserie' checked='checked'/></td>";
 	} else {
 		if (intval($pp['continuingpool']))
 			echo "<td><input class='input' type='checkbox' id='continuationserie' name='continuationserie' checked='checked'/></td>";

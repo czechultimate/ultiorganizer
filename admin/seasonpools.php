@@ -186,13 +186,13 @@ foreach ($pools as $pool) {
       $root_info = PoolInfo($rootid);
       $is_visible = intval($info['visible']) ? "checked='checked'" : "";
       //$is_visible = intval($root_info['visible']) ? "checked='checked'" : "";
-      $is_visible .= " disabled='disabled'";
+      //$is_visible .= " disabled='disabled'";
       $is_continuation = intval($info['continuingpool']) ? "checked='checked'" : "";
       //$is_continuation = intval($root_info['continuingpool']) ? "checked='checked'" : "";
-      $is_continuation .= " disabled='disabled'";
+      //$is_continuation .= " disabled='disabled'";
       $is_placement = intval($info['placementpool']) ? "checked='checked'" : "";
       //$is_placement = intval($root_info['placementpool']) ? "checked='checked'" : "";
-      $is_placement .= " disabled='disabled'";
+      //$is_placement .= " disabled='disabled'";
     }
   }
 

@@ -267,11 +267,12 @@ $html .= "</div>";*/
 
 if (empty($errors)) {
   $html .= "<input type='submit' name='add' data-ajax='false' value='" . _("Save goal") . "'/>";
+  $html .= "<a href='?view=addresult&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Result") . "</a>";
   $html .= "<h3>" . _("Additional game data") . "</h3>";
   $html .= "<a href='?view=addtimeouts&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Time-outs") . "</a>";
   $html .= "<a href='?view=addhalftime&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Half time") . "</a>";
   $html .= "<a href='?view=addfirstoffence&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("First offence") . "</a>";
-  $html .= "<a href='?view=addofficial&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Game official") . "</a>";
+  //$html .= "<a href='?view=addofficial&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Game official") . "</a>";
   $html .= "<input type='submit' name='start' data-ajax='false' value='" . _("Start game") . "'/>";
   if (IsTwitterEnabled()) {
     $html .= "<a href='?view=tweet&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Tweet") . "</a>";

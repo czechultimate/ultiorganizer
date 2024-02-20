@@ -2302,23 +2302,27 @@ function GeneratePlayoffPools($poolId, $generate = true)
     if ($teams == 6) {
       $roundsToWin = 4;
     } //hardcoded quick solution
+
     while ($roundsToWin >= 1) {
       $roundsToWin = $roundsToWin / 2;
       $rounds++;
     }
-
+    
+  
     //read layout templates
     $html = PlayoffTemplate($teams, $rounds, $poolInfo['playoff_template']);
-
     // try to parse moves
     $specialmoves = false;
 
-    if (substr($html, 0, 26) == "<!-- corresponding moves:") {
+    if (substr($html, 0, 26) == "<!--  corresponding moves:") {
+
       $movestring = substr($html, 28, strpos($html, "-->") - 29);
+      
       $movelines = explode("\n", $movestring);
       foreach ($movelines as $move) {
         $moves[] = str_getcsv($move, " ");
       }
+
       if (count($moves) == $rounds) {
         $specialmoves = true; //parsing succesful
       }
