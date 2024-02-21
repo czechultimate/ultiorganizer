@@ -903,6 +903,25 @@ function RemoveUserRole($userid, $propid)
 	}
 }
 
+function RemoveAllUserRoles($userid)
+{
+	if (hasEditUsersRight() || $_SESSION['uid'] == $userid) {
+		$query = sprintf(
+			"DELETE FROM uo_userproperties WHERE userid='%s' AND name='userrole'",
+			DBEscapeString($userid)
+		);
+		$result = DBQuery($query);
+
+		Log1("security", "delete", $userid, "all userrole");
+		if ($userid == $_SESSION['uid']) {
+			SetUserSessionData($userid);
+		}
+		return true;
+	} else {
+		die('Insufficient rights to change user info');
+	}
+}
+
 function AddUserRole($userid, $role)
 {
 	if (hasEditUsersRight()) {
@@ -1031,47 +1050,20 @@ function DeleteRegisterRequest($userid)
 	}
 }
 
-function AddRegisterRequest($newUsername, $newPassword, $newName, $newEmail, $message = 'register.txt')
+function AddRegisterRequest($newUsername, $newPassword, $newName, $message = 'register.txt')
 {
 	Log1("user", "add", $newUsername, "", "register request");
 	$token = uuidSecure();
 	$query = sprintf(
-		"INSERT INTO uo_registerrequest (userid, password, name, email, token) VALUES ('%s', MD5('%s'), '%s', '%s', '%s')",
+		"INSERT INTO uo_registerrequest (userid, password, name, token) VALUES ('%s', MD5('%s'), '%s', '%s')",
 		DBEscapeString($newUsername),
 		DBEscapeString($newPassword),
 		DBEscapeString($newName),
-		DBEscapeString($newEmail),
 		DBEscapeString($token)
 	);
 	$result = DBQuery($query);
 
-	$message = file_get_contents('locale/' . GetSessionLocale() . '/LC_MESSAGES/' . $message);
-
-	// for IIS
-	if (!isset($_SERVER['REQUEST_URI'])) {
-		$url = "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] . "?view=register&token=" . $token;
-	} else {
-		$url = "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . "&token=" . $token;
-	}
-
-	$message = str_replace(array('$url', '$ultiorganizer'), array($url, _("Ultiorganizer")), $message);
-	$headers  = "MIME-Version: 1.0" . "\r\n";
-	$headers .= "Content-type: text/plain; charset=UTF-8" . "\r\n";
-
-	global $serverConf;
-	$headers .= "From: " . $serverConf['EmailSource'] . "\r\n";
-
-	if (!mail($newEmail, _("Confirm your account to ultiorganizer"), $message, $headers)) {
-		$query = sprintf(
-			"DELETE FROM uo_registerrequest WHERE userid='%s'",
-			DBEscapeString($newUsername)
-		);
-		$result = DBQuery($query);
-
-		return false;
-	} else {
-		return true;
-	}
+	return true;
 }
 
 

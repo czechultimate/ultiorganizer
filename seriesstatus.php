@@ -352,7 +352,7 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
   //$html .= "<th>" . _("Games") . "</th>";
   foreach ($categories as $cat) {
     if ($cat['index'] > 0 && $cat['index'])
-      $html .= "<th class='center'>" . _($cat['index']) . "</th>";
+    $html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=".$cat['category_id']."#spiritboard'>" . _($cat['index']) . "</th>";
 	}
 	if ($spsort == "total"){
 		$html .= "<th class='center'>" . _("Tot.") . "</th>";

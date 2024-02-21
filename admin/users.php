@@ -22,6 +22,12 @@ if (hasEditUsersRight()) {
 				UserResetPassword(urldecode($userid));
 			}
 		}
+	} elseif (isset($_POST['deletepermissions'])) {
+		if (isset($_POST['users'])) {
+			foreach ($_POST['users'] as $userid) {
+				RemoveAllUserRoles($userid);
+			}
+		}
 	}
 }
 pageTopHeadOpen($title);
@@ -45,7 +51,7 @@ $target = "view=admin/users";
 echo "<p><a href='?view=admin/adduser'>" . _("Add new user") . "</a></p>";
 echo "<h2>" . $title . "</h2>";
 if (hasEditUsersRight()) {
-	echo SearchUser($target, array(), array('resetpassword' => _("Reset password"), 'deleteuser' => _("Delete")));
+	echo SearchUser($target, array(), array('deletepermissions' => _("Delete permissions"), 'resetpassword' => _("Reset password"), 'deleteuser' => _("Delete")));
 }
 
 contentEnd();

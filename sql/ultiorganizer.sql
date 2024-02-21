@@ -576,7 +576,7 @@ CREATE TABLE `uo_registerrequest` (
   `userid` varchar(50) NOT NULL,
   `password` char(32) DEFAULT NULL,
   `name` varchar(50) NOT NULL,
-  `email` varchar(100) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
   `token` varchar(100) DEFAULT NULL,
   `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`userid`)

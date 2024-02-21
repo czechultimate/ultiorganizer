@@ -207,7 +207,7 @@ ul#pagemenu li a.current, table#pagemenu a.current {
 }
 
 .highlight{  
-background-color: #d7c2ee; 
+	background-color: #ACD1E9; 
 }
 
 .attention{  
@@ -246,12 +246,12 @@ background-color: #d7c2ee;
 }
 
 .home { 
-background-color: #986598; 
+background-color: #0080fe; 
 	color: white;
 }
 
 .guest { 
-background-color: #339798; 
+background-color: #fe7e00; 
 	color: white;
 }
 

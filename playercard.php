@@ -23,23 +23,21 @@ if (!empty($player['profile_id'])) {
   $profile = PlayerProfile($playerId);
 }
 
-
 $curseason = CurrentSeason();
 
-if ($player['num']) {
+if (!is_null($player['num'])) {
   $title = "#" . $profile['num'] . " " . utf8entities($profile['firstname'] . " " . $profile['lastname']);
 } else {
   $title = utf8entities($profile['firstname'] . " " . $profile['lastname']);
 }
-
-if ($player['num']) {
+if (!is_null($player['num'])) {
   $html .= "<h1>#" . $profile['num'] . " " . utf8entities($profile['firstname'] . " " . $profile['lastname']) . "</h1>";
 } else {
   $html .= "<h1>" . utf8entities($profile['firstname'] . " " . $profile['lastname']) . "</h1>";
 }
 //$html .= "<p>" . _("Team") . ": <a class='headerlink' href='?view=teamcard&amp;team=" . $player['team'] . "'>" . utf8entities($player['teamname']) . "</a></p>";
 
-if ($profile) {
+if (!is_null($profile)) {
   $publicfields = explode("|", $profile['public']);
   $html .= "<table style='width:100%'>";
 
@@ -141,7 +139,7 @@ if (count($urls)) {
   }
   $html .= "</table>";
 }
-
+/*
 $games = PlayerSeasonPlayedGames($playerId, $curseason);
 if ($games) {
   $goals = PlayerSeasonGoals($playerId, $curseason);
@@ -190,7 +188,7 @@ if ($games) {
   $html .= "<td>" . $wins . "</td>
 	<td>" . number_format($dblWinsAvg * 100, 1) . "%</td></tr>\n";
   $html .= "</table>\n";
-}
+}*/
 
 $html_tmp = "";
 $stats = array();
@@ -381,7 +379,7 @@ if (ShowDefenseStats()) {
       $html .= "<h2>" . _("History") . ":</h2>\n";
 
 
-      $html_tmp .= "<table style='white-space: nowrap;' border='1' cellspacing='0' width='100%'>\n
+      $html_tmp .= "<table style='white-space: wrap;' border='1' cellspacing='0' width='100%'>\n
 			<tr><th>" . _("Season") . "</th><th>" . _("Event") . "</th><th>" . _("Team") . "</th><th>" . _("Games") . "</th><th>" . _("Passes") . "</th><th>" . _("Goals") . "</th>
 			<th>" . _("Cal.") . "</th><th>" . _("Tot.") . "</th><th>" . _("Pass avg.") . "</th><th>" . _("Goal avg.") . "</th><th>" . _("Point avg.") . "</th><th>" . _("Wins") . "</th><th>" . _("Win-%") . "</th></tr>\n";
 
@@ -529,7 +527,7 @@ $html .= $html_tmp;
 $html .= "<p></p>\n";
 
 //Current season stats
-
+/*
 $games = PlayerSeasonGames($playerId, $curseason);
 if (count($games)) {
   $html .= "<h2>" . utf8entities(CurrentSeasonName()) . " " . _("game events") . ":</h2>\n";
@@ -577,7 +575,7 @@ if (count($games)) {
     }
     $html .= "</table>";
   }
-}
+}*/
 if ($_SESSION['uid'] != 'anonymous') {
   $html .= "<div style='float:left;'><hr/><a href='?view=user/addmedialink&amp;player=" . $player['profile_id'] . "'>" . _("Add media") . "</a></div>";
 }

@@ -605,7 +605,8 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
         echo "<a class='subnav' href='?view=games&amp;series=" . $series . "&amp;filter=tournaments&amp;group=all'>&raquo; " . utf8entities(_("Games")) . "</a></td></tr>\n";
         echo "<tr><td class='navpoollink' style='display: block;' name='". utf8entities(U_($row['series'])) . "'>\n";
           echo "<a class='subnav' href='?view=seriesstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Statistics")) . "</a></td></tr>\n";
-          
+          echo "<tr><td class='navpoollink' style='display: block;' name='". utf8entities(U_($row['series'])) . "'>\n";
+          echo "<a class='subnav' href='?view=seriesspirit&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Spirit")) . "</a></td></tr>\n";
           echo "<tr><td class='navpoollink' style='display: block;' name='". utf8entities(U_($row['series'])) . "'>\n";
           echo "<a class='subnav' href='?view=poolstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Show all pools")) . "</a></td></tr>\n";
         } else {
@@ -617,6 +618,8 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
           echo "<a class='subnav' href='?view=games&amp;series=" . $series . "&amp;filter=tournaments&amp;group=all'>&raquo; " . utf8entities(_("Games")) . "</a></td></tr>\n";
         echo "<tr><td class='navpoollink' style='display: none;' name='". utf8entities(U_($row['series'])) . "'>\n";
           echo "<a class='subnav' href='?view=seriesstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Statistics")) . "</a></td></tr>\n";
+          echo "<tr><td class='navpoollink' style='display: none;' name='". utf8entities(U_($row['series'])) . "'>\n";
+          echo "<a class='subnav' href='?view=seriesspirit&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Spirit")) . "</a></td></tr>\n";
           echo "<tr><td class='navpoollink' style='display: none;' name='". utf8entities(U_($row['series'])) . "'>\n";
           echo "<a class='subnav' href='?view=poolstatus&amp;series=" . $series . "'>&raquo; " . utf8entities(_("Show all pools")) . "</a></td></tr>\n";
         }
@@ -651,7 +654,7 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
   echo "</table>\n";
 
   //event links
-  echo "<table class='leftmenulinks'>\n";
+  /*echo "<table class='leftmenulinks'>\n";
   echo "<tr><td class='menuseasonlevel'>" . utf8entities(_("Event Links")) . "</td></tr>\n";
   echo "<tr><td>";
 
@@ -675,7 +678,7 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
       echo "</td></tr>\n";
     }
   }
-  echo "</table>\n";
+  echo "</table>\n";*/
 
   //event history
   if (IsStatsDataAvailable()) {
@@ -688,7 +691,7 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
     echo "<a class='subnav' href=\"?view=allclubs\">&raquo; " . utf8entities(_("Clubs")) . "</a>\n";
     $countries = CountryList(true, true);
     if (count($countries)) {
-      echo "<a class='subnav' href=\"?view=allcountries\">&raquo; " . utf8entities(_("Countries")) . "</a>\n";
+      //echo "<a class='subnav' href=\"?view=allcountries\">&raquo; " . utf8entities(_("Countries")) . "</a>\n";
     }
     echo "<a class='subnav' href=\"?view=statistics&amp;list=teamstandings\">&raquo; " . utf8entities(_("All time")) . "</a></td></tr>\n";
     echo "</table>";
@@ -698,8 +701,8 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
   echo "<table class='leftmenulinks'>\n";
   echo "<tr><td class='menuseasonlevel'>" . utf8entities(_("Client access")) . "</td></tr>\n";
   echo "<tr><td>";
-  echo "<a class='subnav' href='?view=ext/index'>&raquo; " . utf8entities(_("Ultiorganizer links")) . "</a>\n";
-  echo "<a class='subnav' href='?view=ext/export'>&raquo; " . utf8entities(_("Data export")) . "</a>\n";
+  //echo "<a class='subnav' href='?view=ext/index'>&raquo; " . utf8entities(_("Ultiorganizer links")) . "</a>\n";
+  //echo "<a class='subnav' href='?view=ext/export'>&raquo; " . utf8entities(_("Data export")) . "</a>\n";
  // echo "<a class='subnav' href='?view=mobile/index'>&raquo; " . utf8entities(_("Mobile Administration")) . "</a>\n";
   echo "<a class='subnav' href='./scorekeeper/'>&raquo; " . utf8entities(_("Scorekeeper")) . "</a>\n";
   echo "</td></tr>\n";

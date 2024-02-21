@@ -32,7 +32,7 @@ if (!empty($_POST['save'])) {
     $error = 1;
   }
 
-  if (empty($newEmail)) {
+  /*if (empty($newEmail)) {
     $html .= "<p>" . _("Email can not be empty") . ".</p>";
     $error = 1;
   }
@@ -40,7 +40,7 @@ if (!empty($_POST['save'])) {
   if (!validEmail($newEmail)) {
     $html .= "<p>" . _("Invalid email address") . ".</p>";
     $error = 1;
-  }
+  }*/
 
   $uidcheck = DBEscapeString($newUsername);
 
@@ -57,10 +57,10 @@ if (!empty($_POST['save'])) {
   }
 
   if ($error == 0) {
-    if (AddRegisterRequest($newUsername, $newPassword, $newName, $newEmail)) {
+    if (AddRegisterRequest($newUsername, $newPassword, $newName)) {
       ConfirmRegisterUID($newUsername);
       AddEditSeason($newUsername, CurrentSeason());
-      AddSeasonUserRole($newUsername, "teamadmin:" . $_POST["team"], CurrentSeason());
+     // AddSeasonUserRole($newUsername, "teamadmin:" . $_POST["team"], CurrentSeason());
       $html .= "<p>" . _("Added new user") . "<br/>\n";
       $html .= _("Username") . ": " . $newUsername . "<br/>\n";
       $html .= _("Password") . ": " . $newPassword . "<br/>\n";
