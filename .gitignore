@@ -1,1 +1,4 @@
-conf/config.inc.php
+conf/config.inc.ph
+
+# directory used for chromium dev overrides, when debugging js/css/... on the live web
+.overrides
