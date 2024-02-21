@@ -31,3 +31,21 @@ function changeseason(id){
 	}
 	location.href=url;
 }
+
+// making sure that page refresh and back button won't land on index page, but on the actually expected page
+$(document).on("ready", (e) => {
+	let url = window.history.state.hash;
+	try {
+		$.mobile.changePage(
+			url,
+			{
+				allowSamePageTransition : true,
+				transition              : 'none',
+				showLoadMsg             : false,
+				reloadPage              : false
+			}
+		);
+	} catch (ex) {
+		console.warn(ex);
+	}
+});

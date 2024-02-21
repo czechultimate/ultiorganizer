@@ -104,10 +104,12 @@ if ($season['spiritmode'] > 0) {
   } else {
     $html .= "<p>" . sprintf(_("Spirit points not given for %s."), utf8entities($season['name'])) . "</p>";
   }
-
+  $html .= "<a href='?view=respgames' data-role='button' data-rel='back'>" . _("Back") . "</a>";
   if(hasEditGameEventsRight($gameId)){
     $html .= " <a href='?view=addscoresheet&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Back to score sheet") . "</a>";
   }
-$html .= " <a href='?view=respgames' data-role='button' data-ajax='false'>" . _("Back to game responsibilities") . "</a>";
+  
+  $html .= " <a href='?view=respgames' data-role='button' data-ajax='false'>" . _("Back to game responsibilities") . "</a>";
+
 
 echo $html;
