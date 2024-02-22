@@ -6,8 +6,8 @@ include_once 'lib/pool.functions.php';
 $LAYOUT_ID = SEASONPOOLS;
 
 $season = $_GET["season"];
-$series = SeasonSeries($season);
-$series_id = isset($_GET['series']) ? $_GET['series'] : $series[0]['series_id'];//CurrentSeries($season);
+//$series = SeasonSeries($season);
+$series_id = CurrentSeries($season);
 
 $html = "";
 $title = utf8entities(SeasonName($season)) . ": " . _("Pools");
@@ -90,7 +90,7 @@ $menutabs[_("...")] = "?view=admin/seasonseries&season=" . $season;
 
 $html .= "<p>" . _("Select tournament:") . " ";
 $html .= "<select class='dropdown' name='selectdiv' onchange='location.href=this.value'>\n";
-
+$html .= "<option class='dropdown' value=''>-</option>";
 foreach ($menutabs as $name => $url) {
     $selected = ($url === $_SERVER['REQUEST_URI']) ? "selected" : "";
     $html .= "<option class='dropdown' value='" . htmlentities($url) . "' $selected>" . utf8entities($name) . "</option>";
