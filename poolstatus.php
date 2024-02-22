@@ -561,15 +561,17 @@ function printPlayoffTree($seasoninfo, $poolinfo)
         }
       }
       //update team name to template
-      $theName = $name;
+      //$theName = $name;
+      //$previousRoundByeName = $byeName;
       if ($round == 0) {
         $template = str_replace("[team $i]", $name, $template);
       } else {
+        print($previousRoundByeName);
         if ($movefrom['fromplacing'] == $totalteams && $totalteams % 2 == 1) { // Assuming the BYE team is always last in a pool
           $winners = ceil($movefrom['fromplacing'] / 2);
-
-          $template = str_replace("[winner $round/$winners]", $previousRoundByeName, $template);
-          $theName = $previousRoundByeName;
+          print($previousRoundByeName);
+          $template = str_replace("[winner $round/$winners]", $name, $template);
+          $previousRoundByeName = $name;
         } elseif ($movefrom['fromplacing'] % 2 == 1) {
           $winners = ceil($movefrom['fromplacing'] / 2);
           $template = str_replace("[winner $round/$winners]", $name, $template);
@@ -578,6 +580,7 @@ function printPlayoffTree($seasoninfo, $poolinfo)
           $template = str_replace("[loser $round/$losers]", $name, $template);
         }
       }
+
       //update game results
       if ($i % 2 == 1) {
         $games++;
