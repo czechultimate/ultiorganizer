@@ -302,6 +302,7 @@ if (empty($errors)) {
   $html .= "<input class='button' type='submit' name='forceadd' value='" . _("Save goal with errors") . "'/>";
   $html .= "<input class='button' type='submit' name='cancel' value='" . _("Cancel") . "'/>";
 }
+$html .= "<a href='?view=respgames' data-role='button' data-rel='back'>" . _("Back") . "</a>";
 $html .= "<a href='?view=respgames' data-role='button' data-ajax='false'>" . _("Back to game responsibilities") . "</a>";
 
 $html .= "</form>";

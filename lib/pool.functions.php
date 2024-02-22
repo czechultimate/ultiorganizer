@@ -347,7 +347,7 @@ function PoolScoreBoard($poolId, $sorting, $limit)
 {
   $query = sprintf(
     "
-        SELECT p.player_id, p.firstname, p.lastname, j.name AS teamname, COALESCE(t.done,0) AS done,
+        SELECT p.player_id, p.firstname, p.lastname, j.team_id, j.name AS teamname, COALESCE(t.done,0) AS done,
         COALESCE(t1.callahan,0) AS callahan, COALESCE(s.fedin,0) AS fedin, (COALESCE(t.done,0) + COALESCE(s.fedin,0)) AS total, pel.games
         FROM uo_player AS p
         LEFT JOIN (SELECT m.scorer AS scorer, COUNT(*) AS done FROM uo_goal AS m
@@ -432,7 +432,7 @@ function PoolsScoreBoard($pools, $sorting, $limit)
 
   $poolIds = DBEscapeString(implode(",", $pools));
 
-  $query = " SELECT p.player_id, p.firstname, p.lastname, j.name AS teamname, COALESCE(t.done,0) AS done,
+  $query = " SELECT p.player_id, p.firstname, p.lastname, j.team_id, j.name AS teamname, COALESCE(t.done,0) AS done,
         COALESCE(t1.callahan,0) AS callahan, COALESCE(s.fedin,0) AS fedin, (COALESCE(t.done,0) + COALESCE(s.fedin,0)) AS total, pel.games
         FROM uo_player AS p
         LEFT JOIN (SELECT m.scorer AS scorer, COUNT(*) AS done FROM uo_goal AS m

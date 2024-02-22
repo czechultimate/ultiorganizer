@@ -286,8 +286,8 @@ if($seriesinfo["stats"] == 1){
 
   $scores = SeriesScoreBoardAvg($seriesinfo['series_id'], "total", 10);
   while ($row = mysqli_fetch_assoc($scores)) {
-    $html .= "<tr><td>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</td>";
-    $html .= "<td>" . utf8entities($row['teamname']) . "</td>";
+    $html .= "<tr><td><a href='?view=playercard&amp;player=" . $row['player_id'] . "'>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</a></td>";
+    $html .= "<td><a href='?view=teamcard&amp;team=" . $row['team_id'] . "'>" . utf8entities($row['teamname']) . "</a></td>";
     $html .= "<td class='center'>" . intval($row['games']) . "</td>";
     $html .= "<td class='center'>" . intval($row['fedin']) . "</td>";
     $html .= "<td class='center'>" . intval($row['done']) . "</td>";
@@ -362,7 +362,7 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
   $html .= "</tr>\n";
 
   foreach ($spiritAvg as $teamAvg) {
-    $html .= "<td>" . utf8entities($teamAvg['teamname']) . "</td>";
+    $html .= "<td><a href='?view=teamcard&amp;team=" . $teamAvg['team_id'] . "'>" . utf8entities($teamAvg['teamname']) . "</a></td>";
     //$html .= "<td>" . $teamAvg['games'] . "</td>";
     foreach ($categories as $cat) {
       if ($cat['index'] > 0 && isset($teamAvg[$cat['category_id']])) {

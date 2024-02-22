@@ -68,6 +68,7 @@ if (isset($_POST['save'])) {
 	$html .= "<input type='submit' name='save' data-ajax='false' value='" . _("Save as final result") . "'/>";
 }
 //$html .= "<a href='?view=addscoresheet&amp;game=$gameId' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
+$html .= "<a href='?view=respgames' data-role='button' data-rel='back'>" . _("Back") . "</a>";
 $html .= "<a href='?view=respgames' data-role='button' data-ajax='false'>" . _("Back to game responsibilities") . "</a>";
 $html .= "</form>";
 $html .= "</div><!-- /content -->\n\n";

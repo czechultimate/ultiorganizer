@@ -29,8 +29,8 @@ if (mysqli_num_rows($goals) <= 0) {
 	$prevgoal = 0;
 	while ($goal = mysqli_fetch_assoc($goals)) {
 
-		if ((intval($game_result['halftime']) >= $prevgoal) &&
-			(intval($game_result['halftime']) < intval($goal['time']))
+		if (!is_null($game_result['halftime']) && ((intval($game_result['halftime']) >= $prevgoal) &&
+			(intval($game_result['halftime']) < intval($goal['time'])))
 		) {
 			$html .= "<tr><td>";
 			$html .= _("Half-time");
@@ -99,6 +99,7 @@ $html .= "</td></tr>\n";
 $html .= "</table>\n";
 $html .= "<a href='?view=scoreboard&amp;game=$gameId&amp;team=" . $game_result['hometeam'] . "' data-role='button' data-ajax='false'>" . utf8entities($game_result['hometeamname']) . " " . _("scoreboard") . "</a>";
 $html .= "<a href='?view=scoreboard&amp;game=$gameId&amp;team=" . $game_result['visitorteam'] . "' data-role='button' data-ajax='false'>" . utf8entities($game_result['visitorteamname']) . " " . _("scoreboard") . "</a>";
+$html .= "<a href='?view=respgames' data-role='button' data-rel='back'>" . _("Back") . "</a>";
 $html .= "<a href='?view=respgames' data-role='button' data-ajax='false'>" . _("Back to game responsibilities") . "</a>";
 $html .= "</div><!-- /content -->\n\n";
 

@@ -126,7 +126,7 @@ $html .= "</table>";
 
 $teams = ClubTeams($clubId, CurrentSeason());
 if ($teams) {
-  $html .= "<h2>" . U_(CurrentSeasonName()) . ":</h2>\n";
+  $html .= "<h2>" . U_(CurrentSeasonName()) . " Teams:</h2>\n";
   $html .= "<table style='white-space: nowrap;' border='0' cellspacing='0' cellpadding='2' width='90%'>\n";
   $html .= "<tr><th>" . _("Team") . "</th><th>" . _("Event") . "</th><th colspan='3'></th></tr>\n";
 
@@ -144,6 +144,32 @@ if ($teams) {
     $html .= "</tr>\n";
   }
   $html .= "</table>\n";
+}
+
+$players = ClubPlayers($clubId, CurrentSeason());
+if (!is_null($players)) {
+    $html .= "<h2>" . U_(CurrentSeasonName()) . " Players:</h2>\n";
+    $html .= "<table style='white-space: nowrap;' border='0' cellspacing='0' cellpadding='2' width='90%'>\n";
+    //$html .= "<tr><th>Lastname Firstname</th><th></th><th></th><th></th></tr>\n"; // Vytvořil jsem čtyři sloupce pro hráče
+
+    $players_count = count($players); 
+    $players_per_column = ceil($players_count / 4); 
+
+    for ($i = 0; $i < $players_per_column; $i++) {
+        $html .= "<tr>\n";
+        for ($j = 0; $j < 4; $j++) { 
+            $index = $i + $j * $players_per_column; 
+            if ($index < $players_count) {
+                $player = $players[$index];
+                $fullname = $player['lastname'] . ' ' . $player['firstname']; 
+                $html .= "<td><a href='?view=playercard&amp;profile=" . $player['profile_id'] . "'>" . utf8entities($fullname) . "</a></td>";
+            } else {
+                $html .= "<td>&nbsp;</td>";
+            }
+        }
+        $html .= "</tr>\n";
+    }
+    $html .= "</table>\n";
 }
 
 $teams = ClubTeamsHistory($clubId);
@@ -205,6 +231,7 @@ if (!empty($sqlClubTeams)) {
 
   $html .= "</table>\n";
 }
+
 if ($_SESSION['uid'] != 'anonymous') {
   $html .= "<div style='float:left;'><hr/><a href='?view=user/addmedialink&amp;club=$clubId'>" . _("Add media") . "</a></div>";
 }

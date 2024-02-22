@@ -326,7 +326,8 @@ function SeriesScoreBoardAvg($seriesId, $sorting, $limit){
     "SELECT 
     p.player_id, 
     p.firstname, 
-    p.lastname, 
+    p.lastname,
+    j.team_id, 
     j.name AS teamname, 
     COALESCE(t.done,0) AS done, 
     COALESCE(t1.callahan,0) AS callahan, 

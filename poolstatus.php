@@ -126,8 +126,8 @@ function scoreboard($id, $seriesScoreboard)
 
     $scores = SeriesScoreBoard($id, "total", 10);
     while ($row = mysqli_fetch_assoc($scores)) {
-      $ret .= "<tr><td>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</td>";
-      $ret .= "<td>" . utf8entities($row['teamname']) . "</td>";
+      $ret .= "<tr><td><a href='?view=playercard&amp;player=" . $row['player_id'] . "'>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</a></td>";
+      $ret .= "<td><a href='?view=teamcard&amp;team=" . $row['team_id'] . "'>" . utf8entities($row['teamname']) . "</a></td>";
       $ret .= "<td class='center'>" . intval($row['games']) . "</td>";
       $ret .= "<td class='center'>" . intval($row['fedin']) . "</td>";
       $ret .= "<td class='center'>" . intval($row['done']) . "</td>";
@@ -155,8 +155,8 @@ function scoreboard($id, $seriesScoreboard)
     }
 
     while ($row = mysqli_fetch_assoc($scores)) {
-      $ret .= "<tr><td>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</td>";
-      $ret .= "<td>" . utf8entities($row['teamname']) . "</td>";
+      $ret .= "<tr><td><a href='?view=playercard&amp;player=" . $row['player_id'] . "'>" . utf8entities($row['firstname'] . " " . $row['lastname']) . "</a></td>";
+      $ret .= "<td><a href='?view=teamcard&amp;team=" . $row['team_id'] . "'>" . utf8entities($row['teamname']) . "</a></td>";
       $ret .= "<td class='center'>" . intval($row['games']) . "</td>";
       $ret .= "<td class='center'>" . intval($row['fedin']) . "</td>";
       $ret .= "<td class='center'>" . intval($row['done']) . "</td>";

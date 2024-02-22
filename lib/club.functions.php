@@ -87,6 +87,22 @@ function ClubTeams($clubId, $season = "")
 	return DBQueryToArray($query);
 }
 
+function ClubPlayers($clubId, $season = "")
+{
+	$query = sprintf(
+		"SELECT DISTINCT p.profile_id, p.lastname, p.firstname
+		FROM uo_player p
+		LEFT JOIN uo_team t ON p.team = t.team_id
+		LEFT JOIN uo_club c ON t.club = c.club_id
+		LEFT JOIN uo_series s ON t.series = s.series_id
+		WHERE c.club_id = '%s' and s.season = '%s' ORDER BY `lastname`, `firstname`",
+		DBEscapeString($clubId),
+		DBEscapeString($season)
+	);
+
+	return DBQueryToArray($query);
+}
+
 function ClubTeamsHistory($clubId)
 {
 	$curseason = CurrentSeason();
