@@ -1283,3 +1283,14 @@ function GroupSpiritResult($results){
 
   return $game_ids_grouped;
 }
+
+function GetPlaylistsFromSeries($series){
+  $query = sprintf("SELECT t.team_id, t.name AS team_name, p.firstname, p.lastname
+    FROM uo_team t
+    LEFT JOIN uo_player p ON t.team_id = p.team
+    WHERE t.series = %d",
+    (int)$series
+);
+
+  return DBQueryToArray($query);
+}
