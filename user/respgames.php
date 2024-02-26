@@ -218,10 +218,10 @@ foreach ($respGameArray as $reservationgroup => $resArray) {
         } elseif (isset($seasoninfo['spiritmode']) && $seasoninfo['spiritmode'] > 0) {
           // TeamAdmin
           if (hasEditPlayersRight($game['hometeam'])) {
-            $html .= " | <a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['hometeam'] . "'>" . _("Spirit") . "</a>";
+            $html .= " | <a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['visitorteam'] . "'>" . _("Spirit") . "</a>";
         }
           if (hasEditPlayersRight($game['visitorteam'])) {
-            $html .= " | <a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['visitorteam'] . "'>" . _("Spirit") . "</a>";
+            $html .= " | <a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['hometeam'] . "'>" . _("Spirit") . "</a>";
           }
         }
         if (ShowDefenseStats()) {

@@ -1151,6 +1151,7 @@ function GameGetSpiritPoints($gameId, $teamId)
 function GameSetSpiritPoints($gameId, $teamId, $home, $points, $categories)
 {
 	if (hasEditGameSpiritRight($gameId)) {
+		
 		$query = sprintf(
 			"DELETE FROM uo_spirit_score 
         WHERE game_id=%d AND team_id=%d",

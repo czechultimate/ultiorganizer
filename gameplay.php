@@ -289,9 +289,10 @@ if (GameHasStarted($game_result) > 0) {
       $html .= "<td></td>";
       $html .= "<td></td>";
       $html .= "<td></td>";
-      if (count($gameevents) || count($mediaevents)) {
+      $html .= "<td></td>";
+    /*  if (count($gameevents) || count($mediaevents)) {
         $html .= "<td></td>";
-      }
+      }*/
       $html .= "</tr>";
     }
     $html .= "</table>\n";
@@ -536,12 +537,12 @@ if (GameHasStarted($game_result) > 0) {
 
       if ((isset($seasoninfo['spiritmode']) && $seasoninfo['spiritmode'] > 0) && ($seasoninfo['showspiritpoints'] || isSeasonAdmin($seasoninfo['season_id']))) {
         $html .= "<tr><td>" . _("Spirit points") . ":</td>";
-        if (isset($game_result['homesotg']) && !is_null($game_result['homesotg'])) {
+        if (isset($game_result['homesotg']) && !is_null($game_result['homesotg']) && !is_null($game_result['visitorsotg'])) {
           $html .= "<td class='home'>" . $game_result['homesotg'] . "</td>";
         } else {
           $html .= "<td class='home'>-</td>";
         }
-        if (isset($game_result['visitorsotg']) && !is_null($game_result['visitorsotg'])) {
+        if (isset($game_result['visitorsotg']) && !is_null($game_result['visitorsotg']) && !is_null($game_result['homesotg'])) {
           $html .= "<td class='guest'>" . $game_result['visitorsotg'] . "</td></tr>";
         } else {
           $html .= "<td class='guest'>-</td></tr>";
@@ -751,34 +752,50 @@ if (GameHasStarted($game_result) > 0) {
 showPage($title, $html);
 
 ?>
-
+/
 <script>
   const gameId = <?php echo $gameId; ?>;
   const ongoing = <?php echo $game_result['isongoing']; ?>;
-if(ongoing == 1){
-  const eventSource = new EventSource(`sse.php?game=${gameId}`);
+  var lastInsertedTime = getLastInsertedTime();
+if (ongoing == 1) { // Temporarily disabled
+        // Funkce pro načtení aktualizací ze serveru pomocí AJAX
+        function loadUpdates() {
+            // Vytvoření AJAX dotazu
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', `liveresults.php?game=${gameId}&time=${lastInsertedTime}`, true);
 
-  eventSource.onmessage = function(event) {
-      const data = JSON.parse(event.data);
-      if (data.event_type === "init") {
-          console.log('Received message:', event.data);
-      } else if (data.event_type === "goal") {
-        addNewRow(data);
-        console.log('Received message:', event.data);
-      }  else if (data.event_type === "timeout") {
-        addTimeOut(data);
-        console.log('Received message:', event.data);
-      }  else if (data.event_type === "halftime"){
-        addHalftime(data);
-        console.log('Received message:', event.data);
-      } else if (data.event_type === "close"){
-        eventSource.close();
-        console.log('Received message:', event.data);
-      } else {
-        console.log('Received message:', event.data);
-      }
-  };
-}
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // Zpracování odpovědi od serveru
+                    var response = xhr.responseText;
+                    var events = JSON.parse(response);
+
+                    // Projít všechny události a vyvolat příslušné funkce
+                    events.forEach(function(eventObj) {
+                        var event = JSON.parse(eventObj.event); // Parse the event JSON string to object
+                        lastInsertedTime = event.time;
+                        if (event.event_type === "goal") {
+                            addNewRow(event);
+                            //console.log('Received message:', event);
+                        } else if (event.event_type === "timeout") {
+                            addTimeOut(event);
+                            //console.log('Received message:', event);
+                        } else if (event.event_type === "halftime") {
+                            addHalftime(event);
+                            //console.log('Received message:', event);
+                        } else {
+                            console.log('Received message:', event);
+                        }
+                    });
+                }
+            };
+
+            xhr.send();
+        }
+
+        // Spuštění funkce pro načtení aktualizací každých 10 vteřin
+        setInterval(loadUpdates, 10000);
+    }
 
 function addEmptyRow() {
     var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
@@ -906,5 +923,15 @@ function addHalftime(data) {
     return totalSeconds;
 }
 
+function getLastInsertedTime() {
+    var table = document.getElementById("matchstats").getElementsByTagName('tbody')[0];
+    var lastRow = table.rows[table.rows.length - 2]; // Poslední řádek před prázdným řádkem
+    if (lastRow.cells[0].classList.contains("halftime")) {
+        // Pokud poslední záznam byl poločasem, vezmeme řádek před ním
+        lastRow = table.rows[table.rows.length - 3];
+    }
 
+    var timeCell = lastRow.cells[3]; // Sloupec s časem
+    return minToSec(timeCell.innerHTML);
+}
 </script>
