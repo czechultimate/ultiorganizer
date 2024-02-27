@@ -218,10 +218,18 @@ foreach ($respGameArray as $reservationgroup => $resArray) {
         } elseif (isset($seasoninfo['spiritmode']) && $seasoninfo['spiritmode'] > 0) {
           // TeamAdmin
           if (hasEditPlayersRight($game['hometeam'])) {
-            $html .= " | <a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['visitorteam'] . "'>" . _("Spirit") . "</a>";
+            if(empty(GameGetSpiritPoints($gameId,$game['visitorteam']))){
+              $html .= " | <b><a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['visitorteam'] . "'>" . _("Spirit") . "</a></b>";
+            }else{
+              $html .= " | <a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['visitorteam'] . "'>" . _("Spirit") . "</a>";
+            }
         }
           if (hasEditPlayersRight($game['visitorteam'])) {
+            if(empty(GameGetSpiritPoints($gameId,$game['hometeam']))){
+              $html .= " | <b><a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['hometeam'] . "'>" . _("Spirit") . "</a></b>";
+          }else{
             $html .= " | <a href='?view=user/addspirit&amp;game=$gameId&amp;team=" . $game['hometeam'] . "'>" . _("Spirit") . "</a>";
+          }
           }
         }
         if (ShowDefenseStats()) {

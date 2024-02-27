@@ -1,5 +1,6 @@
 <?php
 include_once 'lib/team.functions.php';
+include_once 'lib/statistical.functions.php';
 include_once 'lib/club.functions.php';
 include_once 'lib/country.functions.php';
 include_once 'lib/url.functions.php';
@@ -127,30 +128,30 @@ $html .= "</table>";
 $teams = ClubTeams($clubId, CurrentSeason());
 if ($teams) {
   $html .= "<h2>" . U_(CurrentSeasonName()) . " Teams:</h2>\n";
-  $html .= "<table style='white-space: nowrap;' border='0' cellspacing='0' cellpadding='2' width='90%'>\n";
-  $html .= "<tr><th>" . _("Team") . "</th><th>" . _("Event") . "</th><th colspan='3'></th></tr>\n";
+  $html .= "<table style='white-space: nowrap;' border='0' cellspacing='0' cellpadding='2' width='100%' id='multicoloured'>\n";
+  $html .= "<tr><th>" . _("Team") . "</th><th>" . _("Event") . "</th><th>" . _("Standing") . "</th><th colspan='3'></th></tr>\n";
 
   foreach ($teams as $team) {
     $html .= "<tr>\n";
     $html .= "<td style='width:30%'><a href='?view=teamcard&amp;team=" . $team['team_id'] . "'>" . utf8entities($team['name']) . "</a></td>";
     $html .=  "<td  style='width:30%'><a href='?view=poolstatus&amp;series=" . $team['series_id'] . "'>" . utf8entities(U_($team['seriesname'])) . "</a></td>";
+    $html .= "<td style='width:10%'><b>" . ordinal(GetTeamStanding($team['series_id'], $team['team_id'])['standing']) . "</b></td>";
     if (IsStatsDataAvailable()) {
-      $html .=  "<td class='right' style='width:15%'><a href='?view=playerlist&amp;team=" . $team['team_id'] . "'>" . _("Roster") . "</a></td>";
-      $html .=  "<td class='right' style='width:15%'><a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Scoreboard") . "</a></td>";
+      //$html .=  "<td class='right' style='width:15%'><a href='?view=playerlist&amp;team=" . $team['team_id'] . "'>" . _("Roster") . "</a></td>";
+      $html .=  "<td class='right' style='width:20%'><a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Scoreboard") . "</a></td>";
     } else {
-      $html .=  "<td class='right' style='width:30%'><a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Players") . "</a></td>";
+      $html .=  "<td class='right' style='width:20%'><a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Players") . "</a></td>";
     }
-    $html .=  "<td class='right' style='width:10%'><a href='?view=games&amp;team=" . $team['team_id'] . "'>" . _("Games") . "</a></td>";
+    $html .=  "<td class='right' style='width:20%'><a href='?view=games&amp;team=" . $team['team_id'] . "'>" . _("Games") . "</a></td>";
     $html .= "</tr>\n";
   }
   $html .= "</table>\n";
 }
 
 $players = ClubPlayers($clubId, CurrentSeason());
-if (!is_null($players)) {
+if ($players) {
     $html .= "<h2>" . U_(CurrentSeasonName()) . " Players:</h2>\n";
-    $html .= "<table style='white-space: nowrap;' border='0' cellspacing='0' cellpadding='2' width='90%'>\n";
-    //$html .= "<tr><th>Lastname Firstname</th><th></th><th></th><th></th></tr>\n"; // Vytvořil jsem čtyři sloupce pro hráče
+    $html .= "<table style='white-space: nowrap;' border='0' cellspacing='0' cellpadding='2' width='100%' >\n";
 
     $players_count = count($players); 
     $players_per_column = ceil($players_count / 4); 
@@ -177,58 +178,29 @@ $sqlClubTeams = "";
 if (count($teams)) {
   $sqlClubTeams .= "(";
   $html .= "<h2>" . _("History") . ":</h2>\n";
-  $html .= "<table style='white-space: nowrap;' border='0' cellspacing='0' cellpadding='2' width='90%'>\n";
-  $html .= "<tr><th>" . _("Event") . "</th><th>" . _("Team") . "</th><th>" . _("Division") . "</th><th colspan='3'></th></tr>\n";
+  $html .= "<table style='white-space: nowrap;' border='0' cellspacing='0' cellpadding='2' width='100%' id='multicoloured'>\n";
+  $html .= "<tr><th>" . _("Season") . "</th><th>" . _("Event") . "</th><th>" . _("Team") . "</th><th>" . _("Standing") . "</th><th colspan='3'></th></tr>\n";
 
   foreach ($teams as $team) {
     $sqlClubTeams .= $team['team_id'];
     $html .= "<tr>\n";
     $html .= "<td style='width:20%'>" . utf8entities(U_(SeasonName($team['season']))) . "</td>";
-    $html .= "<td style='width:30%'><a href='?view=teamcard&amp;team=" . $team['team_id'] . "'>" . utf8entities($team['name']) . "</a></td>";
     $html .=  "<td style='width:20%'><a href='?view=poolstatus&amp;series=" . $team['series_id'] . "'>" . utf8entities(U_($team['seriesname'])) . "</a></td>";
-
+    $html .= "<td style='width:20%'><a href='?view=teamcard&amp;team=" . $team['team_id'] . "'>" . utf8entities($team['name']) . "</a></td>";
+    $html .= "<td style='width:10%'><b>" . ordinal(GetTeamStanding($team['series_id'], $team['team_id'])['standing']) . "</b></td>";
+   
     if (IsStatsDataAvailable()) {
-      $html .=  "<td style='width:15%'><a href='?view=playerlist&amp;team=" . $team['team_id'] . "'>" . _("Roster") . "</a></td>";
-      $html .=  "<td style='width:15%'><a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Scoreboard") . "</a></td>";
+      //$html .=  "<td style='width:15%'><a href='?view=playerlist&amp;team=" . $team['team_id'] . "'>" . _("Roster") . "</a></td>";
+      $html .=  "<td class='right' style='width:20%'><a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Scoreboard") . "</a></td>";
     } else {
-      $html .=  "<td style='width:30%'><a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Players") . "</a></td>";
+      $html .=  "<td style='width:20%'><a href='?view=scorestatus&amp;team=" . $team['team_id'] . "'>" . _("Players") . "</a></td>";
     }
-    $html .=  "<td style='width:10%'><a href='?view=games&amp;team=" . $team['team_id'] . "'>" . _("Games") . "</a></td>";
+    $html .=  "<td class='right' style='width:20%'><a href='?view=games&amp;team=" . $team['team_id'] . "'>" . _("Games") . "</a></td>";
 
     $html .= "</tr>\n";
     $sqlClubTeams .= ",";
   }
   $sqlClubTeams .= "0) ";
-  $html .= "</table>\n";
-}
-if (!empty($sqlClubTeams)) {
-  $html .= "<h2>" . _("All time scoreboard") . ":</h2>\n";
-  $viewUrl = "?view=clubcard&club=" . $clubId . "&amp;";
-  // create sql part for IN condition by imploding comma after each id
-
-  $scores = ScoreboardAllTime(1000, "", "", $sqlClubTeams, $sort);
-
-  $html .= "<table border='1' width='100%'><tr>
-				<th>#</th><th>" . _("Name") . "</th><th>" . _("Latest event / team") . "</th><th class='center'><a class='thsort' href='" . $viewUrl . "sort=games'>" . _("Games") . "</a></th>
-				<th class='center'><a class='thsort' href='" . $viewUrl . "sort=pass'>" . _("Passes") . "</a></th><th class='center'><a class='thsort' href='" . $viewUrl . "sort=goal'>" . _("Goals") . "</a>
-				</th><th class='center'><a class='thsort' href='" . $viewUrl . "sort=total'>" . _("Total") . "</a></th></tr>\n";
-  $i = 1;
-  foreach ($scores as $row) {
-    $html .= "<tr>\n";
-    $html .= "<td>" . $i++ . ".</td>";
-    $html .= "<td>";
-    $html .= "<a href='?view=playercard&amp;profile=" . $row['profile_id'] . "'>";
-    $player = PlayerProfile($row['profile_id']);
-    $html .= utf8entities($player['firstname'] . " " . $player['lastname']) . "</a>";
-    $html .= "</td>";
-    $html .= "<td>" . utf8entities(SeriesSeasonName($row['last_series'])) . " / " . utf8entities(TeamName($row['last_team'])) . "</td>";
-    $html .= "<td class='center'>" . $row['gamestotal'] . "</td>";
-    $html .= "<td class='center'>" . $row['passestotal'] . "</td>";
-    $html .= "<td class='center'>" . $row['goalstotal'] . "</td>";
-    $html .= "<td class='center'>" . $row['total'] . "</td>";
-    $html .= "</tr>\n";
-  }
-
   $html .= "</table>\n";
 }
 

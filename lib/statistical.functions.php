@@ -94,6 +94,15 @@ function SeasonTeamStatistics($season)
 	return DBQueryToArray($query);
 }
 
+function GetTeamStanding($series, $team){
+	$query = sprintf(
+		"SELECT standing FROM `uo_team_stats` where team_id=%d AND series=%d",
+		(int)($team),
+		(int)($series)
+	);
+	return DBQueryToRow($query);
+}
+
 function TeamStatistics($team)
 {
 	$query = sprintf(

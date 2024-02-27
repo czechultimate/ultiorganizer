@@ -655,6 +655,16 @@ function hasEditGameSpiritRight($game)
 		isset($_SESSION['userproperties']['userrole']['gameadmin'][$game]);
 }
 
+function hasTeamRight($game, $teamId)
+{
+	$team = GameRespTeam($game);
+	if($team == $teamId){
+		return 1;
+	}
+
+	return -1;
+}
+
 function hasAccredidationRight($team)
 {
 	return hasEditTeamsRight(getTeamSeries($team)) ||

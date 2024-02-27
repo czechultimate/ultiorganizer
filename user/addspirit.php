@@ -54,12 +54,9 @@ if ($season['spiritmode'] > 0) {
     $menutabs[_("Result")] = "?view=user/addresult&game=$gameId";
     $menutabs[_("Players")] = "?view=user/addplayerlists&game=$gameId";
     $menutabs[_("Score sheet")] = "?view=user/addscoresheet&game=$gameId";
-  }
-  if($teamId > 0){
-    
-  }else {
     $menutabs[_("Spirit points")] = "?view=user/addspirit&game=$gameId";
   }
+
   if (ShowDefenseStats()) {
     $menutabs[_("Defense sheet")] = "?view=user/adddefensesheet&game=$gameId&amp;team=$teamId";
   }
@@ -68,19 +65,32 @@ if ($season['spiritmode'] > 0) {
   $html .= "<form  method='post' action='?view=user/addspirit&amp;game=" . $gameId . "&amp;team=$teamId'>";
 
   if ($teamId > 0) {
-    if ($teamId == $game_result['hometeam']) {
+    if(GameRespTeamBoth($gameId) == 1){
       $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['hometeamname']) . "</h3>\n";
-      $comment = GameGetSpiritComment($gameId, $game_result['hometeam']);
-      $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
-      $html .= SpiritTable($game_result, $points, $categories,true, $comment['note'], true);
-    }
-    if ($teamId == $game_result['visitorteam']) {
-      $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['visitorteamname']) . "</h3>\n";
-      $comment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
-      $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
-      $html .= SpiritTable($game_result, $points, $categories, false, $comment['note'], true);
+
+        $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
+        $comment = GameGetSpiritComment($gameId, $game_result['hometeam']);
+        $html .= SpiritTable($game_result, $points, $categories,true,$comment['note'], true);
+        $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['visitorteamname']) . "</h3>\n";
+        $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
+        $comment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
+        $html .= SpiritTable($game_result, $points, $categories,false,$comment['note'], true);
+    } else {
+      if ($teamId == $game_result['hometeam'] && hasEditGameSpiritRight($gameId) && hasEditPlayersRight($game_result['visitorteam'])) {
+        $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['hometeamname']) . "</h3>\n";
+        $comment = GameGetSpiritComment($gameId, $game_result['hometeam']);
+        $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
+        $html .= SpiritTable($game_result, $points, $categories,true, $comment['note'], true);
+      }
+      if ($teamId == $game_result['visitorteam'] && hasEditGameSpiritRight($gameId) && hasEditPlayersRight($game_result['hometeam'])) {
+        $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['visitorteamname']) . "</h3>\n";
+        $comment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
+        $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
+        $html .= SpiritTable($game_result, $points, $categories, false, $comment['note'], true);
+      }
     }
   } else {
+    if(hasEditGameEventsRight($gameId)){
     $html .= "<h3>" . _("Spirit points given for") . ": " . utf8entities($game_result['hometeamname']) . "</h3>\n";
 
     $points = GameGetSpiritPoints($gameId, $game_result['hometeam']);
@@ -90,6 +100,7 @@ if ($season['spiritmode'] > 0) {
     $points = GameGetSpiritPoints($gameId, $game_result['visitorteam']);
     $comment = GameGetSpiritComment($gameId, $game_result['visitorteam']);
     $html .= SpiritTable($game_result, $points, $categories,false,$comment['note'], true);
+    }
   }
   $html .= "<p>";
   $html .= "<input class='button' type='submit' name='save' value='" . _("Save") . "'/>";
