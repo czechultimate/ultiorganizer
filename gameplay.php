@@ -483,7 +483,7 @@ if (GameHasStarted($game_result) > 0) {
       $dblVAvg = 0.0;
 
       //Build HTML-table
-      $html .= "<table style='width:80%' border='1' cellpadding='2' cellspacing='0'><tr><th></th><th style='width:25%'>" . utf8entities($game_result['hometeamname']) .
+      $html .= "<table style='width:100%' border='1' cellpadding='2' cellspacing='0'><tr><th></th><th style='width:25%'>" . utf8entities($game_result['hometeamname']) .
         "</th><th style='width:25%'>" . utf8entities($game_result['visitorteamname']) . "</th></tr>";
 
       $html .= "<tr><td>" . _("Goals") . ":</td> <td class='home'>$nHGoals</td> <td class='guest'>$nVGoals</td></tr>\n";
