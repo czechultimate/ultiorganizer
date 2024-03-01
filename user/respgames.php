@@ -97,7 +97,7 @@ function respgameslink($season, $series_id, $group, $hide, $mass, $htmlentities 
   return $ret;
 }
 
-if (count($groups) > 0) {
+/*if (count($groups) > 0) {
   foreach ($groups as $grouptmp) {
     if ($group == $grouptmp['reservationgroup']) {
       $html .= "<a class='groupinglink' tabindex='" . ++$tab . "' href='" . respgameslink($season, $series_id, urlencode($grouptmp['reservationgroup']), $hide, $mass) . "'><span class='selgroupinglink'>" . U_($grouptmp['reservationgroup']) . "</span></a>";
@@ -111,7 +111,7 @@ if (count($groups) > 0) {
   } else {
     $html .= "<a class='groupinglink' tabindex='" . ++$tab . "' href='" . respgameslink($season, $series_id, "all", $hide, $mass) . "'>" . _("All") . "</a>";
   }
-}
+}*/
 $html .= "</td>\n";
 
 $html .= "<td>";
@@ -128,13 +128,13 @@ if ($hidestarted != -1) {
 }
 $html .= "</td>\n";
 
-$html .= "</td><td style='text-align:right;' tabindex='" . ++$tab . "'>";
+/*$html .= "</td><td style='text-align:right;' tabindex='" . ++$tab . "'>";
 if ($_SESSION['massinput']) {
   $html .= "<a class='button' href='" . respgameslink($season, $series_id, $group, $hide, "0") . "'>" . _("Just display values") . "</a>";
 } else {
   $html .= "<a class='button' href='" . respgameslink($season, $series_id, $group, $hide, "1") . "'>" . _("Mass input") . "</a>";
 }
-$html .= "</td></tr></table>\n";
+$html .= "</td></tr></table>\n";*/
 
 
 $respGameArray = GameResponsibilityArray($season, $series_id);
