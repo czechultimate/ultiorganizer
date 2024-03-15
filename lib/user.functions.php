@@ -1224,19 +1224,21 @@ function FinalizeNewUser($userid, $email)
 	);
 	$result = DBQuery($query);
 
-	$query = sprintf(
-		"SELECT DISTINCT profile_id FROM uo_player_profile WHERE LOWER(email)='%s'",
-		DBEscapeString(strtolower($email))
-	);
-	$result = DBQuery($query);
-
-	while ($accreditation = mysqli_fetch_row($result)) {
+	if(!empty($email)){
 		$query = sprintf(
-			"INSERT INTO uo_userproperties (userid, name, value) VALUES ('%s', 'userrole', 'playeradmin:%s')",
-			DBEscapeString($userid),
-			DBEscapeString($accreditation[0])
+			"SELECT DISTINCT profile_id FROM uo_player_profile WHERE LOWER(email)='%s'",
+			DBEscapeString(strtolower($email))
 		);
-		$result1 = DBQuery($query);
+		$result = DBQuery($query);
+
+		while ($accreditation = mysqli_fetch_row($result)) {
+			$query = sprintf(
+				"INSERT INTO uo_userproperties (userid, name, value) VALUES ('%s', 'userrole', 'playeradmin:%s')",
+				DBEscapeString($userid),
+				DBEscapeString($accreditation[0])
+			);
+			$result1 = DBQuery($query);
+		}
 	}
 }
 
