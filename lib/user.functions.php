@@ -1506,7 +1506,7 @@ function GameResponsibilityArrayByName($season, $series = null)
 			left join (SELECT COUNT(*) AS goals, game FROM uo_goal GROUP BY game) AS m ON (pp.game_id=m.game)
 		WHERE game_id IN (" . implode(",", array_column($gameResponsibilities, 'game_id')) . ")"
 			. ($series ? " AND pool.series=%d" : "") . "
-		ORDER BY res.starttime ASC, ser.name ASC, pp.time ASC",
+		ORDER BY ser.name ASC, res.location ASC, pp.time ASC, res.fieldname ASC",
 		$series ? (int)$series : 0
 	);
 
