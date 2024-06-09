@@ -98,3 +98,34 @@ button {
 	cursor:pointer;
 	font-size: 10px; 
 }
+
+.spiritbutton fieldset {
+	border: none;
+}
+
+.spiritbutton input[type="radio"] {
+    display: none;
+}
+
+.spiritbutton label {
+    padding: 3px 13px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.spiritbutton label:first-of-type {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.spiritbutton label:last-of-type {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    margin-right: 0;
+}
+
+.spiritbutton input[type="radio"]:checked + label {
+    background-color: #006699;
+    color: white;
+    border-color: #006699;
+}

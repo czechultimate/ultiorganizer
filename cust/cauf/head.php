@@ -11,5 +11,5 @@ function logo()
 
 function pageHeader()
 {
-	return "<a href='https://www.uniulti.cz/'><img class='header_logo' style='height: 68px;' src='cust/cauf/logo.svg'/></a>";
+	return "<a href='https://www.vysledky.frisbee.cz/'><img class='header_logo' style='height: 68px;' src='cust/cauf/logo.svg'/></a>";
 }

@@ -1884,6 +1884,76 @@ function SpiritTable($gameinfo, $points, $categories, $home, $comment, $wide = t
 	return $html;
 }
 
+function SpiritTableWeb($gameinfo, $points, $categories, $home, $comment, $wide = true)
+{
+	$home = $home ? "home" : "vis";
+	$html = "<table>\n";
+	$html .= "<tr>";
+	if ($wide)
+		$html .= "<th style='width:70%;text-align: right;'></th>";
+		$colspan = ($wide ? 3 : 2);
+		$html .= "<th></th></tr>\n";
+
+		foreach ($categories as $cat) {
+			if ($cat['index'] == 0)
+				continue;
+			$id = $cat['category_id'];
+			$html .= "<tr>";
+			if ($wide)
+				$html .= "<td style='width:70%'>";
+			else
+				$html .= "<td colspan='$colspan'>";
+			$html .= _($cat['text']);
+			$html .= "<input type='hidden' id='" . $home . "valueId$id' name='" . $home . "valueId[]' value='$id'/>";
+			if ($wide)
+				$html .= "</td>";
+			else
+				$html .= "</td></tr>\n<tr>";
+				$html .= "<td><div class='spiritbutton'><fieldset id='" . $home . "cat'" . $id . "_0' data-role='controlgroup' data-type='horizontal' >";
+				for ($i = 0; $i <= 4; ++$i) {
+						$id = $cat['category_id'];
+						$checked = (isset($points[$id]) && !is_null($points[$id]) && $points[$id] == $i) ? "checked='checked'" : "";
+						$html .= "<input type='radio' id='" . $home . "cat" . $id . "_" . $i . "' name='" . $home . "cat" . $id . "' value='$i' $checked/>";
+						$html .= "<label for='" . $home . "cat" . $id . "_" . $i . "'>$i</label>";
+						
+				}
+				$html .= "</fieldset><div></td>";
+			$html .= "</tr>\n";
+		}
+		
+		$html .= "<tr>";
+		if ($wide)
+			$html .= "<td style='width:70%'>";
+		else
+			$html .= "<td colspan='$colspan'>";
+
+		$html .= _("Spirit comment");
+		$html .= "<input type='hidden' id='" . $home . "valueId$id' name='" . $home . "valueId[]' value='$id'/>";
+
+		if ($wide)
+			$html .= "</td>";
+		else
+			$html .= "</td></tr>\n<tr>";
+
+		$html .= "<td class='center'>
+				<textarea rows='4' maxlength='500' id='" . $home . "catcomment' name='" . $home . "catcomment' >" . $comment . "</textarea></td>";
+		$html .= "</tr>\n";
+
+
+
+	$html .= "<tr>";
+	$html .= "<td class='highlight' colspan='$colspan'>" . _("Total points");
+	$total = SpiritTotal($points, $categories);
+	if (!isset($total))
+		$total = ": -";
+	else
+		$html .= ": $total";
+	$html .= "</td></tr>";
+	$html .= "</table>\n";
+
+	return $html;
+}
+
 function StartGame($gameId){
 
 	if (hasEditGameEventsRight($gameId)) {

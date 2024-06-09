@@ -20,9 +20,9 @@ if(empty($series)){
 }
 
 foreach($series as $s){
-  $html .= "<p><a href=https://www.uniulti.cz/?view=games&series=" . $s['series']. "&filter=upcoming&group=all><h1>" . $s['seriesname'] . "</a></h1>
+  $html .= "<p><a href=https://www.vysledky.frisbee.cz/?view=games&series=" . $s['series']. "&filter=upcoming&group=all><h1>" . $s['seriesname'] . "</a></h1>
               <ul>
-                <li><b>Místo konání:</b> <a href=https://www.uniulti.cz/?view=reservationinfo&reservation=" . $s['reservation'] . ">" . $s['name'] . "</a></li>
+                <li><b>Místo konání:</b> <a href=https://www.vysledky.frisbee.cz/?view=reservationinfo&reservation=" . $s['reservation'] . ">" . $s['name'] . "</a></li>
                 <li><b>Termín konání:</b> " . date("d-m-Y", strtotime($s['starttime'])) . " - " . date("d-m-Y", strtotime($s['endtime'])) . "</li>
                 </ul>
             </p>";
