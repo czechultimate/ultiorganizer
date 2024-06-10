@@ -111,7 +111,8 @@ function ClubTeamsHistory($clubId)
 			LEFT JOIN uo_team team ON(team.club = club.club_id)
 			LEFT JOIN uo_series ser ON(team.series = ser.series_id)
 			LEFT JOIN uo_season s ON(s.season_id = ser.season)
-			WHERE team.club='%s' AND ser.season!='%s' ORDER BY ser.type, s.starttime DESC, team.name",
+			WHERE team.club='%s' AND ser.season!='%s' 
+			ORDER BY ser.ordering, team.name",
 		DBEscapeString($clubId),
 		DBEscapeString($curseason)
 	);

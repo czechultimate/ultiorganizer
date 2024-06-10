@@ -528,13 +528,7 @@ if (ShowDefenseStats()) {
 }*/
 
 
-$sort = iget("sort");
-
-if (empty($sort)) {
-  $sort = "serie";
-}
-
-$played = TeamPlayedGames($teaminfo['name'], $teaminfo['type'], $sort);
+$played = TeamPlayedGames($teaminfo['name'], $teaminfo['type']);
 
 if ($played) {
   $html .= "<h2>" . _("Game history") . "</h2>";
@@ -543,9 +537,9 @@ if ($played) {
 
   $html .= "<table border='1' cellspacing='2' width='100%'><tr>";
 
-  $html .= "<th><a class='thsort' href=\"" . $viewUrl . "sort=team\">" . _("Team") . "</a></th>";
-  $html .= "<th><a class='thsort' href=\"" . $viewUrl . "sort=result\">" . _("Result") . "</a></th>";
-  $html .= "<th><a class='thsort' href=\"" . $viewUrl . "sort=serie\">" . _("Event") . "</a></th></tr>";
+  $html .= "<th>" . _("Team") . "</th>";
+  $html .= "<th>" . _("Result") . "</th>";
+  $html .= "<th>" . _("Event") . "</th></tr>";
  // $curSeason = Currentseason();
 
   foreach ($played as $row) {

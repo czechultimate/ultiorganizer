@@ -545,11 +545,11 @@ function TeamPoolGamesAgainst($teamId1, $teamId2, $poolId)
   return DBQueryToArray($query);
 }
 
-function TeamPlayedGames($name, $seriestype, $sorting, $curSeason = false)
+function TeamPlayedGames($name, $seriestype, $curSeason = false)
 {
 
   $query = sprintf(
-    "SELECT pj1.name AS hometeamname, pj2.name AS visitorteamname, pp.homescore, pp.visitorscore, pp.hasstarted, ser.name as seriesname,
+    "SELECT pj1.name AS hometeamname, pj2.name AS visitorteamname, pp.homescore, pp.visitorscore, pp.hasstarted, pp.time, ser.name as seriesname,
 	ser.season as season_id, ps.name, pp.game_id, ps.pool_id
 	FROM uo_game pp 
 	LEFT JOIN uo_pool ps ON (ps.pool_id=pp.pool)
@@ -557,7 +557,8 @@ function TeamPlayedGames($name, $seriestype, $sorting, $curSeason = false)
 	LEFT JOIN uo_team pj1 ON(pp.hometeam=pj1.team_id) 
 	LEFT JOIN uo_team pj2 ON (pp.visitorteam=pj2.team_id)
 	WHERE (pj1.name='%s' OR pj2.name='%s') AND ser.type='%s' 
-	AND pp.valid=true",
+	AND pp.valid=true
+  ORDER BY pp.time DESC",
     DBEscapeString($name),
     DBEscapeString($name),
     DBEscapeString($seriestype)
@@ -569,24 +570,6 @@ function TeamPlayedGames($name, $seriestype, $sorting, $curSeason = false)
     print($query);
   }*/
 
-  switch ($sorting) {
-
-    case "team":
-      $query .= " ORDER BY hometeamname ASC, visitorteamname ASC";
-      break;
-
-    case "result":
-      $query .= " ORDER BY pp.homescore DESC, pp.visitorscore DESC, hometeamname ASC, visitorteamname ASC";
-      break;
-
-    case "serie":
-      $query .= " ORDER BY ser.name DESC, ps.name ASC, hometeamname ASC, visitorteamname ASC";
-      break;
-
-    default:
-      $query .= " ORDER BY ser.name DESC, ps.name ASC, hometeamname ASC, visitorteamname ASC";
-      break;
-  }
   return DBQueryToArray($query);
 }
 
