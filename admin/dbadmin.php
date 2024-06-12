@@ -21,7 +21,7 @@ if (isSuperAdmin()) {
 	$html .= "<a href='?view=admin/dbequalize'>&raquo; " . _("Equalization") . "</a><br/>\n";
 	$html .= "</p>\n";
 
-	$types = array("import", "updater", "simulator", "generator");
+	$types = array("import", "updater", "simulator", "generator", "edit");
 
 	foreach ($types as $type) {
 		$plugins = GetPluginList("database", $type);

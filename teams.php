@@ -171,7 +171,7 @@ if ($list == "allteams" || $list == "byseeding") {
     //$htmlseries = array();
     $maxplacements = 0;
     $series = SeasonSeries($seasonInfo['season_id'], true);
-    $advance = SeriesGetAdvance($ser["series_id"]);
+    $advance = GetAdvanceBySeries($ser["series_id"]);
       $htmlteams = array();
       $teams  = SeriesRanking($ser['series_id']);
       foreach ($teams as $team) {
@@ -225,7 +225,7 @@ if ($list == "allteams" || $list == "byseeding") {
         }
         $html .= "</td>";
       }*/
-      $html .= "<td>" . $advance[$i] . "</td>";
+      $html .= "<td>" . $advance[$i]['advance'] . "</td>";
       $html .= "</tr>\n";
     }
     $html .= "</table>\n";

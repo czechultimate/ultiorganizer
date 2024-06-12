@@ -905,3 +905,10 @@ FROM (
     ) AS subquery
 ) AS events
 ORDER BY game_id, time ASC
+
+CREATE TABLE `uo_league_advance` (
+        `series_id` INT(10) NOT NULL,
+        `position` INT(10) NOT NULL,
+        `advance` VARCHAR (500) NOT NULL,
+        PRIMARY KEY (`series_id`, `position`)
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE utf8_general_ci AUTO_INCREMENT=1000;

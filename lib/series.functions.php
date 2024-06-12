@@ -35,6 +35,18 @@ function CurrentSeries($season)
   return -1;
 }
 
+function GetSeries($seriesId)
+{
+  $query = sprintf(
+    "SELECT ser.* 
+  	FROM uo_series ser
+	WHERE ser.series_id = '%s'",
+    DBEscapeString($seriesId)
+  );
+
+  return DBQueryToRow($query);
+}
+
 /**
  * Get all pools in given division.
  *
@@ -1293,4 +1305,32 @@ function GetPlaylistsFromSeries($series){
 );
 
   return DBQueryToArray($query);
+}
+
+function GetAdvanceBySeries ($seriesId)
+{
+  $query = sprintf(
+    "SELECT adv.* 
+  	FROM uo_league_advance adv
+	WHERE adv.series_id = '%s'",
+    DBEscapeString($seriesId)
+  );
+
+  return DBQueryToArray($query);
+}
+
+function SetAdvanceBySeries ($seriesId, $position, $advance)
+{
+  if (isSuperAdmin()) {
+    $query = sprintf(
+      "REPLACE INTO uo_league_advance (series_id, position, advance)
+				VALUES (%d, %d, '%s')",
+      (int)$seriesId,
+      (int)$position,
+      DBEscapeString($advance)
+    );
+    
+    DBQueryInsert($query);
+
+  } else die("Insufficient rights to edit advance to league");
 }
