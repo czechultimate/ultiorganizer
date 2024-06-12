@@ -24,7 +24,7 @@ include_once 'lib/series.functions.php';
 include_once 'lib/standings.functions.php';
 
 $html = "";
-$title = ("Check series playerlists");
+$title = ("Edit advance to the league");
 $seriesId = "";
 
 if (!empty($_POST['seriesId'])) {
