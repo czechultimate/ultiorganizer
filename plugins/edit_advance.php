@@ -52,7 +52,7 @@ if (isset($_POST['edit'])) {
     $maxplacements = 0;
     $maxplacements = max(count(SeriesTeams($seriesId)), $maxplacements);
     for ($i = 1; $i < $maxplacements+1; $i++) {
-        SetAdvanceBySeries($seriesId, $_POST['position_' . $i], $_POST['advance_' . $i]);
+        SetAdvanceBySeries($seriesId, $i, $_POST['advance_' . $i]);
     }
 }
 
@@ -94,7 +94,7 @@ if (isset($_POST['select'])) {
         $html .= "<tr style='border-bottom-style:dashed;border-bottom-width:1px;border-bottom-color:#E0E0E0;'>";
       }
 
-      $html .= "<td><input type='text' size=5 id='position_"  . ($i + 1) ."' name='position_".($i + 1)."' value='"  .($i + 1).  "' readonly></td>";
+      $html .= "<td>" . ordinal($i + 1) . "</td>";
       $html .= "<td>" . $htmlteams[$i] . "</td>";
 
       $html .= "<td> <input type='text' size=50 id='advance_" .($i + 1)."' name='advance_".($i + 1)."' value='" . $advance[$i]["advance"] . "'></td>";
