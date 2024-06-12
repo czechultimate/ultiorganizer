@@ -20,7 +20,6 @@ if (!empty($_POST['remove_x'])) {
   $sp['name'] = !empty($_POST['name0']) ? $_POST['name0'] : "no name";
   $sp['type'] = $_POST['type0'];
   $sp['ordering'] = !empty($_POST['ordering0']) ? $_POST['ordering0'] : "A";
-  $sp['advance'] = !empty($_POST['advance0']) ? $_POST['advance0'] : NULL;
   $sp['season'] = $season;
   $sp['valid'] = isset($_POST['valid0']) ? 1 : 0;
   $sp['stats'] = isset($_POST['stats0']) ? 1 : 0;
@@ -36,7 +35,6 @@ if (!empty($_POST['remove_x'])) {
     $sp['name'] = !empty($_POST["name$id"]) ? $_POST["name$id"] : "no name";
     $sp['type'] = $_POST["type$id"];
     $sp['ordering'] = $_POST["ordering$id"];
-    $sp['advance'] = $_POST["advance$id"];
     $sp['season'] = $season;
     $sp['valid'] = isset($_POST["valid$id"]) ? 1 : 0;
     $sp['stats'] = isset($_POST["stats$id"]) ? 1 : 0;
@@ -59,7 +57,7 @@ $series = SeasonSeries($season);
 $types = SeriesTypes();
 
 $html .= "<table class='admintable'>\n";
-$html .= "<tr><th>" . _("Name") . "</th><th>" . _("Type") . "</th><th>" . _("Rules") . "</th><th>" . _("Ordering") . "</th><th>" . _("Advance") . "</th><th class='center' title='" . _("Visible") . "'>" . _("V") . "</th>" . "</th><th class='center' title='" . _("Stats") . "'>" . _("S") . "</th>";
+$html .= "<tr><th>" . _("Name") . "</th><th>" . _("Type") . "</th><th>" . _("Rules") . "</th><th>" . _("Ordering") . "</th><th class='center' title='" . _("Visible") . "'>" . _("V") . "</th>" . "</th><th class='center' title='" . _("Stats") . "'>" . _("S") . "</th>";
 $html .= "<th>" . _("Operations") . "</th><th></th></tr>\n";
 
 $last_ordering = 0;
@@ -98,8 +96,6 @@ foreach ($series as $row) {
   $html .=  "</select></td>";
 
   $html .= "<td><input class='input' size='3' maxlength='1' name='ordering$id' value='" . utf8entities($row['ordering']) . "'/></td>";
-
-  $html .= "<td><input class='input' size='3' name='advance$id' value='" . $row['advance'] . "'/></td>";
 
   if (intval($row['valid'])) {
     $html .= "<td class='center'><input class='input' type='checkbox' name='valid$id' checked='checked'/></td>";
@@ -157,7 +153,6 @@ foreach ($templates as $template) {
 $html .=  "</select></td>";
 
 $html .= "<td style='padding-top:15px'><input class='input' size='3' maxlength='1' name='ordering0' value='$last_ordering'/></td>";
-$html .= "<td style='padding-top:15px'><input class='input' size='3' name='advance0'/></td>";
 $html .= "<td style='padding-top:15px'><input class='input' type='checkbox' name='valid0' checked='checked'/></td>";
 $html .= "<td style='padding-top:15px'><input class='input' type='checkbox' name='stats0' checked='checked'/></td>";
 

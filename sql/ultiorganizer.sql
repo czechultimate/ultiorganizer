@@ -642,7 +642,6 @@ CREATE TABLE `uo_series` (
   `season` varchar(50) DEFAULT NULL,
   `valid` tinyint(4) NOT NULL DEFAULT '0',
   `type` varchar(20) DEFAULT NULL,
-  `advance` varchar(50) DEFAULT NULL,
   `stats` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`series_id`),
   INDEX `idx_season` (`season`)
