@@ -63,6 +63,10 @@ if (!empty($_POST['remove_x'])) {
         $playerInfo['lastname'] = $_POST["lastname$id"];
       }
 
+
+      $playerInfo['staff'] = isset($_POST["staff$id"]) ? 1 : 0;
+
+
       if (isset($_POST["accrId$id"])) {
         if ($playerInfo['accreditation_id'] != $_POST["accrId$id"]) {
           DeAccreditPlayer($id, "teamplayers");
@@ -78,7 +82,7 @@ if (!empty($_POST['remove_x'])) {
         $playerInfo['profile_id'] = $_POST["profileId$id"];
       }
 
-      SetPlayer($_POST['playerId'][$i], $playerInfo['num'], $playerInfo['firstname'], $playerInfo['lastname'], $playerInfo['accreditation_id'], $playerInfo['profile_id']);
+      SetPlayer($_POST['playerId'][$i], $playerInfo['num'], $playerInfo['firstname'], $playerInfo['lastname'], $playerInfo['accreditation_id'], $playerInfo['staff'], $playerInfo['profile_id']);
 
       if (hasAccredidationRight($playerInfo['team'])) {
         if (isset($_POST["accredits$id"])) {
@@ -153,17 +157,12 @@ echo "<th class='center'>" . _("#") . "</th>";
 echo "<th>" . _("First name") . "</th>";
 echo "<th>" . _("Last name") . "</th>";
 echo "<th>" . _("Profile") . "</th>";
-echo "<th class='center'>" . _("Accredited") . "</th>";
-if (CUSTOMIZATIONS == "slkl") {
-  echo "<th>" . _("Member ID") . "</th>";
-  echo "<th>" . _("Membership") . "</th>";
-  echo "<th>" . _("License") . "</th>";
-  echo "<th></th>";
-} else {
-  echo "<th>" . _("Profile Id") . "</th>";
+echo "<th class='center'>" . _("Staff") . "</th>";
+
+echo "<th>" . _("Profile Id") . "</th>";
   // echo "<th></th>";
-  echo "<th>" . _("Delete") . "</th>";
-}
+echo "<th>" . _("Delete") . "</th>";
+
 
 echo "</tr>\n";
 
@@ -201,7 +200,7 @@ while ($player = mysqli_fetch_assoc($team_players)) {
   echo "<a href='?view=playercard&amp;player=" . $player['player_id'] . "'>" . _("view") . "</a>";
   echo "</td>\n";
 
-  if (!$playerInfo['accredited']) {
+  /*if (!$playerInfo['accredited']) {
     echo "<td  class='center attention'>";
   } else {
     echo "<td  class='center'>";
@@ -214,31 +213,13 @@ while ($player = mysqli_fetch_assoc($team_players)) {
     if ($playerInfo['accredited']) echo _("Yes");
     else echo _("No");
   }
-  echo "</td>\n";
+  echo "</td>\n";*/
 
-  if (CUSTOMIZATIONS == "slkl") {
-    if (!empty($playerInfo['accreditation_id'])) {
-      echo "<td class='center' style='white-space: nowrap'>" . $playerInfo['accreditation_id'] . "</td>";
-    } else {
-      echo "<td class='center attention'><a id='showAccrId" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . ");\" href='javascript:checkProfileId(\"" . $player['player_id'] . "\");'>" . _("Search") . "</a></td>\n";
-    }
+  $staff = intval($player['staff']) ? "checked='checked'" : "";
+  echo "<td  class='center'><input type='checkbox' name='staff" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $staff/></td>\n";
+  
+  echo "<td class='center'><a id='showAccrId" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . ");\" href='javascript:checkProfileId(\"" . $player['player_id'] . "\");'>" . $player['profile_id'] . " </a></td>\n";
 
-    $query = sprintf("SELECT membership, license, external_type, external_validity FROM uo_license WHERE accreditation_id=%d", (int)$playerInfo['accreditation_id']);
-    $row = DBQueryToRow($query);
-    if (!empty($row['membership'])) {
-      echo "<td class='center' style='white-space: nowrap'>" . $row['membership'] . "</td>";
-    } else {
-      echo "<td class='center'>-</td>";
-    }
-
-    if (!empty($row['external_type'])) {
-      echo "<td style='white-space: nowrap'>" . U_($row['external_type']) . "</td>";
-    } else {
-      echo "<td>-</td>";
-    }
-  } else {
-    echo "<td class='center'><a id='showAccrId" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . ");\" href='javascript:checkProfileId(\"" . $player['player_id'] . "\");'>" . $player['profile_id'] . " </a></td>\n";
-  }
   if (CanDeletePlayer($player['player_id'])) {
     echo "<td class='center'><input class='deletebutton' type='image' src='images/remove.png' name='remove' value='X' alt='X' onclick=\"setId(" . $player['player_id'] . ");\"/></td>";
   }

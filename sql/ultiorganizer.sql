@@ -452,6 +452,7 @@ CREATE TABLE `uo_player` (
   `num` tinyint(3) unsigned DEFAULT NULL,
   `accreditation_id` varchar(150) DEFAULT NULL,
   `accredited` tinyint(1) NOT NULL DEFAULT '0',
+  `staff` tinyint(1) NOT NULL DEFAULT '0',
   `profile_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`player_id`),
   INDEX `idx_accreditation_id` (`profile_id`),
