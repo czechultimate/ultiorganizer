@@ -351,7 +351,7 @@ function GamePlayerFromNumber($gameId, $teamId, $number)
 function GameTeamScoreBorad($gameId, $teamId)
 {
 	$query = sprintf(
-		"SELECT p.player_id, p.firstname, p.lastname, p.profile_id, COALESCE(t.done,0) AS done, COALESCE(s.fedin,0) AS fedin, 
+		"SELECT p.player_id, p.firstname, p.lastname, p.staff, p.captain, p.spirit_captain, p.profile_id, COALESCE(t.done,0) AS done, COALESCE(s.fedin,0) AS fedin, 
 		(COALESCE(t.done,0) + COALESCE(s.fedin,0)) AS total, pel.num AS num FROM uo_player AS p 
 		LEFT JOIN (SELECT m.scorer AS scorer, COUNT(*) AS done 
 			FROM uo_goal AS m WHERE m.game='%s' AND m.scorer IS NOT NULL GROUP BY scorer) AS t ON (p.player_id=t.scorer) 

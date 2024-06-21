@@ -57,23 +57,56 @@ if (GameHasStarted($game_result) > 0) {
     }
 
     while ($row = mysqli_fetch_assoc($home_team_score_board)) {
-      $html .= "<tr>";
-      $html .= "<td style='text-align:left'>" . $row['num'] . "</td>";
-      $html .= "<td><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
-      $html .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
-      $html .= utf8entities($row['lastname']) . "</a>";
-      if ($row['player_id'] == $homecaptain) {
-        $html .= "&nbsp;" . _("(C)");
+      
+      if ($row['staff'] == 0){
+        $html .= "<tr>";
+        $html .= "<td style='text-align:left'>" . $row['num'] . "</td>";
+        $html .= "<td><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
+        $html .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
+        $html .= utf8entities($row['lastname']) . "</a>";
+        if ($row['captain'] == 1) {
+          $html .= "&nbsp;" . _("(C)");
+        }
+
+        if ($row['spirit_captain'] == 1) {
+          $html .= "&nbsp;" . _("(SC)");
+        }
+
+        $html .= "</td>";
+        if($poolinfo["stats"] == 1){
+          $html .= "<td class='center'>" . $row['fedin'] . "</td>";
+          $html .= "<td class='center'>" . $row['done'] . "</td>";
+          $html .= "<td class='center'>" . $row['total'] . "</td>";
+        }
+        $html .= "</tr>";
+      } else {
+        
+        if($poolinfo["stats"] == 1){
+          $coachh .= "<tr>";
+          $coachh .= "<td colspan='5'><b>Coach: </b><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
+          $coachh .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
+          $coachh .= utf8entities($row['lastname']) . "</a>";
+          $coachh .= "</td></tr>";
+        } else {
+          $coachh .= "<tr>";
+          $coachh .= "<td colspan='2'><b>Coach: </b><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
+          $coachh .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
+          $coachh .= utf8entities($row['lastname']) . "</a>";
+          $coachh .= "</td></tr>";
+        }
       }
-      $html .= "</td>";
-      if($poolinfo["stats"] == 1){
-        $html .= "<td class='center'>" . $row['fedin'] . "</td>";
-        $html .= "<td class='center'>" . $row['done'] . "</td>";
-        $html .= "<td class='center'>" . $row['total'] . "</td>";
-      }
-      $html .= "</tr>";
+      
     }
 
+    if(!empty($coachh)){
+      if($poolinfo["stats"] == 1){
+        $html .= "<tr><td colspan='5'>&nbsp;</td></tr>";
+      }else{
+        $html .= "<tr><td colspan='2'>&nbsp;</td></tr>";
+      }
+      $html.=$coachh;
+    }
+    
 
     $html .= "</table></td>\n<td style='width:10%'>&nbsp;</td><td valign='top' style='width:45%'>";
 
@@ -88,22 +121,57 @@ if (GameHasStarted($game_result) > 0) {
     }
 
     while ($row = mysqli_fetch_assoc($guest_team_score_board)) {
-      $html .= "<tr>";
-      $html .= "<td style='text-align:left'>" . $row['num'] . "</td>";
-      $html .= "<td><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
-      $html .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
-      $html .= utf8entities($row['lastname']) . "</a>";
-      if ($row['player_id'] == $awaycaptain) {
-        $html .= "&nbsp;" . _("(C)");
-      }
-      $html .= "</td>";
+      
+      if ($row['staff'] == 0){
+        $html .= "<tr>";
+        $html .= "<td style='text-align:left'>" . $row['num'] . "</td>";
+        $html .= "<td><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
+        $html .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
+        $html .= utf8entities($row['lastname']) . "</a>";
+        
+        if ($row['captain'] == 1) {
+          $html .= "&nbsp;" . _("(C)");
+        }
 
-      if($poolinfo["stats"] == 1){
-        $html .= "<td class='center'>" . $row['fedin'] . "</td>";
-        $html .= "<td class='center'>" . $row['done'] . "</td>";
-        $html .= "<td class='center'>" . $row['total'] . "</td>";
+        if ($row['spirit_captain'] == 1) {
+          $html .= "&nbsp;" . _("(SC)");
+        }
+
+        $html .= "</td>";
+
+        if($poolinfo["stats"] == 1){
+          $html .= "<td class='center'>" . $row['fedin'] . "</td>";
+          $html .= "<td class='center'>" . $row['done'] . "</td>";
+          $html .= "<td class='center'>" . $row['total'] . "</td>";
+        }
+        $html .= "</tr>";
       }
-      $html .= "</tr>";
+      else{
+        if($poolinfo["stats"] == 1){
+          $coacha .= "<tr>";
+          $coacha .= "<td colspan='5'><b>Coach: </b><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
+          $coacha .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
+          $coacha .= utf8entities($row['lastname']) . "</a>";
+          $coacha .= "</td></tr>";
+        } else {
+          $coacha .= "<tr>";
+          $coacha .= "<td colspan='2'><b>Coach: </b><a href='?view=playercard&amp;series=0&amp;player=" . $row['player_id'];
+          $coacha .= "'>" . utf8entities($row['firstname']) . "&nbsp;";
+          $coacha .= utf8entities($row['lastname']) . "</a>";
+          $coacha .= "</td></tr>";
+        }
+
+      }
+      
+    }
+
+    if(!empty($coacha)){
+      if($poolinfo["stats"] == 1){
+        $html .= "<tr><td colspan='5'>&nbsp;</td></tr>";
+      }else{
+        $html .= "<tr><td colspan='2'>&nbsp;</td></tr>";
+      }
+      $html.=$coacha;
     }
 
     $html .= "</table></td></tr></table>\n";

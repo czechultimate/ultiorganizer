@@ -12,7 +12,7 @@ include_once $include_prefix . 'lib/common.functions.php';
  * @param string $lname
  * @param string $accrId
  */
-function SetPlayer($playerId, $number, $fname, $lname, $accrId, $staff, $profileId)
+function SetPlayer($playerId, $number, $fname, $lname, $accrId, $staff, $captain, $scaptain, $profileId)
 {
   $playerInfo = PlayerInfo($playerId);
   if (hasEditPlayersRight($playerInfo['team'])) {
@@ -20,7 +20,7 @@ function SetPlayer($playerId, $number, $fname, $lname, $accrId, $staff, $profile
     else $number = (int)$number;
     //echo "<p>".$profileId."</p>";
     $query = sprintf(
-      "UPDATE uo_player SET num=%s, firstname='%s', lastname='%s', accreditation_id='%s', staff = %d,
+      "UPDATE uo_player SET num=%s, firstname='%s', lastname='%s', accreditation_id='%s', staff = %d, captain = %d, spirit_captain = %d,
     		profile_id='%s'
 			WHERE player_id=%d",
       $number,
@@ -28,6 +28,8 @@ function SetPlayer($playerId, $number, $fname, $lname, $accrId, $staff, $profile
       DBEscapeString($lname),
       DBEscapeString($accrId),
       (int)$staff,
+      (int)$captain,
+      (int)$scaptain,
       DBEscapeString($profileId),
       (int)$playerId
     );
@@ -127,7 +129,7 @@ function PlayerInfo($playerId)
 {
   $query = sprintf(
     "SELECT p.player_id, p.profile_id, CONCAT(p.firstname, ' ', p.lastname) as name, p.firstname,
-		p.lastname, p.num, p.accreditation_id, p.staff, p.team, t.name AS teamname, p.accredited, 
+		p.lastname, p.num, p.accreditation_id, p.staff, p.captain, p.spirit_captain, p.team, t.name AS teamname, p.accredited, 
 		p.team, t.series, ser.type, ser.name AS seriesname, pp.profile_image, pp.email, pp.gender,
 		pp.birthdate
 		FROM uo_player p 

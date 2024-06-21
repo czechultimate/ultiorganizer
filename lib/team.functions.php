@@ -30,7 +30,7 @@ function TeamPlayerAccreditationArray($teamId)
 function TeamPlayerList($teamId)
 {
   $query = sprintf(
-    "SELECT player_id, firstname, lastname, num, accredited, staff, accreditation_id, profile_id FROM uo_player WHERE team = %d ORDER BY lastname ASC, firstname ASC",
+    "SELECT player_id, firstname, lastname, num, accredited, staff, captain, spirit_captain, accreditation_id, profile_id FROM uo_player WHERE team = %d ORDER BY lastname ASC, firstname ASC",
     (int)$teamId
   );
   return DBQuery($query);
@@ -1089,9 +1089,13 @@ function RemovePlayer($playerId)
   }
 }
 
-function AddPlayer($teamId, $firstname, $lastname, $profileId, $staff, $num = -1)
+function AddPlayer($teamId, $firstname, $lastname, $profileId, $staff, $num = 0)
 {
   if (hasEditPlayersRight($teamId)) {
+
+    if(!isset($num)){
+      $num = 0;
+    }
 
     if (!empty($profileId)) {
       $profile = PlayerProfile($profileId);

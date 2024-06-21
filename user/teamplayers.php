@@ -65,6 +65,8 @@ if (!empty($_POST['remove_x'])) {
 
 
       $playerInfo['staff'] = isset($_POST["staff$id"]) ? 1 : 0;
+      $playerInfo['captain'] = isset($_POST["captain$id"]) ? 1 : 0;
+      $playerInfo['spirit_captain'] = isset($_POST["spirit_captain$id"]) ? 1 : 0;
 
 
       if (isset($_POST["accrId$id"])) {
@@ -82,7 +84,7 @@ if (!empty($_POST['remove_x'])) {
         $playerInfo['profile_id'] = $_POST["profileId$id"];
       }
 
-      SetPlayer($_POST['playerId'][$i], $playerInfo['num'], $playerInfo['firstname'], $playerInfo['lastname'], $playerInfo['accreditation_id'], $playerInfo['staff'], $playerInfo['profile_id']);
+      SetPlayer($_POST['playerId'][$i], $playerInfo['num'], $playerInfo['firstname'], $playerInfo['lastname'], $playerInfo['accreditation_id'], $playerInfo['staff'], $playerInfo['captain'], $playerInfo['spirit_captain'], $playerInfo['profile_id']);
 
       if (hasAccredidationRight($playerInfo['team'])) {
         if (isset($_POST["accredits$id"])) {
@@ -157,7 +159,9 @@ echo "<th class='center'>" . _("#") . "</th>";
 echo "<th>" . _("First name") . "</th>";
 echo "<th>" . _("Last name") . "</th>";
 echo "<th>" . _("Profile") . "</th>";
-echo "<th class='center'>" . _("Staff") . "</th>";
+echo "<th class='center'>" . _("Coach") . "</th>";
+echo "<th class='center' title='" . _("Captain") . "'>" . _("C") . "</th>";
+echo "<th class='center' title='" . _("Spirit Captain") . "'>" . _("SC") . "</th>";
 
 echo "<th>" . _("Profile Id") . "</th>";
   // echo "<th></th>";
@@ -168,7 +172,6 @@ echo "</tr>\n";
 
 
 $team_players = TeamPlayerList($teamId);
-
 if (mysqli_num_rows($team_players) == 0 && (hasAccredidationRight($teamId) || hasEditPlayersRight($teamId))) {
   $teams = TeamGetTeamsByName($teaminfo['name']);
   if (count($teams)) {
@@ -188,15 +191,17 @@ if (mysqli_num_rows($team_players) == 0 && (hasAccredidationRight($teamId) || ha
 
 while ($player = mysqli_fetch_assoc($team_players)) {
   $playerInfo = PlayerInfo($player['player_id']);
-
+  $dis = hasEditTeamsRight($teaminfo['series']) ? "" : "disabled";
   echo "<tr>";
   echo "<td class='center'><input class='input' size='3' maxlength='3' onkeypress=\"ChgPlayer(" . $player['player_id'] . ");\" onkeyup=\"validNumber(this);\" name='number" . $player['player_id'] . "' id='number" . $player['player_id'] . "' value='" . utf8entities($playerInfo['num']) . "'/></td>";
-  echo "<td><input class='input' size='20' maxlength='20' onkeypress=\"ChgPlayer(" . $player['player_id'] . ");\" name='firstname" . $player['player_id'] . "' id='firstname" . $player['player_id'] . "' value='" . utf8entities($playerInfo['firstname']) . "'/></td>";
-  echo "<td><input class='input' size='20' maxlength='30' onkeypress=\"ChgPlayer(" . $player['player_id'] . ");\" name='lastname" . $player['player_id'] . "' id='lastname" . $player['player_id'] . "' value='" . utf8entities($playerInfo['lastname']) . "'/></td>";
+  echo "<td><input class='input' size='20' maxlength='20' onkeypress=\"ChgPlayer(" . $player['player_id'] . ");\" name='firstname" . $player['player_id'] . "' id='firstname" . $player['player_id'] . "' value='" . utf8entities($playerInfo['firstname']) . "' $dis/></td>";
+  echo "<td><input class='input' size='20' maxlength='20' onkeypress=\"ChgPlayer(" . $player['player_id'] . ");\" name='lastname" . $player['player_id'] . "' id='lastname" . $player['player_id'] . "' value='" . utf8entities($playerInfo['lastname']) . "' $dis/></td>";
   echo "<td style='white-space: nowrap'>";
   echo "<input type='hidden' id='profileId" . $player['player_id'] . "' name='profileId" . $player['player_id'] . "' value='" . utf8entities($playerInfo['profile_id']) . "'/>\n";
   echo "<input type='hidden' id='accrId" . $player['player_id'] . "' name='accrId" . $player['player_id'] . "' value='" . utf8entities($player['accreditation_id']) . "'/>\n";
-  echo "<a href='?view=user/playerprofile&amp;player=" . $player['player_id'] . "'>" . _("edit") . "</a> | ";
+  if (hasEditTeamsRight($teaminfo['series'])){
+    echo "<a href='?view=user/playerprofile&amp;player=" . $player['player_id'] . "'>" . _("edit") . "</a> | ";
+  }
   echo "<a href='?view=playercard&amp;player=" . $player['player_id'] . "'>" . _("view") . "</a>";
   echo "</td>\n";
 
@@ -218,15 +223,21 @@ while ($player = mysqli_fetch_assoc($team_players)) {
   $staff = intval($player['staff']) ? "checked='checked'" : "";
   echo "<td  class='center'><input type='checkbox' name='staff" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $staff/></td>\n";
   
+  $captain = intval($player['captain']) ? "checked='checked'" : "";
+  echo "<td  class='center'><input type='checkbox' name='captain" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $captain/></td>\n";
+
+  $spirit_captain = intval($player['spirit_captain']) ? "checked='checked'" : "";
+  echo "<td  class='center'><input type='checkbox' name='spirit_captain" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $spirit_captain/></td>\n";
+
   echo "<td class='center'><a id='showAccrId" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . ");\" href='javascript:checkProfileId(\"" . $player['player_id'] . "\");'>" . $player['profile_id'] . " </a></td>\n";
 
-  if (CanDeletePlayer($player['player_id'])) {
+  if (CanDeletePlayer($player['player_id']) && hasEditTeamsRight($teaminfo['series'])) {
     echo "<td class='center'><input class='deletebutton' type='image' src='images/remove.png' name='remove' value='X' alt='X' onclick=\"setId(" . $player['player_id'] . ");\"/></td>";
   }
   echo "</tr>\n";
 }
 
-if (hasAccredidationRight($teamId) || hasEditPlayersRight($teamId)) {
+if (hasAccredidationRight($teamId) || hasEditTeamsRight($teaminfo['series'])) {
   echo "<tr>";
   echo "<td class='center'><input class='input' size='3' maxlength='3' name='number0' id='number0'/></td>";
   echo "<td><input class='input' size='20' maxlength='20' name='firstname0' id='firstname0' value=''/></td>";

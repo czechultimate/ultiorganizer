@@ -164,33 +164,89 @@ if (ShowDefenseStats()) {
 
     while ($player = mysqli_fetch_assoc($players)) {
       $playerinfo = PlayerInfo($player['player_id']);
-      $html .= "<tr><td>";
-      if (!empty($playerinfo['profile_id'])) {
-        if ($playerinfo['num'] > -1) {
-          $html .= "<a href='?view=playercard&amp;series=0&amp;player=" . $player['player_id'] . "'>" .
-            "#" . $playerinfo['num'] . " " . utf8entities($playerinfo['firstname'] . " " . $playerinfo['lastname']) . "</a>";
+      if($playerinfo['staff'] == 0){
+        $html .= "<tr><td>";
+        if (!empty($playerinfo['profile_id'])) {
+          if ($playerinfo['num'] > -1) {
+            $html .= "<a href='?view=playercard&amp;series=0&amp;player=" . $player['player_id'] . "'>" .
+              "#" . $playerinfo['num'] . " " . utf8entities($playerinfo['firstname'] . " " . $playerinfo['lastname']) . "</a>";
+              if ($playerinfo['captain'] == 1) {
+                $html .= "&nbsp;" . _("(C)");
+              }
+      
+              if ($playerinfo['spirit_captain'] == 1) {
+                $html .= "&nbsp;" . _("(SC)");
+              }
+          } else {
+            $html .= "<a href='?view=playercard&amp;series=0&amp;player=" . $player['player_id'] . "'>" .
+              utf8entities($playerinfo['firstname'] . " " . $playerinfo['lastname']) . "</a>";
+              if ($playerinfo['captain'] == 1) {
+                $html .= "&nbsp;" . _("(C)");
+              }
+      
+              if ($playerinfo['spirit_captain'] == 1) {
+                $html .= "&nbsp;" . _("(SC)");
+              }
+          }
+          if (!empty($playerinfo['profile_image'])) {
+            $html .= "&nbsp;<img width='10' height='10' src='images/linkicons/image.png' alt='" . _("Photo") . "'/>";
+          }
         } else {
-          $html .= "<a href='?view=playercard&amp;series=0&amp;player=" . $player['player_id'] . "'>" .
-            utf8entities($playerinfo['firstname'] . " " . $playerinfo['lastname']) . "</a>";
+          if ($playerinfo['num'] > -1) {
+            $html .= "#" . $playerinfo['num'] . " " . utf8entities($playerinfo['firstname'] . " " . $playerinfo['lastname']);
+            if ($playerinfo['captain'] == 1) {
+              $html .= "&nbsp;" . _("(C)");
+            }
+    
+            if ($playerinfo['spirit_captain'] == 1) {
+              $html .= "&nbsp;" . _("(SC)");
+            }
+          } else {
+            $html .= utf8entities($playerinfo['firstname'] . " " . $playerinfo['lastname']);
+            if ($playerinfo['captain'] == 1) {
+              $html .= "&nbsp;" . _("(C)");
+            }
+    
+            if ($playerinfo['spirit_captain'] == 1) {
+              $html .= "&nbsp;" . _("(SC)");
+            }
+          }
         }
-        if (!empty($playerinfo['profile_image'])) {
-          $html .= "&nbsp;<img width='10' height='10' src='images/linkicons/image.png' alt='" . _("Photo") . "'/>";
+        $html .= "</td>";
+        $html .= "<td class='center'>" . $player['games'] . "</td>";
+        if($teaminfo['stats'] == 1){
+          $html .= "<td class='center'>" . $player['fedin'] . "</td>";
+          $html .= "<td class='center'>" . $player['done'] . "</td>";
+          $html .= "<td class='center'>" . $player['total'] . "</td>";
         }
-      } else {
-        if ($playerinfo['num'] > -1) {
-          $html .= "#" . $playerinfo['num'] . " " . utf8entities($playerinfo['firstname'] . " " . $playerinfo['lastname']);
+        $html.="</tr>\n";
+      }else {
+        if($poolinfo["stats"] == 1){
+          $coach .= "<tr>";
+          $coach .= "<td colspan='5'><b>Coach: </b><a href='?view=playercard&amp;series=0&amp;player=" . $playerinfo['player_id'];
+          $coach .= "'>" . utf8entities($playerinfo['firstname']) . "&nbsp;";
+          $coach .= utf8entities($playerinfo['lastname']) . "</a>";
+          $coach .= "</td></tr>";
         } else {
-          $html .= utf8entities($playerinfo['firstname'] . " " . $playerinfo['lastname']);
+          $coach .= "<tr>";
+          $coach .= "<td colspan='2'><b>Coach: </b><a href='?view=playercard&amp;series=0&amp;player=" . $playerinfo['player_id'];
+          $coach .= "'>" . utf8entities($playerinfo['firstname']) . "&nbsp;";
+          $coach .= utf8entities($playerinfo['lastname']) . "</a>";
+          $coach .= "</td></tr>";
         }
+
       }
-      $html .= "</td>";
-      $html .= "<td class='center'>" . $player['games'] . "</td>";
-      if($teaminfo['stats'] == 1){
-        $html .= "<td class='center'>" . $player['fedin'] . "</td>";
-        $html .= "<td class='center'>" . $player['done'] . "</td>";
-        $html .= "<td class='center'>" . $player['total'] . "</td></tr>\n";
+    } 
+
+    if(!empty($coach)){
+      if($poolinfo["stats"] == 1){
+        $html .= "<tr><td colspan='5'>&nbsp;</td></tr>";
+      }else{
+        $html .= "<tr><td colspan='2'>&nbsp;</td></tr>";
       }
+      $html.=$coach;
     }
+
     $html .= "</table>\n";
   }
 }
