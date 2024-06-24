@@ -340,6 +340,12 @@ CREATE TABLE `uo_gameevent` (
   PRIMARY KEY (`game`,`num`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
 
+CREATE TABLE `uo_gamegender` (
+  `game` int(10) NOT NULL,
+  `ismen` tinyint(1) NOT NULL,
+  PRIMARY KEY (`game`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
+
 CREATE TABLE `uo_goal` (
   `game` int(10) NOT NULL,
   `num` smallint(5) NOT NULL,

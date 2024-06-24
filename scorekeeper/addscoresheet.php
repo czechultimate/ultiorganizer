@@ -10,6 +10,7 @@ $seasoninfo = SeasonInfo(GameSeason($gameId));
 $game_result = GameResult($gameId);
 $result = GameGoals($gameId);
 $scores = array();
+$men = GameIsFirstGenderMen($gameId);
 while ($row = mysqli_fetch_assoc($result)) {
   $scores[] = $row;
 }
@@ -194,7 +195,27 @@ if ($team == 'H') {
 } elseif ($team == 'A') {
   $vgoal = "checked='checked'";
 }
-$html .= "<h3>" . _("New goal") . "</h3>";
+
+$currentGender = GetGender($men, count($scores));
+$nextGender =  GetGender($men, count($scores) + 1);
+
+if($men > -1 && $currentGender == "Men"){
+  $html .= "<h3 style='color:blue';>" . _("New goal (Current gender - $currentGender)") . "</h3>";
+  if($nextGender == "Men"){
+    $html .= "<p><b style='color:blue';>" . _("(Next gender - $nextGender)") . "</b></p>";
+  } else {
+    $html .= "<p><b style='color:red';>" . _("(Next gender - $nextGender)") . "</b></p>";
+  }
+} else if($men > -1 && $currentGender == "Women") {
+  $html .= "<h3 style='color:red';>" . _("New goal (Current gender - $currentGender)") . "</h3>";
+  if($nextGender == "Men"){
+    $html .= "<p><b style='color:blue';>" . _("(Next gender - $nextGender)") . "</b></p>";
+  } else {
+    $html .= "<p><b style='color:red';>" . _("(Next gender - $nextGender)") . "</b></p>";
+  }
+} else {
+  $html .= "<h3>" . _("New goal") . "</h3>";
+}
 $html .= "<div id='radiot' name='radiot'>";
 $html .= "<fieldset data-role='controlgroup' id='teamselection'>";
 $html .= "<input type='radio' name='team' id='hteam' value='H' $hgoal />";
@@ -280,6 +301,7 @@ if (empty($errors)) {
   $html .= "<a href='?view=addtimeouts&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Time-outs") . "</a>";
   $html .= "<a href='?view=addhalftime&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Half time") . "</a>";
   $html .= "<a href='?view=addfirstoffence&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("First offence") . "</a>";
+  $html .= "<a href='?view=addfirstgender&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("First gender") . "</a>";
   //$html .= "<a href='?view=addofficial&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Game official") . "</a>";
   $html .= "<input type='submit' name='start' data-ajax='false' value='" . _("Start game") . "'/>";
   if (IsTwitterEnabled()) {

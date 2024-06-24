@@ -245,6 +245,19 @@ function GameIsFirstOffenceHome($gameId)
 	return $result;
 }
 
+function GameIsFirstGenderMen($gameId)
+{
+	$query = sprintf(
+		"SELECT ismen 
+		FROM uo_gamegender  
+		WHERE game=%d",
+		(int)$gameId
+	);
+	$result = DBQueryToValue($query);
+
+	return $result;
+}
+
 function GameReservation($gameId)
 {
 	$query = sprintf(
@@ -1321,6 +1334,56 @@ function GameSetStartingTeam($gameId, $home)
 		}
 	} else {
 		die('Insufficient rights to edit game');
+	}
+}
+
+function GameSetStartingGender($gameId, $men)
+{
+	
+	if (hasEditGameEventsRight($gameId)) {
+		if (is_null($men)) {
+			$query = sprintf(
+				"DELETE FROM uo_gamegender WHERE game=%d",
+				(int)$gameId
+			);
+
+			$result = DBQuery($query);
+
+			return $result;
+		} else {
+			
+			$query = sprintf(
+				"INSERT INTO uo_gamegender (game, ismen) VALUES (%d, %d)
+			ON DUPLICATE KEY UPDATE ismen='%d'",
+				(int)$gameId,
+				(int)$men,
+				(int)$men
+			);
+
+			$result = DBQuery($query);
+			return $result;
+		}
+	} else {
+		die('Insufficient rights to edit game');
+	}
+}
+
+function MoreMen($men, $points){
+	$floor = floor(($points + 1) / 2);
+	$mod = $floor % 2;
+	$moreMen = $men ^ ($mod == 1);
+	return $moreMen;
+}
+
+function GetGender($men, $points){
+	$floor = floor(($points + 1) / 2);
+	$mod = $floor % 2;
+	$moreMen = $men ^ ($mod == 1);
+
+	if($moreMen == 1){
+		return "Men";
+	} else {
+		return "Women";
 	}
 }
 
