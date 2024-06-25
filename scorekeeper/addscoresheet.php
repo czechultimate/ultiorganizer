@@ -10,6 +10,7 @@ $seasoninfo = SeasonInfo(GameSeason($gameId));
 $game_result = GameResult($gameId);
 $result = GameGoals($gameId);
 $scores = array();
+$type = GameSeriesType($gameId);
 $men = GameIsFirstGenderMen($gameId);
 while ($row = mysqli_fetch_assoc($result)) {
   $scores[] = $row;
@@ -301,7 +302,9 @@ if (empty($errors)) {
   $html .= "<a href='?view=addtimeouts&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Time-outs") . "</a>";
   $html .= "<a href='?view=addhalftime&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Half time") . "</a>";
   $html .= "<a href='?view=addfirstoffence&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("First offence") . "</a>";
-  $html .= "<a href='?view=addfirstgender&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("First gender") . "</a>";
+  if(strpos($type, "mixed") !== false){
+    $html .= "<a href='?view=addfirstgender&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("First gender") . "</a>";
+  }
   //$html .= "<a href='?view=addofficial&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Game official") . "</a>";
   $html .= "<input type='submit' name='start' data-ajax='false' value='" . _("Start game") . "'/>";
   if (IsTwitterEnabled()) {

@@ -174,7 +174,7 @@ if (GameHasStarted($game_result) > 0) {
       $html.=$coacha;
     }
 
-    $html .= "</table></td></tr></table>\n";
+    $html .= "</table></td></tr>\n";
 
     //timeline
     //$points[50][7];

@@ -157,6 +157,21 @@ function GameSeries($gameId)
 	return $result;
 }
 
+function GameSeriesType($gameId)
+{
+	$seriesId = GameSeries($gameId);
+	$query = sprintf(
+		"SELECT s.type
+		 FROM  uo_series s
+		 WHERE series_id='%s'",
+		 DBEscapeString($seriesId)
+	);
+	$result = DBQueryToValue($query);
+
+	return $result;
+}
+
+
 function GameRespTeam($gameId)
 {
 	$query = sprintf(
@@ -284,6 +299,7 @@ function GameSeason($gameId)
 
 	return $result;
 }
+
 
 function GamePlayers($gameId, $teamId)
 {
