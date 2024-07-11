@@ -102,18 +102,12 @@ function SeriesTypes()
     "open",
     "women",
     "mixed",
-    "master open",
-    "master women",
-    "master mixed",
-    "grand master",
     "U20 open",
     "U20 women",
     "U20 mixed",
-    "U23 open",
-    "U23 women",
-    "U23 mixed",
-    "junior open",
-    "junior women"
+    "beach open",
+    "beach women",
+    "beach mixed",
   );
 }
 
