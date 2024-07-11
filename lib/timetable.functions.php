@@ -568,14 +568,14 @@ function GameRow($game, $date = false, $time = true, $field = true, $series = fa
         $t1 = preg_replace('/\s*/m', '', $game['hometeamname']);
         $t2 = preg_replace('/\s*/m', '', $game['visitorteamname']);
 
-        $xgames = GetAllPlayedGames($t1, $t2, $game['type'], "");
-        if (mysqli_num_rows($xgames) > 0) {
-          $ret .= "<td class='right' style='$infow'><span style='white-space: nowrap'>";
-          $ret .= "<a href='?view=gamecard&amp;team1=" . utf8entities($game['hometeam']) . "&amp;team2=" . utf8entities($game['visitorteam']) . "'>";
-          $ret .=  _("Game history") . "</a></span></td>\n";
-        } else {
+        //$xgames = GetAllPlayedGames($t1, $t2, $game['type'], "");
+        //if (mysqli_num_rows($xgames) > 0) {
+          //$ret .= "<td class='right' style='$infow'><span style='white-space: nowrap'>";
+          //$ret .= "<a href='?view=gamecard&amp;team1=" . utf8entities($game['hometeam']) . "&amp;team2=" . utf8entities($game['visitorteam']) . "'>";
+          //$ret .=  _("Game history") . "</a></span></td>\n";
+        //} else {
           $ret .= "<td class='left' style='$infow'></td>\n";
-        }
+        //}
       } else {
         $ret .= "<td class='left' style='$infow'></td>\n";
       }
