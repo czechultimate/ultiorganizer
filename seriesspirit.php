@@ -28,7 +28,7 @@ if (iget("spsort")) {
 }
 
 $spiritAvg = SeriesSpiritBoardOnlyFilled($seriesinfo['series_id']);
-
+$spiritAvg = SeriesRankingForSpirit($spiritAvg, $seriesinfo['series_id']);
 $html .= "<h2>". utf8entities($seriesinfo['name']) . "</h2>";
 if ($seasoninfo['showspiritpoints']) {
 
@@ -44,8 +44,11 @@ if ($seasoninfo['showspiritpoints']) {
 	  });
 	} else {
 	  mergesort($spiritAvg, function ($a, $b) use ($spsort) {
-		return $a[$spsort] == $b[$spsort] ? 0 : ($a[$spsort] > $b[$spsort] ? -1 : 1);
-	  });
+      if ($a[$spsort] == $b[$spsort]) {
+          return $a['ranking'] < $b['ranking'] ? -1 : 1;
+      }
+      return $a[$spsort] > $b[$spsort] ? -1 : 1;
+  });
 	}
 
   $categories = SpiritCategories($seasoninfo['spiritmode']);

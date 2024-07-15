@@ -565,7 +565,7 @@ function SeriesSpiritBoardOnlyFilled($seriesId){
             $averages[$last_team] = $teamline;
             $total = 0;
           }
-          $teamline = array('teamname' => $row['name'], 'team_id' => $row['team_id'], 'club' => $row['club']);
+          $teamline = array('teamname' => $row['name'], 'team_id' => $row['team_id'], 'club' => $row['club'], 'ranking' => 0);
         }
 
         $sum = 0;
@@ -666,6 +666,22 @@ function SeriesSpiritBoard($seriesId)
   }
 
   return $averages;
+}
+
+function SeriesRankingForSpirit($spiritAvg, $series_id){
+  $teamRanking = SeriesRanking($series_id);
+  $ranking = array();
+  $rank = 1;
+  foreach ($teamRanking as $team){
+    $ranking[$team['team_id']] = $rank;
+    $rank++;
+  }
+  foreach ($spiritAvg as &$spirit) {
+      $spirit['ranking'] = $ranking[$spirit['team_id']]; 
+  }
+
+  unset($spirit);
+  return $spiritAvg;
 }
 
 function SeriesAllSpiritPointsOnlyFilled($seriesId)
