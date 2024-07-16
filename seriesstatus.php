@@ -9,7 +9,7 @@ $LAYOUT_ID = SERIESTATUS;
 $title = _("Statistics") . " ";
 $viewUrl = "?view=seriesstatus";
 $sort = "ranking";
-$spsort = "total";
+$spsort = "spabs";
 $html = "";
 $submenuseriesid = 0;
 
@@ -33,6 +33,7 @@ $teamstats = array();
 $allteams = array();
 $teams = SeriesTeams($seriesinfo['series_id']);
 $spiritAvg = SeriesSpiritBoardOnlyFilled($seriesinfo['series_id']);
+$spiritAvg = SeriesRankingForSpirit($spiritAvg, $seriesinfo['series_id']);
 $spiritTtl = SeriesAllSpiritPointsOnlyFilled($seriesinfo['series_id']);
 
 foreach ($teams as $team) {
@@ -333,8 +334,11 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
 	  });
 	} else {
 	  mergesort($spiritAvg, function ($a, $b) use ($spsort) {
-		return $a[$spsort] == $b[$spsort] ? 0 : ($a[$spsort] > $b[$spsort] ? -1 : 1);
-	  });
+      if ($a[$spsort] == $b[$spsort]) {
+          return $a['ranking'] < $b['ranking'] ? -1 : 1;
+      }
+      return $a[$spsort] > $b[$spsort] ? -1 : 1;
+  });
 	}
 
   $categories = SpiritCategories($seasoninfo['spiritmode']);
@@ -354,10 +358,10 @@ if ($seasoninfo['showspiritpoints']) { // TODO total
     if ($cat['index'] > 0 && $cat['index'])
     $html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=".$cat['category_id']."#spiritboard'>" . _($cat['index']) . "</th>";
 	}
-	if ($spsort == "total"){
+	if ($spsort == "spabs"){
 		$html .= "<th class='center'>" . _("Tot.") . "</th>";
 	} else {
-		$html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=total#spiritboard'>" . _("Tot.") . "</a></th>";
+		$html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=spabs#spiritboard'>" . _("Tot.") . "</a></th>";
 	}
   $html .= "</tr>\n";
 

@@ -247,10 +247,14 @@ if ($list == "allteams" || $list == "byseeding") {
 
     foreach ($series as $row) {
       $spiritAvg = SeriesSpiritBoardOnlyFilled($row['series_id']);
-
-      usort($spiritAvg, function ($a, $b) {
-        return $a['total'] < $b['total'];
-      });
+      $spiritAvg = SeriesRankingForSpirit($spiritAvg, $row['series_id']);
+      $spsort = "spabs";
+      mergesort($spiritAvg, function ($a, $b) use ($spsort) {
+      if ($a[$spsort] == $b[$spsort]) {
+          return $a['ranking'] < $b['ranking'] ? -1 : 1;
+      }
+      return $a[$spsort] > $b[$spsort] ? -1 : 1;
+  });
       $html .= "<div class='TableContainer3'>\n";
       $html .= "<table cellspacing='0' border='0' width='100%' id='multicoloured'>\n";
       $html .= "<tr><th style='width:150px'>" . utf8entities(U_($row['name'])) . "</th>";

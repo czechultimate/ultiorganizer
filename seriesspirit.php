@@ -7,7 +7,7 @@ include_once 'lib/team.functions.php';
 $title = _("Spirit") . " ";
 $viewUrl = "?view=seriesspirit";
 $sort = "ranking";
-$spsort = "total";
+$spsort = "spabs";
 $html = "";
 $submenuseriesid = 0;
 
@@ -68,10 +68,10 @@ if ($seasoninfo['showspiritpoints']) {
     if ($cat['index'] > 0 && $cat['index'])
       $html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=".$cat['category_id']."'>" . _($cat['index']) . "</th>";
 	}
-	if ($spsort == "total"){
+	if ($spsort == "spabs"){
 		$html .= "<th class='center'>" . _("Tot.") . "</th>";
 	} else {
-		$html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=total'>" . _("Tot.") . "</a></th>";
+		$html .= "<th class='center'><a class='thsort' href='" . $viewUrl . "&amp;Spsort=spabs'>" . _("Tot.") . "</a></th>";
 	}
   $html .= "</tr>\n";
 

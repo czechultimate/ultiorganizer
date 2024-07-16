@@ -330,7 +330,6 @@ function printRoundRobinPool($seasoninfo, $poolinfo)
   $teams = PoolSchedulingTeams($poolinfo['pool_id']);
   $continuationpools = array();
   $gamesplayed = PoolTotalPlayedGames($poolinfo['pool_id']);
-
   if (!$poolinfo['continuingpool'] || count($standings) >= count($teams)) {
     $i = 1;
     foreach ($standings as $row) {
@@ -351,7 +350,11 @@ function printRoundRobinPool($seasoninfo, $poolinfo)
         $ret .= "<tr>";
       }
       if ($gamesplayed > 0) {
-        $ret .= "<td><div style='$colorcoding'>" . $row['activerank'] . "</div></td>";
+        if($poolinfo['placementpool'] == 1) {
+          $ret .= "<td><div style='$colorcoding'>" . PoolPlacementString($poolinfo['pool_id'], $row['activerank']) . "</div></td>";
+        } else {
+          $ret .= "<td><div style='$colorcoding'>" . $row['activerank'] . "</div></td>";
+        }
       } else {
         $ret .= "<td><div style='$colorcoding'>-</div></td>";
       }
