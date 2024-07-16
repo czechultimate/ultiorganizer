@@ -1063,7 +1063,7 @@ function ConfirmEnrolledTeam($seriesId, $id)
       DBQuery("UPDATE uo_team SET club=$clubId WHERE team_id=$teamId");
     }
 
-    if ($countryId && !$clubId) {
+    /*if ($countryId && !$clubId) {
       $countryinfo = CountryInfo($countryId);
       DBQuery("UPDATE uo_team SET abbreviation=UPPER('" . $countryinfo['abbreviation'] . "') WHERE team_id=$teamId");
     } else {
@@ -1092,7 +1092,7 @@ function ConfirmEnrolledTeam($seriesId, $id)
         }
       }
       DBQuery("UPDATE uo_team SET abbreviation=UPPER('" . DBEscapeString($abb) . "') WHERE team_id=$teamId");
-    }
+    }*/
 
 
     $seriesInfo = SeriesInfo($seriesId);
