@@ -132,6 +132,38 @@ function SeriesView($games, $date = true, $time = false)
   return $ret;
 }
 
+function DivisionTypeView($games, $date = true, $time = false)
+{
+  $ret = "";
+  $prevType = "";
+  $prevSeason = "";
+  $isTableOpen = false;
+  $rss = IsGameRSSEnabled();
+
+  while ($game = mysqli_fetch_assoc($games)) {
+    if ($game['type'] != $prevType || $game['season_type'] != $prevSeason) {
+      if ($isTableOpen) {
+        $ret .= "</table>\n";
+        $isTableOpen = false;
+      }
+      $ret .= "<table cellpadding='2' border='0' cellspacing='0' id='multicoloured'>\n";
+      $isTableOpen = true;
+      $ret .= TypeHeaders($game);
+    }
+
+    //function GameRow($game, $date=false, $time=true, $field=true, $series=false,$pool=false,$info=true)
+    $ret .= GameRow($game, true, false, true, false, false, true, $rss);
+
+    $prevType = $game['type'];
+    $prevSeason = $game['season_type'];
+  }
+
+  if ($isTableOpen) {
+    $ret .= "</table>\n";
+  }
+  return $ret;
+}
+
 function PlaceView($games, $grouping = true)
 {
   $ret = "";
@@ -461,6 +493,18 @@ function PoolHeaders($info)
   return $ret;
 }
 
+function TypeHeaders($info)
+{
+  $ret = "<tr style='width:100%'>\n";
+  $ret .= "<th align='left' colspan='12'>";
+  $ret .= utf8entities(U_($info['type']));
+  $ret .= " - ";
+  $ret .= utf8entities(U_($info['season_type']));
+  $ret .= "</th>\n";
+  $ret .= "</tr>\n";
+  return $ret;
+}
+
 function SeriesAndPoolHeaders($info)
 {
   $ret = "<tr style='width:100%'>\n";
@@ -581,19 +625,11 @@ function GameRow($game, $date = false, $time = true, $field = true, $series = fa
       }
     } else {
       if (!intval($game['isongoing'])) {
-        if (intval($game['scoresheet'])) {
           $ret .= "<td class='right' style='$infow'><span>&nbsp;<a href='?view=gameplay&amp;game=" . $game['game_id'] . "'>";
           $ret .= _("Game play") . "</a></span></td>\n";
-        } else {
-          $ret .= "<td class='left' style='$infow'></td>\n";
-        }
       } else {
-        if (intval($game['scoresheet'])) {
           $ret .= "<td class='right' style='$infow'><span>&nbsp;&nbsp;<a href='?view=gameplay&amp;game=" . $game['game_id'] . "'>";
           $ret .= _("Ongoing") . "</a></span></td>\n";
-        } else {
-          $ret .= "<td class='right' style='$infow'>&nbsp;&nbsp;" . _("Ongoing") . "</td>\n";
-        }
       }
     }
     if ($rss) {

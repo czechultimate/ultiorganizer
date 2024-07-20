@@ -351,13 +351,15 @@ function RemoveClubProfileUrl($teamId, $clubId, $urlId)
 function ClubVsClub($club1, $club2, $type){
 	$query = sprintf(
 		"SELECT
-		g.game_id,
-		ht.name AS home_team,
-		vt.name AS visitor_team,
-		g.homescore,
-		g.visitorscore,
+		g.*,
+		ht.name AS hometeamname,
+		ht.team_id AS hometeam,
+		vt.name AS visitorteamname,
+		vt.team_id AS visitorteam,
+		hc.club_id AS homeclub,
+		vc.club_id AS visitorclub,
 		s.type,
-		se.type
+		se.type as season_type
 		FROM
 			uo_game g
 		JOIN
@@ -390,5 +392,7 @@ function ClubVsClub($club1, $club2, $type){
 	}
 
 	$query .= " ORDER BY s.type ASC, g.game_id ASC";
-	return DBQueryToArray($query);
+
+	$result = DBQuery($query);
+	return $result;
 }
