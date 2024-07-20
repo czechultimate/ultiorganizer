@@ -691,7 +691,7 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
     echo "<a class='subnav' href=\"?view=allclubs\">&raquo; " . utf8entities(_("Clubs")) . "</a>\n";
     $countries = CountryList(true, true);
     if (count($countries)) {
-      //echo "<a class='subnav' href=\"?view=allcountries\">&raquo; " . utf8entities(_("Countries")) . "</a>\n";
+      echo "<a class='subnav' href=\"?view=allcountries\">&raquo; " . utf8entities(_("Countries")) . "</a>\n";
     }
     echo "<a class='subnav' href=\"?view=statistics&amp;list=teamstandings\">&raquo; " . utf8entities(_("All time")) . "</a></td></tr>\n";
     echo "</table>";

@@ -347,3 +347,48 @@ function RemoveClubProfileUrl($teamId, $clubId, $urlId)
 		die('Insufficient rights to remove url');
 	}
 }
+
+function ClubVsClub($club1, $club2, $type){
+	$query = sprintf(
+		"SELECT
+		g.game_id,
+		ht.name AS home_team,
+		vt.name AS visitor_team,
+		g.homescore,
+		g.visitorscore,
+		s.type,
+		se.type
+		FROM
+			uo_game g
+		JOIN
+			uo_team ht ON g.hometeam = ht.team_id
+		JOIN
+			uo_team vt ON g.visitorteam = vt.team_id
+		JOIN
+			uo_club hc ON ht.club = hc.club_id
+		JOIN
+			uo_club vc ON vt.club = vc.club_id
+		JOIN
+			uo_series s ON ht.series = s.series_id OR vt.series = s.series_id
+		JOIN
+			uo_season se ON se.season_id = s.season
+		WHERE
+			hc.club_id IN (SELECT club_id FROM uo_club WHERE hc.club_id IN (%d, %d))
+			AND vc.club_id IN (SELECT club_id FROM uo_club WHERE vc.club_id IN (%d, %d))
+			AND hc.club_id <> vc.club_id", 
+	
+		(int)$club1,
+		(int)$club2,
+		(int)$club1,
+		(int)$club2
+		);
+
+	if($type != "All"){
+		$query .= sprintf(" AND s.type = '%s'",
+		DBEscapeString($type)
+	);
+	}
+
+	$query .= " ORDER BY s.type ASC, g.game_id ASC";
+	return DBQueryToArray($query);
+}
