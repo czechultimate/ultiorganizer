@@ -28,9 +28,11 @@ if (GameHasStarted($game_result) > 0) {
   $html .= " - ";
   $html .= utf8entities($game_result['visitorteamname']);
   $html .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+  $html .= "<span id=titlescore>";
   $html .= intval($game_result['homescore']);
   $html .= " - ";
   $html .= intval($game_result['visitorscore']);
+  $html .= "</span>";
   if (intval($game_result['isongoing'])) {
     $html .= " (" . _("ongoing") . ")";
   }
@@ -825,32 +827,32 @@ showPage($title, $html);
   const gameId = <?php echo $gameId; ?>;
   const ongoing = <?php echo $game_result['isongoing']; ?>;
   var lastInsertedTime = getLastInsertedTime();
-if (ongoing == 1) { // Temporarily disabled
-        // Funkce pro načtení aktualizací ze serveru pomocí AJAX
+if (ongoing == 1) { 
+        
         function loadUpdates() {
-            // Vytvoření AJAX dotazu
+            
             var xhr = new XMLHttpRequest();
             xhr.open('GET', `liveresults.php?game=${gameId}&time=${lastInsertedTime}`, true);
 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
-                    // Zpracování odpovědi od serveru
+                    
                     var response = xhr.responseText;
                     var events = JSON.parse(response);
 
-                    // Projít všechny události a vyvolat příslušné funkce
+                   
                     events.forEach(function(eventObj) {
                         var event = JSON.parse(eventObj.event); // Parse the event JSON string to object
                         lastInsertedTime = event.time;
                         if (event.event_type === "goal") {
                             addNewRow(event);
-                            //console.log('Received message:', event);
+                         
                         } else if (event.event_type === "timeout") {
                             addTimeOut(event);
-                            //console.log('Received message:', event);
+                         
                         } else if (event.event_type === "halftime") {
                             addHalftime(event);
-                            //console.log('Received message:', event);
+                         
                         } else {
                             console.log('Received message:', event);
                         }
@@ -933,6 +935,8 @@ function addNewRow(data) {
     } else {
         cell5.innerHTML = secToMin(time - minToSec(prevTime));
     }
+
+    document.getElementById("titlescore").innerText =homescore + " - " + visitorscore;
 
     addEmptyRow();
 }

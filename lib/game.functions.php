@@ -307,7 +307,7 @@ function GamePlayers($gameId, $teamId)
 		"SELECT p.player_id, pg.num, p.firstname, p.lastname 
 		FROM uo_played AS pg 
 		LEFT JOIN uo_player AS p ON(pg.player=p.player_id)
-		WHERE pg.game=%d AND p.team=%d
+		WHERE pg.game=%d AND p.team=%d AND p.staff = 0
 		ORDER BY p.lastname ASC, p.firstname ASC",
 		(int)$gameId,
 		(int)$teamId

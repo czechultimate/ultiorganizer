@@ -30,7 +30,7 @@ function TeamPlayerAccreditationArray($teamId)
 function TeamPlayerList($teamId)
 {
   $query = sprintf(
-    "SELECT player_id, firstname, lastname, num, accredited, staff, captain, spirit_captain, accreditation_id, profile_id FROM uo_player WHERE team = %d ORDER BY lastname ASC, firstname ASC",
+    "SELECT player_id, firstname, lastname, num, accredited, staff, captain, spirit_captain, accreditation_id, profile_id FROM uo_player WHERE team = %d AND staff = 0 ORDER BY lastname ASC, firstname ASC",
     (int)$teamId
   );
   return DBQuery($query);
