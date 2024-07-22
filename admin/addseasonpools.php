@@ -181,7 +181,7 @@ echo yuiLoad(array("utilities", "slider", "colorpicker", "datasource", "autocomp
 				showhsvcontrols: false,
 				showhexcontrols: true,
 				showhexsummary: false,
-				showrgbcontrols: false,
+				showrgbcontrols: true,
 				showwebsafe: false,
 				images: {
 					PICKER_THUMB: "styles/yui/colorpicker/assets/picker_thumb.png",
