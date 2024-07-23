@@ -685,11 +685,12 @@ function leftMenu($id = 0, $pagestart = true, $printable = false, $submenuseries
     echo "<table class='leftmenulinks'>\n";
     echo "<tr><td class='menuseasonlevel'>" . utf8entities(_("Statistics")) . "</td></tr>\n";
     echo "<tr><td>";
+    
     echo "<a class='subnav' href=\"?view=seasonlist\">&raquo; " . utf8entities(_("Events")) . "</a>\n";
     echo "<a class='subnav' href=\"?view=allplayers\">&raquo; " . utf8entities(_("Players")) . "</a>\n";
     echo "<a class='subnav' href=\"?view=allteams\">&raquo; " . utf8entities(_("Teams")) . "</a>\n";
     echo "<a class='subnav' href=\"?view=allclubs\">&raquo; " . utf8entities(_("Clubs")) . "</a>\n";
-    echo "<a class='subnav' href=\"?view=clubvsclub\">&raquo; " . utf8entities(_("Club vs club")) . "</a>\n";
+    echo "<a class='subnav' href=\"?view=clubvsclub\">&raquo; " . utf8entities(_("Club vs Club")) . "</a>\n";
     $countries = CountryList(true, true);
     if (count($countries)) {
       echo "<a class='subnav' href=\"?view=allcountries\">&raquo; " . utf8entities(_("Countries")) . "</a>\n";

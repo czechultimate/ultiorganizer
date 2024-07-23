@@ -25,19 +25,24 @@ if ($scope == "today"){
     $timefilter = "all";
     $order = "time";
 } else {
-    $id = 1149;//CurrentSeason();
-    $gamefilter = "series";
-    $timefilter = "all";
+    $id = CurrentSeason();
+    $gamefilter = "season";
+    $timefilter = "upcoming";
     $order = "time";
 }
 
 $games = TimetableGames($id, $gamefilter, $timefilter, $order);
+
 
 $prevseries;
 $prevdate = "";
 $prevrg = "";
 $prevloc = "";
 $html .= "<div class='ui-grid-solo'>";
+if(mysqli_num_rows($games) == 0)
+{
+  $html .= "<p><b> No games found </b></p><br>";
+}
 $html .= "<ul data-role='listview'>\n";
 while ($game = mysqli_fetch_assoc($games)) { 
     
@@ -85,7 +90,6 @@ while ($game = mysqli_fetch_assoc($games)) {
 
     $html .= "</div>";
   $html .= "</ul>";
-//$html .= LiveUpcomingView($games, $groupheader);
 $html .= "</div>";
 $html .= "</div><!-- /content -->\n\n";
 echo $html;
