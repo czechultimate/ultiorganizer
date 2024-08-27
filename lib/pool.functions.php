@@ -273,6 +273,9 @@ function PoolPlacementString($poolId, $pos, $ordinal = true)
     foreach ($ppools as $ppool) {
       
       $teams = PoolSchedulingTeams($ppool['pool_id']);
+      if(count($teams) == 0){
+        $teams = PoolTeams($ppool['pool_id']);
+      }
       if ($info['pool_id'] != $ppool['pool_id']) {
         for ($i = 1; $i <= count($teams); $i++) {
           $moved = PoolMoveExist($ppool['pool_id'], $i);
