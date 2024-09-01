@@ -161,14 +161,14 @@ foreach ($respGameArray as $tournament => $resArray) {
                 $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
               } else if(hasEditGameSpiritRight($gameId)){
                 if(GameRespTeamBoth($gameId) == 1){
-                  if(empty(GameGetSpiritPoints($gameId, $game['hometeam'])) || empty(GameGetSpiritPoints($gameId,$game['visitorteam']))){
+                  if((empty(GameGetSpiritPoints($gameId, $game['hometeam'])) || empty(GameGetSpiritPoints($gameId,$game['visitorteam']))) && GameIsForfeited($gameId) == 0){
                     $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false' style='color: red;border: 2px solid red;'>" . _("Spirit") . "</a>";
                   } else{
                     $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
                   }
                 } else {
                   $team = FindTeamInArray($teamAdminIdArray, $game['hometeam'], $game['visitorteam']);
-                  if(empty(GameGetSpiritPoints($gameId,$team))){
+                  if(empty(GameGetSpiritPoints($gameId,$team)) && GameIsForfeited($gameId) == 0){
                     $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false' style='color: red;border: 2px solid red;'>" . _("Spirit") . "</a>";
                   } else{
                     $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $team . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";

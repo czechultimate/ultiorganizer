@@ -308,6 +308,7 @@ CREATE TABLE `uo_game` (
   `homesotg` int(10) DEFAULT NULL,
   `visitorsotg` int(10) DEFAULT NULL,
   `isongoing` tinyint(1) DEFAULT '0',
+  `forfeited` tinyint(1) DEFAULT '0',
   `scheduling_name_home` int(10) DEFAULT NULL,
   `scheduling_name_visitor` int(10) DEFAULT NULL,
   `name` int(10) DEFAULT NULL,
