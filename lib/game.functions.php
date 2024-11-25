@@ -903,6 +903,30 @@ function GetPlayersFromGame($gameId){
 	return $result;
 }
 
+function GetCountPlayersFromGame($gameId){
+	$query = sprintf(
+		"SELECT 
+			g.game_id,
+			COUNT(DISTINCT CASE WHEN p.team = g.hometeam THEN pl.player END) AS hometeam_players,
+			COUNT(DISTINCT CASE WHEN p.team = g.visitorteam THEN pl.player END) AS visitorteam_players
+		FROM 
+			uo_played pl
+		JOIN 
+			uo_game g ON pl.game = g.game_id
+		JOIN 
+			uo_player p ON pl.player = p.player_id
+		WHERE 
+			g.game_id = %d
+		GROUP BY 
+			g.game_id",
+		(int)$gameId
+	);
+
+	$result = DBQueryToRow($query);
+
+	return $result;
+}
+
 function GetTeamsIdByGameId($gameId){
 
 	$query = sprintf(

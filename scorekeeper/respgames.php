@@ -150,12 +150,14 @@ foreach ($respGameArray as $tournament => $resArray) {
               if(hasEditGameEventsRight($gameId)){
                 $html .= "<a href='?view=addresult&amp;game=" . $gameId . "' data-role='button' data-ajax='false'>" . _("Result") . "</a>";
                 $html .= "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Players") . "</a>";
-                if(mysqli_num_rows(GetPlayersFromGame($gameId)) < 1){
+                $player_list = GetCountPlayersFromGame($gameId);
+                if($player_list == null || $player_list['hometeam_players'] == 0){
                   $html .= "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
-                }else{
+                } elseif ($player_list['visitorteam_players'] == 0){
+                  $html .= "<a href='?view=addplayerlists&amp;game=" . $gameId . "&amp;team=" . $game['visitorteam'] . "' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
+                } else{
                   $html .= "<a href='?view=addscoresheet&amp;game=$gameId' data-role='button' data-ajax='false'>" . _("Scoresheet") . "</a>";
                 }
-
               }
               if (intval($seasoninfo['spiritmode'] > 0) && isSeasonAdmin($seasoninfo['season_id'])) {
                 $html .= "<a href='?view=addspiritpoints&amp;game=$gameId&amp;team=" . $game['hometeam'] . "' data-role='button' data-ajax='false'>" . _("Spirit") . "</a>";
