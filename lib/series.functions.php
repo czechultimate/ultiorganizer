@@ -524,7 +524,7 @@ function SeriesSpiritBoardOnlyFilled($seriesId){
       LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
       LEFT JOIN uo_pool pool ON(gp.pool=pool.pool_id)
       LEFT JOIN uo_game AS g1 ON (gp.game=g1.game_id)
-      WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0 AND st.value IS NOT NULL
+      WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0 AND st.value IS NOT NULL AND g1.forfeited=0
       ORDER BY st.team_id, st.category_id",
     $seriesId
   );
@@ -609,7 +609,7 @@ function SeriesSpiritBoard($seriesId)
       LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
       LEFT JOIN uo_pool pool ON(gp.pool=pool.pool_id)
       LEFT JOIN uo_game AS g1 ON (gp.game=g1.game_id)
-      WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0 AND st.value IS NOT NULL
+      WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0 AND st.value IS NOT NULL AND g1.forfeited=0
       ORDER BY st.team_id, st.category_id",
     $seriesId
   );
@@ -693,7 +693,7 @@ function SeriesAllSpiritPointsOnlyFilled($seriesId)
     LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
     LEFT JOIN uo_pool pool ON(gp.pool=pool.pool_id)
     LEFT JOIN uo_game AS g1 ON (gp.game=g1.game_id)
-    WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0
+    WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0 AND g1.forfeited=0
     GROUP BY st.team_id, te.name, pool.series
     ORDER BY st.team_id;",
     $seriesId
@@ -736,7 +736,7 @@ function SeriesAllSpiritPoints($seriesId)
     LEFT JOIN uo_game_pool AS gp ON (st.game_id=gp.game)
     LEFT JOIN uo_pool pool ON(gp.pool=pool.pool_id)
     LEFT JOIN uo_game AS g1 ON (gp.game=g1.game_id)
-    WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0
+    WHERE pool.series=%d AND gp.timetable=1 AND g1.isongoing=0 AND g1.hasstarted>0 AND g1.forfeited=0
     GROUP BY st.team_id, te.name, pool.series
     ORDER BY st.team_id;",
     $seriesId
@@ -1244,7 +1244,7 @@ LEFT JOIN
 LEFT JOIN
     uo_team AS uo_team_visitor ON uo_game.visitorteam = uo_team_visitor.team_id
 WHERE
-    uo_pool.series = %d
+    uo_pool.series = %d and uo_game.forfeited = 0
 GROUP BY
     uo_game.game_id,
     uo_spirit_score.team_id",

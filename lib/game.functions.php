@@ -260,6 +260,19 @@ function GameIsFirstOffenceHome($gameId)
 	return $result;
 }
 
+function GameIsForfeited($gameId)
+{
+	$query = sprintf(
+		"SELECT forfeited 
+		FROM uo_game 
+		WHERE game_id=%d",
+		(int)$gameId
+	);
+	$result = DBQueryToValue($query);
+
+	return $result;
+}
+
 function GameIsFirstGenderMen($gameId)
 {
 	$query = sprintf(
@@ -1189,7 +1202,9 @@ function GameAddTimeout($gameId, $number, $time, $home)
 function GameGetSpiritPoints($gameId, $teamId)
 {
 	$query = sprintf(
-		"SELECT * FROM uo_spirit_score WHERE game_id=%d AND team_id=%d",
+		"SELECT * FROM uo_spirit_score as sc
+		 LEFT JOIN uo_game AS g ON (sc.game_id=g.game_id)
+		 WHERE sc.game_id=%d AND sc.team_id=%d AND g.forfeited=0",
 		(int)$gameId,
 		(int)$teamId
 	);
@@ -1372,6 +1387,23 @@ function GameSetStartingTeam($gameId, $home)
 
 			return $result;
 		}
+	} else {
+		die('Insufficient rights to edit game');
+	}
+}
+
+function GameSetForfeit($gameId, $forfeited)
+{
+	if (hasEditGameEventsRight($gameId)) {
+			$query = sprintf(
+				"UPDATE uo_game SET forfeited='%d' WHERE game_id='%d'",
+				(int)$forfeited,
+				(int)$gameId
+			);
+
+			$result = DBQuery($query);
+
+			return $result;
 	} else {
 		die('Insufficient rights to edit game');
 	}
