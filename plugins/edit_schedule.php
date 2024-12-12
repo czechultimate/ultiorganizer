@@ -67,14 +67,15 @@ if (isset($_POST['select'])) {
   
     $html .= "<table cellpadding='2' style='width:100%;'>\n";
     $html .= "<tr>";
-    $html .= "<th style='width:30%;'>" . _("Hometeam") . "</th>";
-    $html .= "<th style='width:30%;'>" . _("Visitorteam") . "</th>";
+    $html .= "<th style='width:25%;'>" . _("Pool") . "</th>";
+    $html .= "<th style='width:25%;'>" . _("Hometeam") . "</th>";
+    $html .= "<th style='width:25%;'>" . _("Visitorteam") . "</th>";
     $html .= "<th style='width:10%;'>" . _("Field") . "</th>";
-    $html .= "<th style='width:30%;'>" . _("DateTime") . "</th>";
+    $html .= "<th style='width:20%;'>" . _("DateTime") . "</th>";
     $html .= "</tr>\n";
     foreach ($teams as $team) {
       $html .= "<tr style='border-bottom-style:dashed;border-bottom-width:1px;border-bottom-color:#E0E0E0;'>";
-
+      $html .= "<td>" . $team['name'] . "</td>";
       $html .= "<td>" . $team['hometeam'] . "</td>";
       $html .= "<td>" . $team['visitorteam'] . "</td>";
       $html .= "<td>" . $team['fieldname'] . "</td>";

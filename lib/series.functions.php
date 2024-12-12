@@ -1324,7 +1324,8 @@ function GetScheduleBySeries ($seriesId)
         COALESCE(ht.name, 'TBD') AS hometeam,
         COALESCE(vt.name, 'TBD') AS visitorteam,
         r.fieldname,
-        g.time
+        g.time,
+        p.name
     FROM 
         uo_game g
     LEFT JOIN 
