@@ -1315,3 +1315,48 @@ function SetAdvanceBySeries ($seriesId, $position, $advance)
 
   } else die("Insufficient rights to edit advance to league");
 }
+
+function GetScheduleBySeries ($seriesId)
+{
+  $query = sprintf(
+    "SELECT
+        g.game_id,
+        COALESCE(ht.name, 'TBD') AS hometeam,
+        COALESCE(vt.name, 'TBD') AS visitorteam,
+        r.fieldname,
+        g.time
+    FROM 
+        uo_game g
+    LEFT JOIN 
+        uo_team ht ON g.hometeam = ht.team_id
+    LEFT JOIN 
+        uo_team vt ON g.visitorteam = vt.team_id
+    JOIN 
+        uo_reservation r ON g.reservation = r.id
+    JOIN 
+        uo_pool p ON g.pool = p.pool_id
+    WHERE 
+        p.series = %d
+    ORDER BY 
+        r.fieldname ASC, 
+        g.time ASC;
+    ",
+    DBEscapeString($seriesId)
+  );
+
+  return DBQueryToArray($query);
+}
+
+function SetScheduleByGameTime ($gameId, $time)
+{
+  if (isSuperAdmin()) {
+    $query = sprintf(
+      "UPDATE uo_game SET time = '%s' WHERE game_id = %d",
+      $time,
+      $gameId
+    );
+    
+    DBQuery($query);
+
+  } else die("Insufficient rights to edit advance to league");
+}
