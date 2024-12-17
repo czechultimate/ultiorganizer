@@ -96,9 +96,9 @@ if (!empty($_POST['remove_x'])) {
     }
   }
   header("location:?view=user/teamplayers&team=$teamId");
-} elseif (!empty($_POST['copy'])) {
+/*} elseif (!empty($_POST['copy'])) {
   TeamCopyRoster($_POST["copyroster"], $teamId);
-  header("location:?view=user/teamplayers&team=$teamId");
+  header("location:?view=user/teamplayers&team=$teamId");*/
 }
 
 //common page
@@ -169,25 +169,6 @@ echo "<th>" . _("Delete") . "</th>";
 
 
 echo "</tr>\n";
-
-
-$team_players = TeamPlayerList($teamId);
-if (mysqli_num_rows($team_players) == 0 && (hasAccredidationRight($teamId) || hasEditPlayersRight($teamId))) {
-  $teams = TeamGetTeamsByName($teaminfo['name']);
-  if (count($teams)) {
-    echo "<p>" . _("Copy team roster from:") . " ";
-    echo "<select class='dropdown' name='copyroster'>\n";
-    foreach ($teams as $team) {
-      $oldteaminfo = TeamInfo($team['team_id']);
-      if ($oldteaminfo['type'] == $teaminfo['type'] && $oldteaminfo['season'] != $teaminfo['season']) {
-        echo "<option class='dropdown' value='" . utf8entities($team['team_id']) . "'>" . utf8entities($oldteaminfo['seasonname'] . " " . $oldteaminfo['name']) . "</option>";
-      }
-    }
-    echo "</select>\n";
-    echo "<input id='copy' class='button' name='copy' type='submit' value='" . _("Copy") . "'/>";
-    echo "</p>\n";
-  }
-}
 
 while ($player = mysqli_fetch_assoc($team_players)) {
   $playerInfo = PlayerInfo($player['player_id']);
