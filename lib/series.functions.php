@@ -1319,19 +1319,27 @@ function SetAdvanceBySeries ($seriesId, $position, $advance)
 function GetScheduleBySeries ($seriesId)
 {
   $query = sprintf(
-    "SELECT
-        g.game_id,
-        COALESCE(ht.name, 'TBD') AS hometeam,
-        COALESCE(vt.name, 'TBD') AS visitorteam,
+    "SELECT 
+        CASE 
+            WHEN ht.name IS NULL OR ht.name = '' THEN sn_home.name 
+            ELSE ht.name 
+        END AS hometeam_name,
+        CASE 
+            WHEN vt.name IS NULL OR vt.name = '' THEN sn_visitor.name 
+            ELSE vt.name
+        END AS visitorteam_name,
         r.fieldname,
-        g.time,
-        p.name
+        g.time
     FROM 
         uo_game g
     LEFT JOIN 
         uo_team ht ON g.hometeam = ht.team_id
     LEFT JOIN 
         uo_team vt ON g.visitorteam = vt.team_id
+    LEFT JOIN 
+        uo_scheduling_name sn_home ON g.scheduling_name_home = sn_home.scheduling_id
+    LEFT JOIN 
+        uo_scheduling_name sn_visitor ON g.scheduling_name_visitor = sn_visitor.scheduling_id
     JOIN 
         uo_reservation r ON g.reservation = r.id
     JOIN 
