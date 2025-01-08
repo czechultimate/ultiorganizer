@@ -170,6 +170,8 @@ echo "<th>" . _("Delete") . "</th>";
 
 echo "</tr>\n";
 
+$team_players = TeamPlayerList($teamId);
+
 while ($player = mysqli_fetch_assoc($team_players)) {
   $playerInfo = PlayerInfo($player['player_id']);
   $dis = hasEditTeamsRight($teaminfo['series']) ? "" : "disabled";
