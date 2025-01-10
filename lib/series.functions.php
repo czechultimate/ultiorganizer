@@ -1330,7 +1330,8 @@ function GetScheduleBySeries ($seriesId)
         END AS visitorteam,
         r.fieldname,
         p.name,
-        g.time
+        g.time,
+        g.game_id
     FROM 
         uo_game g
     LEFT JOIN 
