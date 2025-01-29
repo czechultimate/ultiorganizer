@@ -9,6 +9,15 @@ function ClubName($clubId)
 	return DBQueryToValue($query);
 }
 
+function ClubNamebyCAUid($clubId)
+{
+	$query = sprintf(
+		"SELECT name FROM uo_club WHERE cau_id='%s'",
+		DBEscapeString($clubId)
+	);
+	return DBQueryToValue($query);
+}
+
 function ClubInfo($clubId)
 {
 	$query = sprintf(
@@ -160,6 +169,22 @@ function AddClub($seriesId, $name)
 		$query = sprintf(
 			"INSERT INTO uo_club (name) VALUES ('%s')",
 			DBEscapeString($name)
+		);
+		$clubId = DBQueryInsert($query);
+		Log1("club", "add", $clubId);
+		return $clubId;
+	} else {
+		die('Insufficient rights to add club');
+	}
+}
+
+function AddClubWithCauId($seriesId, $name, $cau_id)
+{
+	if (hasEditTeamsRight($seriesId)) {
+		$query = sprintf(
+			"INSERT INTO uo_club (name, cau_id) VALUES ('%s', '%s')",
+			DBEscapeString($name),
+			DBEscapeString($cau_id)
 		);
 		$clubId = DBQueryInsert($query);
 		Log1("club", "add", $clubId);

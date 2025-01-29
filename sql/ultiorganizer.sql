@@ -22,6 +22,7 @@ CREATE TABLE `uo_club` (
   `valid` tinyint(4) NOT NULL DEFAULT '1',
   `profile_image` varchar(20) DEFAULT NULL,
   `founded` int(4) DEFAULT NULL,
+  `cau_id` int(10)
   PRIMARY KEY (`club_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;
 
@@ -273,6 +274,7 @@ CREATE TABLE `uo_enrolledteam` (
   `rank` int(10) DEFAULT '0',
   `enroll_time` datetime DEFAULT NULL,
   `countryname` varchar(50) DEFAULT NULL,
+  `cau_id` int(10)
   PRIMARY KEY (`id`),
   INDEX `idx_series` (`series`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;

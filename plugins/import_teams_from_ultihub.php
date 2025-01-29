@@ -20,6 +20,7 @@ if (!isSuperAdmin()) {
 }
 
 include_once 'lib/season.functions.php';
+include_once 'lib/club.functions.php';
 include_once 'lib/series.functions.php';
 include_once 'lib/player.functions.php';
 
@@ -43,66 +44,24 @@ if (!empty($_POST['cautournamentid'])) {
 }
 
 if (isset($_POST['import'])) {
-    $token = GetCAUToken();
     $seriesId = $_POST['seriesid'];
-    $teams = SeriesTeams($seriesId);
-	$player = PlayersByName();
 
-    $leagueDivisionData = json_decode(file_get_contents("$domain/list/tournament_belongs_to_league_and_division?filter[tournament_id]={$CAUTournamentId}&token=$token"))->data;
-    
-    $leagueDivisionId = $leagueDivisionData[0]->id;
-    $rostersData = json_decode(file_get_contents("$domain/list/roster?filter[tournament_belongs_to_league_and_division_id]=$leagueDivisionId&token=$token"))->data;
+    $teams = GetTeamsAtTournament($CAUTournamentId);
 
-    foreach ($rostersData as $roster) {
-        $teamData = json_decode(file_get_contents("$domain/list/team?filter[id]=$roster->team_id&token=$token"))->data;
-        $teamRostersData = json_decode(file_get_contents("$domain/list/player_at_roster?filter[roster_id]=$roster->id&extend=1&token=$token"))->data;
-        foreach ($teamRostersData as $teamRoster) {
+    foreach ($teams as $team) {
 
-            $first = $teamRoster->player->first_name;
-            $last = $teamRoster->player->last_name;
-            $number = $teamRoster->player->jersey_number;
-            if (!empty($roster->name)){
-                $team = $teamData[0]->name . " " . $roster->name;
-            } else {
-                $team = $teamData[0]->name;
-            }
-            $teamId = -1;
-            $playerId = "";
-           /* $output = array(
-                'team' => $teamData[0]->name,
-                'roster_name' => $roster->name,
-                'first_name' => $teamRoster->player->first_name,
-                'last_name' => $teamRoster->player->last_name,
-                'jersey_number' => $teamRoster->player->jersey_number,
-            );*/
-          // print($teamRoster->player->first_name . " " . $teamRoster->player->last_name . " " . $teamRoster->player->jersey_number  . " " . $teamData[0]->name . " " . $roster->name . "\n" );
-           //print_r($output);
-           foreach ($teams as $t) {
-
-                if ($t['name'] == $team) {
-                    
-                    $teamId = $t['team_id'];
-                    
-                    break;
-                }
-            }
-
-            foreach ($player as $id => $name) {
-                
-                if ($name == ($first . ' ' . $last)){
-                    $playerId = $id;
-                    break;
-                }
-            }
-
-            if ($teamId != -1) {
-                $id = AddPlayer($teamId, $first, $last, $playerId, $number);
-            }
+        $club = ClubNamebyCAUid($team->club_id);
+        
+        if ($club == -1) {
+            $club = GetClubById($team->club_id);
         }
+
+        $id = AddSeriesEnrolledTeam($seriesId, $_SESSION['uid'], $team->team_name, $club, "Czech republic", $team->seeding, $team->club_id);
+        ConfirmEnrolledTeam($seriesId, $id);
     }
 }
 //season selection
-$html .= "<form method='post' enctype='multipart/form-data' action='?view=plugins/import_teams_from_utihub'>\n";
+$html .= "<form method='post' enctype='multipart/form-data' action='?view=plugins/import_teams_from_ultihub'>\n";
 
 if (empty($seasonId)) {
 	$html .= "<p>" . ("Select event") . ": <select class='dropdown' name='season'>\n";
@@ -119,7 +78,7 @@ if (empty($seasonId)) {
 	$html .= "<p><input class='button' type='submit' name='select' value='" . ("Select") . "'/></p>";
     
     
-} else {
+} else if (!empty($seasonId) and empty($CAUTournamentId)) {
 
     $html .= "<p>" . ("Select tournament from CAU") . ":	<select class='dropdown' name='cautournamentid'>\n";
     $tournamentData = GetCAUTournaments($SeasonYear);
@@ -137,12 +96,7 @@ if (empty($seasonId)) {
 	}
 	$html .= "</select></p>\n";
 
-    
-	//$html .= "<p>" . ("Select file to import") . ":<br/>\n";
-	//$html .= "<input class='input' type='file' size='100' name='file'/><br/>\n";
-	//$html .= "<input class='input' type='checkbox' name='utf8' /> " . ("File in UTF-8 format") . "</p>";
 	$html .= "<p><input class='button' type='submit' name='import' value='" . ("Import") . "'/></p>";
-	//$html .= "<p> CSV file format: First Name, Last Name, Number, Team</p>";
 	$html .= "<div>";
 	$html .= "<input type='hidden' name='MAX_FILE_SIZE' value='50000000' />\n";
 	$html .= "<input type='hidden' name='season' value='$seasonId' />\n";
@@ -156,48 +110,86 @@ showPage($title, $html);
 function GetCAUTournaments($SeasonYear){
     $api = "https://evidence.frisbee.cz/api/competitions";
 
-    $seasonData = json_decode(file_get_contents("$api?season=$SeasonYear"))->data;
+    $response = file_get_contents("$api?season=$SeasonYear");
+
+    $seasonData = json_decode($response);
+
     $tournamentData = GetTournamentNames($seasonData);
     print_r($tournamentData);
     return $tournamentData;
+}
+
+function GetTeamsAtTournament($TournamentId){
+    $api = "https://evidence.frisbee.cz/api/teams-at-tournament";
+
+    $response = file_get_contents("$api?tournament_id=$TournamentId");
+    if ($response === FALSE) {
+        // Handle error
+        return [];
+    }
+
+    $tournamentData = json_decode($response);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        // Handle JSON parse error
+        return [];
+    }
+
+    $teamData = [];
+    foreach ($tournamentData as $team) {
+        $teamData[] = (object)[
+            'id' => $team->seeding,
+            'application_id' => $team->application_id,
+            'club_id' => $team->club_id,
+            'team_name' => $team->team_name,
+            'seeding' => $team->seeding
+        ];
+    }
+
+    $teamData[] = (object)[
+        'id' => 20,
+        'application_id' => 20,
+        'club_id' => 23,
+        'team_name' => "Czech Masters",
+        'seeding' => 20
+    ];
+
+    // Sort the teamData array by the 'id' field
+    usort($teamData, function($a, $b) {
+        return $a->id <=> $b->id;
+    });
+
+    print_r($teamData);
+    return $teamData;
 }
 
 function GetTournamentNames($apiResponse) {
     $tournamentNames = [];
     foreach ($apiResponse as $competition) {
         foreach ($competition->tournaments as $tournament) {
-            $tournamentNames[] = $tournament->name;
+            $tournamentNames[] = (object)[
+                'id' => $tournament->id,
+                'name' => $competition->name . ' - ' . $competition->division . ' - ' . $tournament->name
+            ];
         }
     }
     return $tournamentNames;
 }
 
-function GetCAUToken(){
-    $Username = "ultiorganizer";
-    $Password = "A1b2C3d4E5f6G7h8";
-   // $SeasonYear = "2024";
-    $domain = "https://api.evidence.czechultimate.cz";
-    $loginData = array(
-        'login' => $Username,
-        'password' => $Password,
-    );
 
-    $loginResponse = json_decode(
-        file_get_contents(
-            "$domain/user/login",
-            false,
-            stream_context_create(array(
-                'http' => array(
-                    'method' => 'POST',
-                    'header' => 'Content-Type: application/x-www-form-urlencoded',
-                    'content' => http_build_query($loginData),
-                ),
-            ))
-        )
-    );
+function GetClubById($club_id){
+    $api = "https://evidence.frisbee.cz/api/clubs";
 
-    $token = $loginResponse->token->token;
+    $response = file_get_contents($api);
 
-    return $token;
+    $clubData = json_decode($response);
+
+    foreach ($clubData as $club) {
+        if ($club->id == $club_id) {
+            return $club->name;
+        }
+    }
+
+    return "";
 }
+
 ?>
