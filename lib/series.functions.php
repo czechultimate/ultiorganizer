@@ -1323,13 +1323,15 @@ function GetScheduleBySeries ($seriesId)
         CASE 
             WHEN ht.name IS NULL OR ht.name = '' THEN sn_home.name 
             ELSE ht.name 
-        END AS hometeam_name,
+        END AS hometeam,
         CASE 
             WHEN vt.name IS NULL OR vt.name = '' THEN sn_visitor.name 
             ELSE vt.name
-        END AS visitorteam_name,
+        END AS visitorteam,
         r.fieldname,
-        g.time
+        p.name,
+        g.time,
+        g.game_id
     FROM 
         uo_game g
     LEFT JOIN 

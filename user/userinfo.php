@@ -120,8 +120,8 @@ if ($userid != "anonymous") {
       $error = 1;
     }
 
-    if (!empty($newPassword1) && (strlen($newPassword1) < 5 || strlen($newPassword1) > 20)) {
-      $message .= "<p class='warning'>" . _("Password is too short (min. 5 letters).") . "</p>";
+    if (!empty($newPassword1) && (strlen($newPassword1) < 4 || strlen($newPassword1) > 20)) {
+      $message .= "<p class='warning'>" . _("Password is too short (min. 4 letters).") . "</p>";
       $error = 1;
     }
 
