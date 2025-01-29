@@ -10,7 +10,7 @@ security=superadmin
 customization=all
 
 [DESCRIPTION]
-title = "Import Teams from Ultihub"
+title = "Upload Result to CAU"
 description = "CSV file format: firstname,lastname,number,team name."
 -->
 <?php
@@ -25,7 +25,7 @@ include_once 'lib/series.functions.php';
 include_once 'lib/player.functions.php';
 
 $html = "";
-$title = ("Import Teams from Ultihub");
+$title = ("Upload Result to CAU");
 $seasonId = "";
 $SeasonYear = "";
 $CAUTournamentId ="";
@@ -42,25 +42,21 @@ if (!empty($_POST['cautournamentid'])) {
     $CAUTournamentId = $_POST['cautournamentid'];
 }
 
-if (isset($_POST['import'])) {
+if (isset($_POST['upload'])) {
     $seriesId = $_POST['seriesid'];
 
-    $teams = GetTeamsAtTournament($CAUTournamentId);
-
-    foreach ($teams as $team) {
-
-        $club = ClubNamebyCAUid($team->club_id);
-        
-        if ($club == -1) {
-            $club = GetClubById($team->club_id);
-        }
-
-        $id = AddSeriesEnrolledTeam($seriesId, $_SESSION['uid'], $team->team_name, $club, "Czech republic", $team->seeding, $team->club_id, $team->application_id);
-        ConfirmEnrolledTeam($seriesId, $id);
+    $rankedteams = SeriesRanking($seriesId);
+    $rank = 1;
+    foreach ($rankedteams as $team) {
+        UploadResultForTeam($team['cau_team_id'], $rank);
+        $rank++;
     }
+
+    print_r($rankedteams);
+    
 }
 //season selection
-$html .= "<form method='post' enctype='multipart/form-data' action='?view=plugins/import_teams_from_ultihub'>\n";
+$html .= "<form method='post' enctype='multipart/form-data' action='?view=plugins/upload_result_to_cau'>\n";
 
 if (empty($seasonId)) {
 	$html .= "<p>" . ("Select event") . ": <select class='dropdown' name='season'>\n";
@@ -95,7 +91,7 @@ if (empty($seasonId)) {
 	}
 	$html .= "</select></p>\n";
 
-	$html .= "<p><input class='button' type='submit' name='import' value='" . ("Import") . "'/></p>";
+	$html .= "<p><input class='button' type='submit' name='upload' value='" . ("Upload") . "'/></p>";
 	$html .= "<div>";
 	$html .= "<input type='hidden' name='MAX_FILE_SIZE' value='50000000' />\n";
 	$html .= "<input type='hidden' name='season' value='$seasonId' />\n";
@@ -114,12 +110,32 @@ function GetCAUTournaments($SeasonYear){
     $seasonData = json_decode($response);
 
     $tournamentData = GetTournamentNames($seasonData);
-
+    print_r($tournamentData);
     return $tournamentData;
+}
+
+function UploadResultForTeam($cau_team_id, $rank){
+    $api = "https://evidence.frisbee.cz/api/competition-application";
+    $ApiToken="0001931a9e8c6ccabbffe501f4a37ba266de7e06";
+
+    $data = json_encode(['rank' => $rank]);
+
+    $options = [
+        'http' => [
+            'method' => 'PATCH',
+            'header' => "Content-Type: application/json\r\n" .
+                        "Authorization: Bearer $ApiToken\r\n",
+            'content' => $data
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    $response = file_get_contents("$api/$cau_team_id", false, $context);
 }
 
 function GetTeamsAtTournament($TournamentId){
     $api = "https://evidence.frisbee.cz/api/teams-at-tournament";
+    
 
     $response = file_get_contents("$api?tournament_id=$TournamentId");
     if ($response === FALSE) {
@@ -144,11 +160,20 @@ function GetTeamsAtTournament($TournamentId){
         ];
     }
 
+    $teamData[] = (object)[
+        'id' => 20,
+        'application_id' => 20,
+        'club_id' => 23,
+        'team_name' => "Czech Masters",
+        'seeding' => 20
+    ];
+
     // Sort the teamData array by the 'id' field
     usort($teamData, function($a, $b) {
         return $a->id <=> $b->id;
     });
 
+    print_r($teamData);
     return $teamData;
 }
 
