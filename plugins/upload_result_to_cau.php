@@ -44,15 +44,14 @@ if (!empty($_POST['cautournamentid'])) {
 
 if (isset($_POST['upload'])) {
     $seriesId = $_POST['seriesid'];
-
+    $teams = GetTeamsAtTournament($CAUTournamentId);
+    $spiritAvg = SeriesSpiritBoardOnlyFilled($seriesId);
     $rankedteams = SeriesRanking($seriesId);
     $rank = 1;
     foreach ($rankedteams as $team) {
-        UploadResultForTeam($team['cau_team_id'], $rank);
+        UploadResultForTeam($team['cau_team_id'], $rank, $teams, $spiritAvg, $team['team_id']);
         $rank++;
     }
-
-    print_r($rankedteams);
     
 }
 //season selection
@@ -110,27 +109,50 @@ function GetCAUTournaments($SeasonYear){
     $seasonData = json_decode($response);
 
     $tournamentData = GetTournamentNames($seasonData);
-    print_r($tournamentData);
     return $tournamentData;
 }
 
-function UploadResultForTeam($cau_team_id, $rank){
-    $api = "https://evidence.frisbee.cz/api/competition-application";
+function UploadResultForTeam($cau_team_id, $rank, $cau_teams, $spiritAvg, $team_uo_id) {
+    $api = "https://evidence.frisbee.cz/api/team-at-tournament/";
     $ApiToken="0001931a9e8c6ccabbffe501f4a37ba266de7e06";
 
-    $data = json_encode(['rank' => $rank]);
-
+    $team_id = findTeamIdByCauTeamId($cau_teams, $cau_team_id);
+    print($team_id);
+    $team_spirit = findSpiritByTeamId($spiritAvg, $team_uo_id);
+    $team_spirit = number_format($team_spirit, 3);
+    $data = json_encode(['final_placement' => $rank, 'spirit_avg' => $team_spirit]);
     $options = [
         'http' => [
             'method' => 'PATCH',
             'header' => "Content-Type: application/json\r\n" .
-                        "Authorization: Bearer $ApiToken\r\n",
+                        "Authorization: Token $ApiToken\r\n",
             'content' => $data
         ]
     ];
 
     $context = stream_context_create($options);
-    $response = file_get_contents("$api/$cau_team_id", false, $context);
+    $api = $api . $team_id;
+
+    $response = file_get_contents($api, false, $context);
+}
+
+function findSpiritByTeamId($spiritAvg, $team_id) {
+
+    foreach ($spiritAvg as $spirit) {
+        if ($spirit["team_id"] == $team_id) {
+            return $spirit["total"] ;
+        }
+    }
+    return null;
+}
+
+function findTeamIdByCauTeamId($cau_teams, $cau_team_id) {
+    foreach ($cau_teams as $team) {
+        if ($team->application_id == $cau_team_id) {
+            return $team->id;
+        }
+    }
+    return null;
 }
 
 function GetTeamsAtTournament($TournamentId){
@@ -138,21 +160,15 @@ function GetTeamsAtTournament($TournamentId){
     
 
     $response = file_get_contents("$api?tournament_id=$TournamentId");
-    if ($response === FALSE) {
-        // Handle error
-        return [];
-    }
+
 
     $tournamentData = json_decode($response);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        // Handle JSON parse error
-        return [];
-    }
+
 
     $teamData = [];
     foreach ($tournamentData as $team) {
         $teamData[] = (object)[
-            'id' => $team->seeding,
+            'id' => $team->id,
             'application_id' => $team->application_id,
             'club_id' => $team->club_id,
             'team_name' => $team->team_name,
@@ -160,20 +176,11 @@ function GetTeamsAtTournament($TournamentId){
         ];
     }
 
-    $teamData[] = (object)[
-        'id' => 20,
-        'application_id' => 20,
-        'club_id' => 23,
-        'team_name' => "Czech Masters",
-        'seeding' => 20
-    ];
-
     // Sort the teamData array by the 'id' field
     usort($teamData, function($a, $b) {
         return $a->id <=> $b->id;
     });
 
-    print_r($teamData);
     return $teamData;
 }
 
