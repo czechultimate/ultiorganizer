@@ -55,9 +55,12 @@ if (isset($_POST['import'])) {
             $club = GetClubById($team->club_id);
         }
 
-        $id = AddSeriesEnrolledTeam($seriesId, $_SESSION['uid'], $team->team_name, $club, "Czech republic", $team->seeding, $team->club_id, $team->application_id);
+        $id = AddSeriesEnrolledTeam($seriesId, $_SESSION['uid'], $team->team_name, $club, "Czech republic", $team->seeding, $team->club_id, $team->id);
         ConfirmEnrolledTeam($seriesId, $id);
     }
+
+    $html .= "<p>" . ("Teams imported") . "</p>";
+    $html .= "<p><a href='?view=plugins/import_teams_from_ultihub'>" . ("Back to start") . "</a></p>";
 }
 //season selection
 $html .= "<form method='post' enctype='multipart/form-data' action='?view=plugins/import_teams_from_ultihub'>\n";
@@ -136,7 +139,7 @@ function GetTeamsAtTournament($TournamentId){
     $teamData = [];
     foreach ($tournamentData as $team) {
         $teamData[] = (object)[
-            'id' => $team->seeding,
+            'id' => $team->id,
             'application_id' => $team->application_id,
             'club_id' => $team->club_id,
             'team_name' => $team->team_name,
@@ -146,7 +149,7 @@ function GetTeamsAtTournament($TournamentId){
 
     // Sort the teamData array by the 'id' field
     usort($teamData, function($a, $b) {
-        return $a->id <=> $b->id;
+        return $a->seeding <=> $b->seeding;
     });
 
     return $teamData;

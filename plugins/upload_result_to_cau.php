@@ -52,7 +52,9 @@ if (isset($_POST['upload'])) {
         UploadResultForTeam($team['cau_team_id'], $rank, $teams, $spiritAvg, $team['team_id']);
         $rank++;
     }
-    
+
+    $html .= "<p>" . ("Result uploaded") . "</p>";
+    $html .= "<p><a href='?view=plugins/upload_result_to_cau'>" . ("Back to start") . "</a></p>";
 }
 //season selection
 $html .= "<form method='post' enctype='multipart/form-data' action='?view=plugins/upload_result_to_cau'>\n";
@@ -95,7 +97,7 @@ if (empty($seasonId)) {
 	$html .= "<input type='hidden' name='MAX_FILE_SIZE' value='50000000' />\n";
 	$html .= "<input type='hidden' name='season' value='$seasonId' />\n";
 	$html .= "</div>\n";
-}
+} else
 
 $html .= "</form>";
 
@@ -116,8 +118,6 @@ function UploadResultForTeam($cau_team_id, $rank, $cau_teams, $spiritAvg, $team_
     $api = "https://evidence.frisbee.cz/api/team-at-tournament/";
     $ApiToken="0001931a9e8c6ccabbffe501f4a37ba266de7e06";
 
-    $team_id = findTeamIdByCauTeamId($cau_teams, $cau_team_id);
-    print($team_id);
     $team_spirit = findSpiritByTeamId($spiritAvg, $team_uo_id);
     $team_spirit = number_format($team_spirit, 3);
     $data = json_encode(['final_placement' => $rank, 'spirit_avg' => $team_spirit]);
@@ -131,7 +131,7 @@ function UploadResultForTeam($cau_team_id, $rank, $cau_teams, $spiritAvg, $team_
     ];
 
     $context = stream_context_create($options);
-    $api = $api . $team_id;
+    $api = $api . $cau_team_id;
 
     $response = file_get_contents($api, false, $context);
 }
@@ -148,7 +148,7 @@ function findSpiritByTeamId($spiritAvg, $team_id) {
 
 function findTeamIdByCauTeamId($cau_teams, $cau_team_id) {
     foreach ($cau_teams as $team) {
-        if ($team->application_id == $cau_team_id) {
+        if ($team->id == $cau_team_id) {
             return $team->id;
         }
     }
