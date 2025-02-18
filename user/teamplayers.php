@@ -132,8 +132,8 @@ leftMenu($LAYOUT_ID);
 contentStart();
 
 $menutabs[_("Roster")] = "?view=user/teamplayers&team=$teamId";
-$menutabs[_("Team Profile")] = "?view=user/teamprofile&team=$teamId";
-$menutabs[_("Club Profile")] = "?view=user/clubprofile&team=$teamId";
+//$menutabs[_("Team Profile")] = "?view=user/teamprofile&team=$teamId";
+//$menutabs[_("Club Profile")] = "?view=user/clubprofile&team=$teamId";
 pageMenu($menutabs);
 
 //help
@@ -204,13 +204,13 @@ while ($player = mysqli_fetch_assoc($team_players)) {
   echo "</td>\n";*/
 
   $staff = intval($player['staff']) ? "checked='checked'" : "";
-  echo "<td  class='center'><input type='checkbox' name='staff" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $staff/></td>\n";
+  echo "<td  class='center'><input type='checkbox' $dis name='staff" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $staff/></td>\n";
   
   $captain = intval($player['captain']) ? "checked='checked'" : "";
-  echo "<td  class='center'><input type='checkbox' name='captain" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $captain/></td>\n";
+  echo "<td  class='center'><input type='checkbox' $dis name='captain" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $captain/></td>\n";
 
   $spirit_captain = intval($player['spirit_captain']) ? "checked='checked'" : "";
-  echo "<td  class='center'><input type='checkbox' name='spirit_captain" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $spirit_captain/></td>\n";
+  echo "<td  class='center'><input type='checkbox' $dis name='spirit_captain" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . " ); \" $spirit_captain/></td>\n";
 
   echo "<td class='center'><a id='showAccrId" . $player['player_id'] . "' onclick=\"ChgPlayer(" . $player['player_id'] . ");\" href='javascript:checkProfileId(\"" . $player['player_id'] . "\");'>" . $player['profile_id'] . " </a></td>\n";
 
