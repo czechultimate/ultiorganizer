@@ -34,6 +34,7 @@ $allteams = array();
 $teams = SeriesTeams($seriesinfo['series_id']);
 $spiritAvg = SeriesSpiritBoardOnlyFilled($seriesinfo['series_id']);
 $spiritAvg = SeriesRankingForSpirit($spiritAvg, $seriesinfo['series_id']);
+
 $spiritTtl = SeriesAllSpiritPointsOnlyFilled($seriesinfo['series_id']);
 
 foreach ($teams as $team) {

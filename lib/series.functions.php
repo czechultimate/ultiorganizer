@@ -971,19 +971,21 @@ function SeriesEnrolledTeamsByUser($seriesId, $userid)
  * @param int $country uo_country.country_id
  * @return uo_enrolledteam.id
  */
-function AddSeriesEnrolledTeam($seriesId, $userid, $name, $club, $country, $rank)
+function AddSeriesEnrolledTeam($seriesId, $userid, $name, $club, $country, $rank, $club_id, $cau_team_id)
 {
   if ($userid == 'anonymous') die("Can not enroll for anonymous");
   if ($userid == $_SESSION['uid'] || hasEditTeamsRight($seriesId)) {
     $query = sprintf(
-      "INSERT INTO uo_enrolledteam (series, userid, name, clubname, rank, countryname, enroll_time)
-				VALUES (%d, '%s', '%s', '%s', '%s', '%s', now())",
+      "INSERT INTO uo_enrolledteam (series, userid, name, clubname, rank, countryname, enroll_time, cau_id, cau_team_id)
+				VALUES (%d, '%s', '%s', '%s', '%s', '%s', now(), '%s', '%s')",
       (int)$seriesId,
       DBEscapeString($userid),
       DBEscapeString($name),
       DBEscapeString($club),
       DBEscapeString($rank),
-      DBEscapeString($country)
+      DBEscapeString($country),
+      DBEscapeString($club_id),
+      DBEscapeString($cau_team_id)
     );
     $id = DBQueryInsert($query);
     Log1("enrolment", "add", $seriesId, "$name");
@@ -1043,14 +1045,15 @@ function ConfirmEnrolledTeam($seriesId, $id)
 
     //clubname not found
     if (!empty($teaminfo['clubname']) && $clubId == -1) {
-      $clubId = AddClub($seriesId, $teaminfo['clubname']);
+      $clubId = AddClubWithCauId($seriesId, $teaminfo['clubname'], $teaminfo['cau_id']);
     }
 
     $query = sprintf(
-      "INSERT INTO uo_team (name, series, rank, valid) VALUES ('%s', %d, %d, 1)",
+      "INSERT INTO uo_team (name, series, rank, valid, cau_team_id) VALUES ('%s', %d, %d, 1, %d)",
       DBEscapeString($teaminfo['name']),
       (int)$seriesId,
-      (int)$teaminfo['rank']
+      (int)$teaminfo['rank'],
+      (int)$teaminfo['cau_team_id']
     );
 
     $teamId = DBQueryInsert($query);
