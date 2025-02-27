@@ -50,7 +50,6 @@ if (!empty($_POST['remove_x'])) {
   header("location:?view=user/teamplayers&team=$teamId");
 } elseif (!empty($_POST['save'])) {
   for ($i = 0; $i < count($_POST['playerEdited']); $i++) {
-    if ($_POST['playerEdited'][$i] == "yes") {
       $id = $_POST['playerId'][$i];
       $playerInfo = PlayerInfo($_POST['playerId'][$i]);
       if (isset($_POST["number$id"])) {
@@ -62,7 +61,6 @@ if (!empty($_POST['remove_x'])) {
       if (isset($_POST["lastname$id"]) && strlen($_POST["lastname$id"]) > 0) {
         $playerInfo['lastname'] = $_POST["lastname$id"];
       }
-
 
       $playerInfo['staff'] = isset($_POST["staff$id"]) ? 1 : 0;
       $playerInfo['captain'] = isset($_POST["captain$id"]) ? 1 : 0;
@@ -93,7 +91,6 @@ if (!empty($_POST['remove_x'])) {
           DeAccreditPlayer($id, "teamplayers");
         }
       }
-    }
   }
   header("location:?view=user/teamplayers&team=$teamId");
 /*} elseif (!empty($_POST['copy'])) {
@@ -237,8 +234,8 @@ echo "</table>\n";
 
 echo "<p><input type='hidden' id='hiddenDeleteId' name='hiddenDeleteId'/>";
 if (hasAccredidationRight($teamId) || hasEditPlayersRight($teamId)) {
-  echo "<input disabled='disabled' id='save' class='button' name='save' type='submit' value='" . _("Save") . "'/>";
-  echo "<input disabled='disabled' id='cancel' class='button' name='cancel' type='submit' value='" . _("Cancel") . "'/>";
+  echo "<input id='save' class='button' name='save' type='submit' value='" . _("Save") . "'/>";
+  echo "<input id='cancel' class='button' name='cancel' type='submit' value='" . _("Cancel") . "'/>";
   $playerArray = TeamPlayerArray($teamId);
   foreach ($playerArray as $playerId => $name) {
     echo "<input type='hidden' id='playerEdited" . $playerId . "' name='playerEdited[]' value='no'/>\n";
