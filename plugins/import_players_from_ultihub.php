@@ -50,7 +50,7 @@ if (isset($_POST['import'])) {
     $player = PlayersByName();
 
     foreach ($teams as $team) {
-        $teamId = $team['id']; // ID týmu
+        $teamId = FindTeamByCAUId($team['id']); // ID týmu
         $members = $team['members']; // Seznam členů týmu
 
         foreach ($members as $member) {
@@ -69,6 +69,8 @@ if (isset($_POST['import'])) {
             }
 
             // Přidání hráče do týmu
+            //print($teamId . " " . $first . " " . $last . " " . $playerId . " " . $number . "<br>");
+            //UpdateNum($teamId, $playerId, $number);
             $id = AddPlayer($teamId, $first, $last, $playerId, $number);
         }
     }
@@ -78,7 +80,7 @@ if (isset($_POST['import'])) {
 }
 
 //season selection
-$html .= "<form method='post' enctype='multipart/form-data' action='?view=plugins/import_teams_from_ultihub'>\n";
+$html .= "<form method='post' enctype='multipart/form-data' action='?view=plugins/import_players_from_ultihub'>\n";
 
 if (empty($seasonId)) {
 	$html .= "<p>" . ("Select event") . ": <select class='dropdown' name='season'>\n";

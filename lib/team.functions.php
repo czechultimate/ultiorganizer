@@ -1111,7 +1111,7 @@ function AddPlayer($teamId, $firstname, $lastname, $profileId, $staff, $num = 0)
       $profileId = DBQueryInsert($query);
       $accreditationId = 0;
     }
-    $query = "INSERT INTO uo_player (firstname, lastname, profile_id, accreditation_id,team";
+    $query = "INSERT INTO uo_player (firstname, lastname, profile_id, accreditation_id, team, num";
 
     if ($num >= 0) {
       $query .= ",num";
@@ -1119,12 +1119,13 @@ function AddPlayer($teamId, $firstname, $lastname, $profileId, $staff, $num = 0)
 
     $query .= ") ";
     $query .= sprintf(
-      "VALUES ('%s', '%s', %d, '%s', %d",
+      "VALUES ('%s', '%s', %d, '%s', %d, %d",
       DBEscapeString($firstname),
       DBEscapeString($lastname),
       (int)$profileId,
       $accreditationId,
-      (int)$teamId
+      (int)$teamId,
+      (int)$num
     );
 
     if ($num >= 0) {
@@ -1619,4 +1620,12 @@ function FindTeamInArray($teamArray, $home, $visitor){
       return $home;
     }
   }
+}
+
+function FindTeamByCAUId($cauId){
+  $query = sprintf(
+    "SELECT team_id FROM uo_team WHERE cau_team_id='%s'",
+    DBEscapeString($cauId)
+  );
+  return DBQueryToValue($query);
 }
