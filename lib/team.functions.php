@@ -1089,12 +1089,26 @@ function RemovePlayer($playerId)
   }
 }
 
-function AddPlayer($teamId, $firstname, $lastname, $profileId, $staff, $num = 0)
+function AddPlayer($teamId, $firstname, $lastname, $profileId, $num = 0)
 {
   if (hasEditPlayersRight($teamId)) {
 
     if(!isset($num)){
       $num = 0;
+    }
+
+    // Check for duplicate player
+    $query = sprintf(
+        "SELECT COUNT(*) AS count FROM uo_player WHERE team = %d AND firstname = '%s' AND lastname = '%s'",
+        (int)$teamId,
+        DBEscapeString($firstname),
+        DBEscapeString($lastname)
+    );
+    $existingPlayerCount = DBQueryToValue($query);
+
+    if ($existingPlayerCount > 0) {
+        // Player already exists, do not add
+        return -1;
     }
 
     if (!empty($profileId)) {
