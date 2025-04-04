@@ -1125,15 +1125,15 @@ function AddPlayer($teamId, $firstname, $lastname, $profileId, $num = 0)
       $profileId = DBQueryInsert($query);
       $accreditationId = 0;
     }
-    $query = "INSERT INTO uo_player (firstname, lastname, profile_id, accreditation_id, team, num";
+    $query = "INSERT INTO uo_player (firstname, lastname, profile_id, accreditation_id, team, num)";
 
-    if ($num >= 0) {
-      $query .= ",num";
-    }
+    //if ($num >= 0) {
+      //$query .= ",num";
+    //}
 
-    $query .= ") ";
+    //$query .= ") ";
     $query .= sprintf(
-      "VALUES ('%s', '%s', %d, '%s', %d, %d",
+      "VALUES ('%s', '%s', %d, '%s', %d, %d)",
       DBEscapeString($firstname),
       DBEscapeString($lastname),
       (int)$profileId,
@@ -1142,10 +1142,10 @@ function AddPlayer($teamId, $firstname, $lastname, $profileId, $num = 0)
       (int)$num
     );
 
-    if ($num >= 0) {
-      $query .= sprintf(",%d", (int)$num);
-    }
-    $query .= sprintf(")");
+    //if ($num >= 0) {
+      //$query .= sprintf(",%d", (int)$num);
+    //}
+    //$query .= sprintf(")");
     $playerId = DBQueryInsert($query);
     Log1("player", "add", $playerId, $teamId);
 
